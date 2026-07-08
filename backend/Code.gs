@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = '1RzDcasCT_eAyE0xSs9j9O2y06dLoT8rCcBCIE42qvSc';
+﻿const SPREADSHEET_ID = '1J2Jfv4PIj2C3RMoX2ZH5jW946FFBN6p25FJkk8TsvGU';
 const SHEETS = {
   state: { name: 'State', headers: ['key', 'json', 'updatedAt'] },
   posts: { name: 'Posts', headers: ['id', 'weekStart', 'weekEnd', 'date', 'business', 'account', 'sns', 'content', 'impressions', 'followers', 'operator', 'inputAt', 'updatedAt', 'note', 'json'] },
@@ -23,7 +23,7 @@ function doPost(e) {
     const action = request.action || '';
     if (action === 'loadData') return json_({ ok: true, data: { data: readData_(), updatedAt: readUpdatedAt_() } });
     if (action === 'saveData') return json_({ ok: true, data: saveData_(request.data || {}) });
-    throw new Error('未対応の操作です: ' + action);
+    throw new Error('譛ｪ蟇ｾ蠢懊・謫堺ｽ懊〒縺・ ' + action);
   } catch (error) {
     return json_({ ok: false, error: error.message || String(error) });
   }
@@ -227,3 +227,4 @@ function parseJson_(value) {
 function json_(payload) {
   return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
 }
+
