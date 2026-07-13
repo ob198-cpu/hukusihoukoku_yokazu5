@@ -3110,7 +3110,9 @@ tbody tr:nth-child(even) td {
           renderAll();
           setCloudStatus("シート読込済み", "ok");
         } else {
-          setCloudStatus("シート保存準備完了", "ok");
+          cloudSyncReady = true;
+          await saveCloudData(normalizeData(cloneRecord(data)));
+          return;
         }
         cloudSyncReady = true;
       } catch (error) {
