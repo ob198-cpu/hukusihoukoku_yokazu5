@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>譬ｪ蠑丈ｼ夂､ｾ繧医°縺壽ｧ・SNS驕狗畑蝣ｱ蜻・</title>
+  <title>株式会社よかず様 SNS運用報告5</title>
     <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap');
 
 :root {
-  --primary: #4f46e5;         /* 鬮倡ｴ壽─縺ｮ縺ゅｋ繧､繝ｳ繝・ぅ繧ｴ繝悶Ν繝ｼ */
+  --primary: #4f46e5;         /* 高級感のあるインディゴブルー */
   --primary-hover: #4338ca;
   --primary-light: #f5f3ff;
   --primary-gradient: linear-gradient(135deg, #4f46e5, #3b82f6);
@@ -18,21 +18,21 @@
   --warning-light: #fffbeb;
   --danger: #ef4444;
   --danger-light: #fef2f2;
-  --background: #f1f5f9;       /* 荳雁刀縺ｪ繝ｩ繧､繝医げ繝ｬ繝ｼ */
+  --background: #f1f5f9;       /* 上品なライトグレー */
   --card-bg: #ffffff;
-  --text-main: #0f172a;        /* 繧ｹ繧ｿ繧､繝ｪ繝・す繝･縺ｧ豺ｱ縺・せ繝ｬ繝ｼ繝医ヶ繝ｩ繝・け */
-  --text-muted: #475569;       /* 隕冶ｪ肴ｧ縺ｮ濶ｯ縺・メ繝｣繧ｳ繝ｼ繝ｫ繧ｰ繝ｬ繝ｼ */
+  --text-main: #0f172a;        /* スタイリッシュで深いスレートブラック */
+  --text-muted: #475569;       /* 視認性の良いチャコールグレー */
   --text-muted-light: #94a3b8;
-  --border-color: rgba(15, 23, 42, 0.11); /* 蠅・阜邱壹ｒ繧上★縺九↓蠑ｷ隱ｿ縺励※繧ｳ繝ｳ繝医Λ繧ｹ繝亥髄荳・*/
+  --border-color: rgba(15, 23, 42, 0.11); /* 境界線をわずかに強調してコントラスト向上 */
   --border-focus: #c7d2fe;
   --font-sans: 'Outfit', 'Noto Sans JP', "Yu Gothic", "Meiryo", system-ui, -apple-system, sans-serif;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 4px 6px -2px rgba(0, 0, 0, 0.02); /* 螟壼ｱ､繧ｷ繝｣繝峨え */
+  --shadow-lg: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.03), 0 4px 6px -2px rgba(0, 0, 0, 0.02); /* 多層シャドウ */
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 12px;           /* 荳雁刀縺ｪ隗剃ｸｸ */
+  --radius-lg: 12px;           /* 上品な角丸 */
 }
 
 * { box-sizing: border-box; }
@@ -55,7 +55,7 @@ header {
   gap: 18px;
   padding: 14px 32px;
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.85); /* Stripe/Apple鬚ｨ蜊企乗・逋ｽ繝倥ャ繝繝ｼ */
+  background: rgba(255, 255, 255, 0.85); /* Stripe/Apple風半透明白ヘッダー */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
@@ -466,10 +466,11 @@ textarea { min-height: 90px; resize: vertical; }
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 260px;
+  min-width: 340px;
 }
 
-.report-slide > .week-controls .week-select-label select {
+.report-slide > .week-controls .week-select-label select,
+.report-slide > .week-controls .month-select-label select {
   margin-top: 0;
 }
 
@@ -493,14 +494,28 @@ textarea { min-height: 90px; resize: vertical; }
   flex-grow: 1;
 }
 
+.week-select-label,
+.month-select-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 .week-select-label {
   min-width: 280px;
   flex: 1 1 320px;
 }
 
-.week-select-label select {
+.month-select-label {
+  min-width: 170px;
+  flex: 0 0 190px;
+}
+
+.week-select-label select,
+.month-select-label select {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 .week-range-card,
@@ -570,7 +585,7 @@ textarea { min-height: 90px; resize: vertical; }
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 14px 16px;
-  background: linear-gradient(135deg, #f5f3ff, #eff6ff); /* 讌ｵ阮・・繧､繝ｳ繝・ぅ繧ｴ繝ｻ繝悶Ν繝ｼ縺ｮ繧ｰ繝ｩ繝・・繧ｷ繝ｧ繝ｳ */
+  background: linear-gradient(135deg, #f5f3ff, #eff6ff); /* 極薄のインディゴ・ブルーのグラデーション */
   color: var(--text-main);
   text-align: center;
   box-shadow: var(--shadow-sm);
@@ -1127,19 +1142,19 @@ th.sortable:hover {
 }
 
 th.sortable::after {
-  content: " 竊・;
+  content: " ↕";
   font-size: 10px;
   opacity: .5;
 }
 
 th.sortable.sorted-asc::after {
-  content: " 竊・;
+  content: " ↑";
   opacity: 1;
   color: var(--primary);
 }
 
 th.sortable.sorted-desc::after {
-  content: " 竊・;
+  content: " ↓";
   opacity: 1;
   color: var(--primary);
 }
@@ -1421,11 +1436,13 @@ tbody tr:nth-child(even) td {
 
 .stack.input-form-panel.active {
   display: grid;
+  min-width: 0;
 }
 
 .stack {
   display: grid;
   gap: 20px;
+  min-width: 0;
 }
 
 .field-group {
@@ -1433,6 +1450,7 @@ tbody tr:nth-child(even) td {
   border-radius: 8px;
   padding: 16px;
   background: #fafafa;
+  min-width: 0;
 }
 
 .field-group legend {
@@ -1444,6 +1462,7 @@ tbody tr:nth-child(even) td {
 
 .follower-bulk-grid {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1459,7 +1478,67 @@ tbody tr:nth-child(even) td {
   font-size: 13px;
 }
 
+.follower-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--border-color);
+  background: #eef6ff;
+  color: var(--text-main);
+  font-weight: 800;
+}
+
+.follower-total-row output {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+.metric-entry-panel {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) repeat(4, minmax(110px, 0.72fr));
+  gap: 8px;
+  align-items: stretch;
+}
+
+.metric-entry-panel label {
+  margin: 0;
+  border: 1px solid #4b5563;
+  background: #f3f4f6;
+  padding: 0;
+  color: #001a33;
+  font-size: 12px;
+  text-align: center;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-entry-panel input {
+  min-height: 42px;
+  border: 0;
+  border-top: 1px solid #4b5563;
+  border-radius: 0;
+  background: #fff;
+  text-align: left;
+  flex: 1;
+}
+
+.metric-entry-main {
+  grid-row: span 2;
+  align-self: stretch;
+}
+
+.metric-entry-main input {
+  min-height: 96px;
+  font-size: 18px;
+}
+
 .work-input-table-wrap {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -1469,12 +1548,13 @@ tbody tr:nth-child(even) td {
 .work-input-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 620px;
+  min-width: 1500px;
+  table-layout: fixed;
 }
 
 .work-input-table th,
 .work-input-table td {
-  padding: 10px;
+  padding: 8px;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
 }
@@ -1484,6 +1564,7 @@ tbody tr:nth-child(even) td {
   font-size: 12px;
   text-align: left;
   background: #f8fafc;
+  white-space: nowrap;
 }
 
 .work-input-table tr:last-child td {
@@ -1495,8 +1576,58 @@ tbody tr:nth-child(even) td {
   width: 100%;
 }
 
+.work-input-table input[type="number"] {
+  min-width: 0;
+}
+
+.work-input-table th:first-child,
+.work-input-table td:first-child {
+  width: 640px;
+}
+
+.work-input-table th:nth-child(2),
+.work-input-table td:nth-child(2) {
+  width: 160px;
+}
+
+.work-input-table th:nth-child(n+3),
+.work-input-table td:nth-child(n+3) {
+  width: 100px;
+}
+
+.work-input-table th:last-child,
+.work-input-table td:last-child {
+  width: 80px;
+}
+
 .work-input-table-wrap + #add-work-row {
   margin-top: 12px;
+}
+
+.work-filter-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: -8px;
+}
+
+.work-filter-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(180px, 240px) auto;
+  gap: 10px;
+  align-items: end;
+  margin: 0 0 12px;
+}
+
+.work-filter-row label {
+  margin: 0;
+}
+
+.work-filter-row .btn {
+  height: 44px;
 }
 
 .record-list {
@@ -1945,6 +2076,63 @@ tbody tr:nth-child(even) td {
     grid-template-columns: 1fr;
   }
 
+  .follower-bulk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .input-tabs {
+    flex-wrap: wrap;
+  }
+
+  .input-tabs .input-tab {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .input-mode-tabs {
+    flex-wrap: nowrap;
+  }
+
+  .input-mode-tabs .input-tab {
+    flex: 1 1 0;
+    white-space: nowrap;
+  }
+
+  .week-controls .week-select-label,
+  .week-controls .month-select-label,
+  .report-slide > .week-controls .week-select-label {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .week-controls .week-select-label select,
+  .week-controls .month-select-label select {
+    min-width: 0;
+  }
+
+  .follower-bulk-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .metric-entry-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric-entry-main {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .metric-entry-main input {
+    min-height: 42px;
+    font-size: 16px;
+  }
+
   .report-compact-grid > .large-outline-box:nth-last-child(2),
   .report-compact-grid > .large-outline-box:last-child {
     grid-column: auto;
@@ -1972,22 +2160,22 @@ tbody tr:nth-child(even) td {
 <body>
   <header>
     <div>
-      <p>譬ｪ蠑丈ｼ夂､ｾ繧医°縺壽ｧ・/p>
-      <h1>SNS驕狗畑蝣ｱ蜻・</h1>
+      <p>SNS Operation Report</p>
+      <h1>株式会社よかず様 SNS運用報告5</h1>
     </div>
     <nav>
-      <button class="tab active" data-view="report">騾ｱ谺｡蝣ｱ蜻・/button>
-      <button class="tab" data-view="input">蜈･蜉帙す繝ｼ繝・/button>
-      <button class="tab" data-view="summary">髮・ｨ・/button>
+      <button class="tab active" data-view="report">週次報告</button>
+      <button class="tab" data-view="input">入力シート</button>
+      <button class="tab" data-view="summary">集計</button>
     </nav>
-    <div class="cloud-status syncing no-print" id="cloud-status">繧ｷ繝ｼ繝育｢ｺ隱堺ｸｭ</div>
+    <div class="cloud-status syncing no-print" id="cloud-status">シート確認中</div>
   </header>
 
   <main>
     <section id="view-report" class="view active">
       <div class="view-head no-print">
         <div>
-          <h2>騾ｱ谺｡蝣ｱ蜻・/h2>
+          <h2>週次報告</h2>
         </div>
       </div>
 
@@ -1998,10 +2186,11 @@ tbody tr:nth-child(even) td {
           </div>
 
           <div class="week-controls no-print">
-            <button class="btn" type="button" id="prev-week">蜑埼ｱ</button>
-            <button class="btn" type="button" id="next-week">鄙碁ｱ</button>
-            <label class="week-select-label">騾ｱ繝悶Ο繝・け<select id="week-select" aria-label="謚慕ｨｿ騾ｱ"></select></label>
-            <div class="week-range-card"><span>驕ｸ謚樔ｸｭ縺ｮ騾ｱ</span><strong id="week-range-label">-</strong></div>
+            <button class="btn" type="button" id="prev-week">前週</button>
+            <button class="btn" type="button" id="next-week">翌週</button>
+            <label class="month-select-label">月ブロック<select id="month-select" aria-label="投稿月"></select></label>
+            <label class="week-select-label">週ブロック<select id="week-select" aria-label="投稿週"></select></label>
+            <div class="week-range-card"><span>選択中の週</span><strong id="week-range-label">-</strong></div>
             <input type="hidden" id="week-start">
             <input type="hidden" id="week-end">
             <select id="report-business" hidden></select>
@@ -2010,20 +2199,20 @@ tbody tr:nth-child(even) td {
           <div class="slide1-top">
             <div class="inquiry-summary-box" id="report-kpis"></div>
             <div class="chart-area">
-              <div class="total-box">邱上う繝ｳ繝励Ξ繝・す繝ｧ繝ｳ謨ｰ<br><span id="total-impressions">縲・・屓</span><a class="total-detail-link no-print" href="#summary-breakdown-title" id="show-impression-breakdown">蜀・ｨｳ繧定ｦ九ｋ</a></div>
+              <div class="total-box">これまでの累計<br>インプレッション数<br><span id="total-impressions">〇〇回</span><a class="total-detail-link no-print" href="#summary-breakdown-title" id="show-impression-breakdown">内訳を見る</a></div>
               <div class="pie-wrap" id="impression-pie"></div>
             </div>
             <div class="chart-area">
-              <div class="total-box">邱上ヵ繧ｩ繝ｭ繝ｯ繝ｼ謨ｰ<br><span id="total-followers">縲・・ｺｺ</span></div>
+              <div class="total-box">総フォロワー数<br><span id="total-followers">〇〇人</span></div>
               <div class="pie-wrap" id="follower-pie"></div>
             </div>
           </div>
 
-          <div class="period-title" id="period-label">縲・怦縲・律・槭・怦縲・律縲謚慕ｨｿ</div>
+          <div class="period-title" id="period-label">〇月〇日～〇月〇日　投稿</div>
 
           <div class="report-compact-grid">
             <div class="sns-box">
-              <h3>X・域怙螟ｧ5謚慕ｨｿ・・/h3>
+              <h3>X（最大5投稿）</h3>
               <div class="mock-post-list" id="x-posts"></div>
             </div>
             <div class="sns-box">
@@ -2043,13 +2232,13 @@ tbody tr:nth-child(even) td {
               <div class="mock-post-list" id="youtube-posts"></div>
             </div>
             <div class="large-outline-box">
-              <h3>L繧ｹ繝・ャ繝有INE騾∽ｿ｡騾壽焚・・span id="lstep-check-label">縲・怦縲・律</span>繝√ぉ繝・け・・/h3>
+              <h3>LステップLINE送信通数（<span id="lstep-check-label">〇月〇日</span>チェック）</h3>
               <div class="lstep-three" id="lstep-report"></div>
             </div>
             <div class="large-outline-box">
               <div class="box-head">
-                <h3>蝠上＞蜷医ｏ縺帛・螳ｹ</h3>
-                <button type="button" class="detail-mini-btn" id="inquiry-detail-button-bottom">隧ｳ邏ｰ</button>
+                <h3>問い合わせ内容</h3>
+                <button type="button" class="detail-mini-btn" id="inquiry-detail-button-bottom">詳細</button>
               </div>
               <div class="inquiry-mini-table" id="inquiry-report"></div>
             </div>
@@ -2061,143 +2250,183 @@ tbody tr:nth-child(even) td {
     <section id="view-input" class="view">
       <div class="view-head">
         <div>
-          <h2>蜈･蜉帙す繝ｼ繝・/h2>
+          <h2>入力シート</h2>
         </div>
       </div>
 
       <div class="week-controls input-week-controls">
-        <button class="btn" type="button" id="input-prev-week">蜑埼ｱ</button>
-        <button class="btn" type="button" id="input-next-week">鄙碁ｱ</button>
-        <label class="week-select-label">騾ｱ繝悶Ο繝・け<select id="input-week-select" aria-label="蜈･蜉帙す繝ｼ繝医・謚慕ｨｿ騾ｱ"></select></label>
-        <div class="week-range-card"><span>驕ｸ謚樔ｸｭ縺ｮ騾ｱ</span><strong id="input-week-range-label">-</strong></div>
+        <button class="btn" type="button" id="input-prev-week">前週</button>
+        <button class="btn" type="button" id="input-next-week">翌週</button>
+        <label class="month-select-label">月ブロック<select id="input-month-select" aria-label="入力シートの投稿月"></select></label>
+        <label class="week-select-label">週ブロック<select id="input-week-select" aria-label="入力シートの投稿週"></select></label>
+        <div class="week-range-card"><span>選択中の週</span><strong id="input-week-range-label">-</strong></div>
       </div>
 
-      <div class="input-tabs input-mode-tabs" aria-label="蜈･蜉帙す繝ｼ繝育判髱｢蛻・崛">
-        <button class="input-tab active" type="button" data-input-mode-tab="entry">蜈･蜉帷判髱｢</button>
-        <button class="input-tab" type="button" data-input-mode-tab="edit">邱ｨ髮・判髱｢</button>
+      <div class="input-tabs input-mode-tabs" aria-label="入力シート画面切替">
+        <button class="input-tab active" type="button" data-input-mode-tab="entry">入力画面</button>
+        <button class="input-tab" type="button" data-input-mode-tab="edit">編集画面</button>
       </div>
 
       <div class="input-layout">
         <div class="input-mode-panel active" data-input-mode-panel="entry">
           <div class="input-tabs">
-            <button class="input-tab active" type="button" data-input-tab="post">謚慕ｨｿ蜈･蜉・/button>
-            <button class="input-tab" type="button" data-input-tab="work">菴懷刀蛻･謗ｨ遘ｻ</button>
-            <button class="input-tab" type="button" data-input-tab="follower">繝輔か繝ｭ繝ｯ繝ｼ邂｡逅・/button>
-            <button class="input-tab" type="button" data-input-tab="inquiry">蝠上＞蜷医ｏ縺帛・蜉・/button>
-            <button class="input-tab" type="button" data-input-tab="lstep">L繧ｹ繝・ャ繝礼ｮ｡逅・/button>
+            <button class="input-tab active" type="button" data-input-tab="post">投稿入力</button>
+            <button class="input-tab" type="button" data-input-tab="work">作品別推移</button>
+            <button class="input-tab" type="button" data-input-tab="follower">フォロワー管理</button>
+            <button class="input-tab" type="button" data-input-tab="inquiry">問い合わせ入力</button>
+            <button class="input-tab" type="button" data-input-tab="lstep">Lステップ管理</button>
           </div>
           <form class="panel stack input-form-panel active" id="post-form" data-input-panel="post">
-            <h3>謚慕ｨｿ蜈･蜉・/h3>
+            <h3>投稿入力</h3>
             <input type="hidden" name="postId">
             <div class="selected-week-field">
-              <span>謚慕ｨｿ騾ｱ</span>
+              <span>投稿週</span>
               <strong data-selected-week-label>-</strong>
               <input type="hidden" name="weekStart">
               <input type="hidden" name="weekEnd">
             </div>
             <div class="grid-2">
-              <label>謚慕ｨｿ譌･<input type="date" name="date" required></label>
-              <label>SNS遞ｮ蛻･<select name="sns" required></select></label>
-              <label>繧､繝ｳ繝励Ξ繝・す繝ｧ繝ｳ/蜀咲函謨ｰ<input type="number" name="impressions" min="0" value="0"></label>
+              <label>投稿日<input type="date" name="date" required></label>
+              <label>SNS種別<select name="sns" required></select></label>
             </div>
-            <label>謚慕ｨｿ蜀・ｮｹ<textarea name="content" required></textarea></label>
             <div class="grid-2">
-              <label>蜈･蜉幄・input type="text" name="operator" required></label>
+              <label>投稿時間<input type="time" name="postTime"></label>
+              <label>投稿形式<select name="postType">
+                <option value="画像">画像</option>
+                <option value="動画">動画</option>
+                <option value="文章">文章</option>
+                <option value="リール">リール</option>
+                <option value="その他">その他</option>
+              </select></label>
+            </div>
+            <div class="metric-entry-panel">
+              <label class="metric-entry-main">インプレッション/再生数<input type="number" name="impressions" min="0" value="0"></label>
+              <label>いいね<input type="number" name="likes" min="0" value="0"></label>
+              <label>コメント/リプライ<input type="number" name="comments" min="0" value="0"></label>
+              <label>シェア/リポスト<input type="number" name="shares" min="0" value="0"></label>
+              <label>保存数<input type="number" name="saves" min="0" value="0"></label>
+              <label>プロフィールアクセス数<input type="number" name="profileAccesses" min="0" value="0"></label>
+              <label>リンククリック数<input type="number" name="linkClicks" min="0" value="0"></label>
+            </div>
+            <label>投稿内容<textarea name="content" required></textarea></label>
+            <div class="grid-2">
+              <label>入力者<input type="text" name="operator" required></label>
             </div>
             <div class="post-form-actions">
-              <button class="btn primary" type="submit" id="post-submit-button">謚慕ｨｿ繧堤匳骭ｲ</button>
-              <button class="btn" type="button" id="post-edit-cancel" hidden>邱ｨ髮・ｒ繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
+              <button class="btn primary" type="submit" id="post-submit-button">投稿を登録</button>
+              <button class="btn" type="button" id="post-edit-cancel" hidden>編集をキャンセル</button>
             </div>
           </form>
 
           <form class="panel stack input-form-panel" id="work-form" data-input-panel="work">
-            <h3>菴懷刀蛻･謗ｨ遘ｻ蜈･蜉・/h3>
+            <h3>作品別推移入力</h3>
             <input type="hidden" name="workId">
             <div class="grid-2">
-              <label>遒ｺ隱肴律<input type="date" name="date" required></label>
-              <label>蜈･蜉幄・input type="text" name="operator" required></label>
+              <label>確認日<input type="date" name="date" required></label>
+              <label>入力者<input type="text" name="operator" required></label>
+              <label>SNS種別で表示<select name="workSnsFilter">
+                <option value="">全SNS</option>
+              </select></label>
+              <label>月別で表示<input type="month" name="workMonthFilter"></label>
+            </div>
+            <div class="work-filter-status">
+              <button class="btn small" type="button" id="work-filter-all">全期間表示</button>
+              <span id="work-filter-count">-</span>
             </div>
             <fieldset class="field-group">
-              <legend>菴懷刀縺斐→縺ｮ繧､繝ｳ繝励Ξ繝・す繝ｧ繝ｳ/蜀咲函謨ｰ</legend>
+              <legend>作品ごとの実績</legend>
               <div class="work-input-table-wrap">
                 <table class="work-input-table">
                   <thead>
-                    <tr><th>菴懷刀</th><th>繧､繝ｳ繝励Ξ繝・す繝ｧ繝ｳ/蜀咲函謨ｰ</th><th>謫堺ｽ・/th></tr>
+                    <tr>
+                      <th>作品/投稿内容</th>
+                      <th>インプレッション/再生数</th>
+                      <th>いいね</th>
+                      <th>コメント/リプライ</th>
+                      <th>シェア/リポスト</th>
+                      <th>保存数</th>
+                      <th>プロフィールアクセス</th>
+                      <th>リンククリック</th>
+                      <th>操作</th>
+                    </tr>
                   </thead>
                   <tbody id="work-metric-body"></tbody>
                 </table>
               </div>
-              <button class="btn small" type="button" id="add-work-row">陦後ｒ霑ｽ蜉</button>
+              <button class="btn small" type="button" id="add-work-row">行を追加</button>
             </fieldset>
             <div class="post-form-actions">
-              <button class="btn primary" type="submit" id="work-submit-button">菴懷刀蛻･謗ｨ遘ｻ繧堤匳骭ｲ</button>
-              <button class="btn" type="button" id="work-edit-cancel" hidden>邱ｨ髮・ｒ繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
+              <button class="btn" type="button" id="work-edit-cancel" hidden>編集をキャンセル</button>
             </div>
           </form>
 
           <form class="panel stack input-form-panel" id="follower-form" data-input-panel="follower">
-            <h3>繝輔か繝ｭ繝ｯ繝ｼ邂｡逅・/h3>
+            <h3>フォロワー管理</h3>
             <input type="hidden" name="followerId">
             <div class="grid-2">
-              <label>謚慕ｨｿ譌･<input type="date" name="date" required></label>
-              <label>蜈･蜉幄・input type="text" name="operator" required></label>
+              <label>投稿日<input type="date" name="date" required></label>
+              <label>入力者<input type="text" name="operator" required></label>
             </div>
             <fieldset class="field-group">
-              <legend>繝輔か繝ｭ繝ｯ繝ｼ謨ｰ</legend>
+              <legend>SNS別フォロワー数</legend>
               <div class="follower-bulk-grid" id="follower-bulk-body"></div>
+              <div class="follower-total-row">
+                <span>合計</span>
+                <output id="follower-total" aria-live="polite">0人</output>
+              </div>
             </fieldset>
             <div class="post-form-actions">
-              <button class="btn primary" type="submit" id="follower-submit-button">繝輔か繝ｭ繝ｯ繝ｼ謨ｰ繧剃ｸ諡ｬ騾∽ｿ｡</button>
-              <button class="btn" type="button" id="follower-edit-cancel" hidden>邱ｨ髮・ｒ繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
+              <button class="btn primary" type="submit" id="follower-submit-button">フォロワー数を一括送信</button>
+              <button class="btn" type="button" id="follower-edit-cancel" hidden>編集をキャンセル</button>
             </div>
           </form>
 
           <form class="panel stack input-form-panel" id="inquiry-form" data-input-panel="inquiry">
-            <h3>蝠上＞蜷医ｏ縺帛・蜉・/h3>
+            <h3>問い合わせ入力</h3>
             <input type="hidden" name="inquiryId">
             <div class="selected-week-field">
-              <span>謚慕ｨｿ騾ｱ</span>
+              <span>投稿週</span>
               <strong data-selected-week-label>-</strong>
               <input type="hidden" name="weekStart">
               <input type="hidden" name="weekEnd">
             </div>
             <div class="grid-2">
-              <label>謚慕ｨｿ譌･<input type="date" name="date" required></label>
-              <label>SNS遞ｮ蛻･<select name="sns" required></select></label>
-              <label>蛹ｺ蛻・select name="type" required></select></label>
-              <label>蟇ｾ蠢懃憾豕・select name="status" required></select></label>
-              <label>蜈･蜉幄・input type="text" name="operator" required></label>
+              <label>投稿日<input type="date" name="date" required></label>
+              <label>SNS種別<select name="sns" required></select></label>
+              <label>区分<select name="type" required></select></label>
+              <label>対応状況<select name="status" required></select></label>
+              <label>入力者<input type="text" name="operator" required></label>
             </div>
-            <label>蝠上＞蜷医ｏ縺帛・螳ｹ<textarea name="content" required></textarea></label>
+            <label>問い合わせ内容<textarea name="content" required></textarea></label>
             <div class="post-form-actions">
-              <button class="btn primary" type="submit" id="inquiry-submit-button">蝠上＞蜷医ｏ縺帙ｒ逋ｻ骭ｲ</button>
-              <button class="btn" type="button" id="inquiry-edit-cancel" hidden>邱ｨ髮・ｒ繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
+              <button class="btn primary" type="submit" id="inquiry-submit-button">問い合わせを登録</button>
+              <button class="btn" type="button" id="inquiry-edit-cancel" hidden>編集をキャンセル</button>
             </div>
           </form>
 
           <form class="panel stack input-form-panel" id="lstep-form" data-input-panel="lstep">
-            <h3>L繧ｹ繝・ャ繝礼ｮ｡逅・/h3>
+            <h3>Lステップ管理</h3>
             <input type="hidden" name="lstepId">
             <div class="selected-week-field">
-              <span>謚慕ｨｿ騾ｱ</span>
+              <span>投稿週</span>
               <strong data-selected-week-label>-</strong>
               <input type="hidden" name="weekStart">
               <input type="hidden" name="weekEnd">
             </div>
             <div class="grid-2">
-              <label>謚慕ｨｿ譌･<input type="date" name="checkDate" required></label>
-              <label>辟｡譁呎棧<input type="number" name="limit" min="0" value="200"></label>
-              <label>蜈･蜉幄・input type="text" name="operator" required></label>
+              <label>投稿日<input type="date" name="checkDate" required></label>
+              <label>無料枠<input type="number" name="limit" min="0" value="200"></label>
+              <label>入力者<input type="text" name="operator" required></label>
             </div>
             <fieldset class="field-group">
-              <legend>騾∽ｿ｡謨ｰ</legend>
+              <legend>送信数</legend>
               <div>
-                <label>莉企ｱ騾∽ｿ｡謨ｰ<input type="number" name="current" min="0" value="0"></label>
+                <label>今週送信数<input type="number" name="current" min="0" value="0"></label>
               </div>
             </fieldset>
             <div class="post-form-actions">
-              <button class="btn primary" type="submit" id="lstep-submit-button">L繧ｹ繝・ャ繝励ｒ逋ｻ骭ｲ</button>
-              <button class="btn" type="button" id="lstep-edit-cancel" hidden>邱ｨ髮・ｒ繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
+              <button class="btn primary" type="submit" id="lstep-submit-button">Lステップを登録</button>
+              <button class="btn" type="button" id="lstep-edit-cancel" hidden>編集をキャンセル</button>
             </div>
           </form>
         </div>
@@ -2205,52 +2434,53 @@ tbody tr:nth-child(even) td {
         <div class="panel record-list input-mode-panel" data-input-mode-panel="edit">
           <div class="record-manager-head">
             <div>
-              <p class="section-kicker">繝・・繧ｿ邂｡逅・/p>
-              <h3>蜈･蜉帶ｸ医∩繝・・繧ｿ縺ｮ菫ｮ豁｣繝ｻ蜑企勁</h3>
-              <p class="muted">謚慕ｨｿ莉･螟悶ｂ縲∽ｸ隕ｧ縺九ｉ蜿､縺・ョ繝ｼ繧ｿ繧呈爾縺励※邱ｨ髮・・蜑企勁縺ｧ縺阪∪縺吶・/p>
+              <p class="section-kicker">データ管理</p>
+              <h3>入力済みデータの修正・削除</h3>
+              <p class="muted">投稿以外も、一覧から古いデータを探して編集・削除できます。</p>
             </div>
-            <button class="btn primary" type="button" id="export-excel">陦ｨ遉ｺ荳ｭ繝・・繧ｿ繧脱xcel蜃ｺ蜉・/button>
+            <button class="btn primary" type="button" id="export-excel">表示中データをExcel出力</button>
           </div>
           <div class="record-manager-note">
-            <strong>菴ｿ縺・婿: 縲悟・縺ｦ陦ｨ遉ｺ縲阪∪縺溘・讀懃ｴ｢縺ｧ蜿､縺・ョ繝ｼ繧ｿ繧呈爾縺励∝ｯｾ雎｡陦後・縲檎ｷｨ髮・阪悟炎髯､縲阪ｒ謚ｼ縺励※縺上□縺輔＞縲・/strong>
-            <span>繝舌ャ繧ｯ繧｢繝・・菫晏ｭ倥・蠕ｩ蜈・・謫堺ｽ懷ｱ･豁ｴ繧ゅ％縺ｮ荳隕ｧ荳企Κ縺九ｉ謫堺ｽ懊〒縺阪∪縺吶・/span>
-            <div class="record-target-list" aria-label="邱ｨ髮・炎髯､蟇ｾ雎｡">
-              <span>謚慕ｨｿ</span>
-              <span>菴懷刀蛻･謗ｨ遘ｻ</span>
-              <span>繝輔か繝ｭ繝ｯ繝ｼ邂｡逅・/span>
-              <span>蝠上＞蜷医ｏ縺帛・蜉・/span>
-              <span>L繧ｹ繝・ャ繝礼ｮ｡逅・/span>
+            <strong>使い方: 「全て表示」または検索で古いデータを探し、対象行の「編集」「削除」を押してください。</strong>
+            <span>バックアップ保存・復元・操作履歴もこの一覧上部から操作できます。</span>
+            <div class="record-target-list" aria-label="編集削除対象">
+              <span>投稿</span>
+              <span>作品別推移</span>
+              <span>フォロワー管理</span>
+              <span>問い合わせ入力</span>
+              <span>Lステップ管理</span>
             </div>
           </div>
           <div class="input-tabs">
-            <button class="input-tab active" type="button" data-record-tab="all">蜈ｨ繝・・繧ｿ</button>
-            <button class="input-tab" type="button" data-record-tab="post">謚慕ｨｿ蜈･蜉・/button>
-            <button class="input-tab" type="button" data-record-tab="work">菴懷刀蛻･謗ｨ遘ｻ</button>
-            <button class="input-tab" type="button" data-record-tab="follower">繝輔か繝ｭ繝ｯ繝ｼ邂｡逅・/button>
-            <button class="input-tab" type="button" data-record-tab="inquiry">蝠上＞蜷医ｏ縺帛・蜉・/button>
-            <button class="input-tab" type="button" data-record-tab="lstep">L繧ｹ繝・ャ繝礼ｮ｡逅・/button>
+            <button class="input-tab active" type="button" data-record-tab="all">全データ</button>
+            <button class="input-tab" type="button" data-record-tab="post">投稿入力</button>
+            <button class="input-tab" type="button" data-record-tab="work">作品別推移</button>
+            <button class="input-tab" type="button" data-record-tab="follower">フォロワー管理</button>
+            <button class="input-tab" type="button" data-record-tab="inquiry">問い合わせ入力</button>
+            <button class="input-tab" type="button" data-record-tab="lstep">Lステップ管理</button>
           </div>
           <div class="record-week-controls">
-            <button class="btn" type="button" id="record-prev-week">蜑埼ｱ</button>
-            <button class="btn" type="button" id="record-next-week">鄙碁ｱ</button>
-            <label class="week-select-label">騾ｱ繝悶Ο繝・け<select id="record-week-select" aria-label="蜈･蜉帶ｸ医∩荳隕ｧ縺ｮ謚慕ｨｿ騾ｱ"></select></label>
+            <button class="btn" type="button" id="record-prev-week">前週</button>
+            <button class="btn" type="button" id="record-next-week">翌週</button>
+            <label class="month-select-label">月ブロック<select id="record-month-select" aria-label="入力済み一覧の投稿月"></select></label>
+            <label class="week-select-label">週ブロック<select id="record-week-select" aria-label="入力済み一覧の投稿週"></select></label>
             <input type="hidden" id="record-week-start">
             <input type="hidden" id="record-week-end">
-            <button class="btn" type="button" id="clear-record-filters">蜈ｨ縺ｦ陦ｨ遉ｺ</button>
+            <button class="btn" type="button" id="clear-record-filters">全て表示</button>
           </div>
           <div class="record-search-row">
-            <label>驕主悉繝・・繧ｿ讀懃ｴ｢<input type="search" id="record-search" placeholder="譌･莉倥・SNS繝ｻ蜀・ｮｹ繝ｻ蜈･蜉幄・〒讀懃ｴ｢"></label>
-            <button class="btn" type="button" id="clear-record-search">讀懃ｴ｢繧ｯ繝ｪ繧｢</button>
-            <button class="btn" type="button" id="export-backup">繝舌ャ繧ｯ繧｢繝・・菫晏ｭ・/button>
-            <label class="btn" for="restore-backup">繝舌ャ繧ｯ繧｢繝・・蠕ｩ蜈・/label>
+            <label>過去データ検索<input type="search" id="record-search" placeholder="日付・SNS・内容・入力者で検索"></label>
+            <button class="btn" type="button" id="clear-record-search">検索クリア</button>
+            <button class="btn" type="button" id="export-backup">バックアップ保存</button>
+            <label class="btn" for="restore-backup">バックアップ復元</label>
             <input type="file" id="restore-backup" accept="application/json,.json" hidden>
-            <button class="btn" type="button" id="export-history">螻･豁ｴ繧剃ｿ晏ｭ・/button>
+            <button class="btn" type="button" id="export-history">履歴を保存</button>
           </div>
-          <p class="record-tool-note">縲悟・繝・・繧ｿ縲阪〒縺ｯ謚慕ｨｿ莉･螟悶ｂ蜷後§陦ｨ縺ｫ陦ｨ遉ｺ縺励∪縺吶ょ推陦後・蜿ｳ遶ｯ縺九ｉ邱ｨ髮・・蜑企勁縺ｧ縺阪∪縺吶よ､懃ｴ｢荳ｭ縺ｯ譛滄俣縺ｫ髢｢菫ゅ↑縺剰ｩｲ蠖薙ョ繝ｼ繧ｿ繧定｡ｨ遉ｺ縺励∪縺吶・/p>
+          <p class="record-tool-note">「全データ」では投稿以外も同じ表に表示します。各行の右端から編集・削除できます。検索中は期間に関係なく該当データを表示します。</p>
           <div id="record-tables"></div>
           <div class="record-maintenance">
             <details class="history-panel">
-              <summary>謫堺ｽ懷ｱ･豁ｴ</summary>
+              <summary>操作履歴</summary>
               <div id="history-list"></div>
             </details>
           </div>
@@ -2261,37 +2491,37 @@ tbody tr:nth-child(even) td {
     <section id="view-summary" class="view">
       <div class="view-head">
         <div>
-          <h2>髮・ｨ医す繝ｼ繝・/h2>
+          <h2>集計シート</h2>
         </div>
       </div>
       <div class="panel">
-        <div class="summary-tabs" aria-label="髮・ｨ郁｡ｨ遉ｺ蛻・崛">
-          <button class="summary-tab active" type="button" data-summary-tab="overview">讎りｦ・/button>
-          <button class="summary-tab" type="button" data-summary-tab="followers">繝輔か繝ｭ繝ｯ繝ｼ</button>
-          <button class="summary-tab" type="button" data-summary-tab="works">菴懷刀蛻･謗ｨ遘ｻ</button>
-          <button class="summary-tab" type="button" data-summary-tab="breakdown">謚慕ｨｿ繝ｻ蝠上＞蜷医ｏ縺帛・險ｳ</button>
+        <div class="summary-tabs" aria-label="集計表示切替">
+          <button class="summary-tab active" type="button" data-summary-tab="overview">概要</button>
+          <button class="summary-tab" type="button" data-summary-tab="followers">フォロワー</button>
+          <button class="summary-tab" type="button" data-summary-tab="works">作品別推移</button>
+          <button class="summary-tab" type="button" data-summary-tab="breakdown">投稿・問い合わせ内訳</button>
         </div>
         <div class="summary-range-controls">
-          <label>陦ｨ遉ｺ髢句ｧ区律<input type="date" id="summary-start"></label>
-          <label>陦ｨ遉ｺ邨ゆｺ・律<input type="date" id="summary-end"></label>
-          <button class="btn" type="button" id="summary-all-period">蜈ｨ譛滄俣</button>
+          <label>表示開始日<input type="date" id="summary-start"></label>
+          <label>表示終了日<input type="date" id="summary-end"></label>
+          <button class="btn" type="button" id="summary-all-period">全期間</button>
         </div>
 
         <div class="summary-panel active" data-summary-panel="overview">
           <div class="kpi-grid">
             <div class="kpi">
-              <span>邱上う繝ｳ繝励Ξ繝・す繝ｧ繝ｳ謨ｰ</span>
-              <strong id="summary-total-impressions">0蝗・/strong>
+              <span>これまでの累計インプレッション数</span>
+              <strong id="summary-total-impressions">0回</strong>
             </div>
             <div class="kpi">
-              <span>邱上ヵ繧ｩ繝ｭ繝ｯ繝ｼ謨ｰ</span>
-              <strong id="summary-total-followers">0莠ｺ</strong>
+              <span>総フォロワー数</span>
+              <strong id="summary-total-followers">0人</strong>
             </div>
           </div>
           <table>
             <thead>
               <tr>
-                <th>邱上う繝ｳ繝励Ξ繝・す繝ｧ繝ｳ/蜀咲函謨ｰ</th><th>邱上ヵ繧ｩ繝ｭ繝ｯ繝ｼ謨ｰ</th><th>蝠上＞蜷医ｏ縺・/th><th>蛻ｩ逕ｨ閠・撫縺・粋繧上○</th><th>閨ｷ蜩｡蝠上＞蜷医ｏ縺・/th><th>L蜑埼ｱ縺ｾ縺ｧ騾∽ｿ｡謨ｰ</th><th>L莉企ｱ騾∽ｿ｡謨ｰ</th><th>L谿矩壽焚</th>
+                <th>総インプレッション/再生数</th><th>総フォロワー数</th><th>問い合わせ</th><th>利用者問い合わせ</th><th>職員問い合わせ</th><th>L前週まで送信数</th><th>L今週送信数</th><th>L残通数</th>
               </tr>
             </thead>
             <tbody id="summary-body"></tbody>
@@ -2299,25 +2529,25 @@ tbody tr:nth-child(even) td {
         </div>
 
         <div class="summary-panel" data-summary-panel="followers">
-          <h3 class="summary-section-title">繝輔か繝ｭ繝ｯ繝ｼ謗ｨ遘ｻ</h3>
+          <h3 class="summary-section-title">フォロワー推移</h3>
           <div class="follower-summary-grid">
             <div>
-              <h4>騾ｱ谺｡</h4>
+              <h4>週次</h4>
               <div class="summary-breakdown-table">
                 <table>
                   <thead>
-                    <tr><th>騾ｱ</th><th>繝輔か繝ｭ繝ｯ繝ｼ謨ｰ</th><th>蜑榊屓豈・/th><th>蠅怜刈邇・/th></tr>
+                    <tr><th>週</th><th>SNS</th><th>フォロワー数</th><th>前回比</th><th>増加率</th></tr>
                   </thead>
                   <tbody id="follower-week-body"></tbody>
                 </table>
               </div>
             </div>
             <div>
-              <h4>譛域ｬ｡</h4>
+              <h4>月次</h4>
               <div class="summary-breakdown-table">
                 <table>
                   <thead>
-                    <tr><th>譛・/th><th>繝輔か繝ｭ繝ｯ繝ｼ謨ｰ</th><th>蜑榊屓豈・/th><th>蠅怜刈邇・/th></tr>
+                    <tr><th>月</th><th>SNS</th><th>フォロワー数</th><th>前回比</th><th>増加率</th></tr>
                   </thead>
                   <tbody id="follower-month-body"></tbody>
                 </table>
@@ -2331,31 +2561,42 @@ tbody tr:nth-child(even) td {
         </div>
 
         <div class="summary-panel" data-summary-panel="works">
-          <h3 class="summary-section-title">菴懷刀蛻･繧､繝ｳ繝励Ξ繝・す繝ｧ繝ｳ謗ｨ遘ｻ</h3>
-          <div class="summary-mode-tabs" aria-label="菴懷刀蛻･謗ｨ遘ｻ縺ｮ陦ｨ遉ｺ蜊倅ｽ・>
-            <button class="summary-mode-btn active" type="button" data-work-mode="day">譌･蛻･</button>
-            <button class="summary-mode-btn" type="button" data-work-mode="week">騾ｱ蛻･</button>
-            <button class="summary-mode-btn" type="button" data-work-mode="month">譛亥挨</button>
+          <h3 class="summary-section-title">作品別インプレッション推移</h3>
+          <div class="work-filter-row">
+            <label>SNS種別
+              <select id="summary-work-sns">
+                <option value="">全SNS</option>
+              </select>
+            </label>
+            <label>対象月
+              <input type="month" id="summary-work-month">
+            </label>
+            <button class="btn" type="button" id="summary-work-clear">全期間</button>
           </div>
-          <p class="summary-limit-note">陦ｨ遉ｺ縺ｯ譛譁ｰ12蝗槫・縺ｧ縺吶ょ・譛滄俣縺ｮ繝・・繧ｿ縺ｯExcel蜃ｺ蜉帙〒遒ｺ隱阪＠縺ｾ縺吶・/p>
+          <div class="summary-mode-tabs" aria-label="作品別推移の表示単位">
+            <button class="summary-mode-btn active" type="button" data-work-mode="day">日別</button>
+            <button class="summary-mode-btn" type="button" data-work-mode="week">週別</button>
+            <button class="summary-mode-btn" type="button" data-work-mode="month">月別</button>
+          </div>
+          <p class="summary-limit-note">表示は最新12回分です。全期間のデータはExcel出力で確認します。</p>
           <div id="summary-work-metrics"></div>
         </div>
 
         <div class="summary-panel" data-summary-panel="breakdown">
           <div class="summary-section-head">
-            <h3 class="summary-section-title" id="summary-breakdown-title">騾ｱ蛻･蜀・ｨｳ</h3>
-            <div class="summary-mode-tabs" aria-label="蜀・ｨｳ陦ｨ遉ｺ蜊倅ｽ・>
-              <button class="summary-mode-btn" type="button" data-summary-mode="day">譌･蛻･</button>
-              <button class="summary-mode-btn active" type="button" data-summary-mode="week">騾ｱ蛻･</button>
-              <button class="summary-mode-btn" type="button" data-summary-mode="month">譛亥挨</button>
+            <h3 class="summary-section-title" id="summary-breakdown-title">週別内訳</h3>
+            <div class="summary-mode-tabs" aria-label="内訳表示単位">
+              <button class="summary-mode-btn" type="button" data-summary-mode="day">日別</button>
+              <button class="summary-mode-btn active" type="button" data-summary-mode="week">週別</button>
+              <button class="summary-mode-btn" type="button" data-summary-mode="month">月別</button>
             </div>
           </div>
-          <p class="summary-limit-note">陦ｨ遉ｺ縺ｯ譛譁ｰ120陦後∪縺ｧ縺ｧ縺吶る聞譛溘ョ繝ｼ繧ｿ縺ｯ譛亥挨陦ｨ遉ｺ縺ｾ縺溘・Excel蜃ｺ蜉帙〒遒ｺ隱阪＠縺ｾ縺吶・/p>
+          <p class="summary-limit-note">表示は最新120行までです。長期データは月別表示またはExcel出力で確認します。</p>
           <div class="summary-breakdown-table">
             <table>
               <thead id="summary-date-head">
               <tr>
-                <th>騾ｱ</th><th>謚慕ｨｿ謨ｰ</th><th>X</th><th>Instagram</th><th>TikTok</th><th>Threads</th><th>YouTube</th><th>蜷郁ｨ・mp/蜀咲函</th><th>蝠上＞蜷医ｏ縺・/th><th>L騾∽ｿ｡謨ｰ</th>
+                <th>週</th><th>投稿数</th><th>X</th><th>Instagram</th><th>TikTok</th><th>Threads</th><th>YouTube</th><th>合計Imp/再生</th><th>問い合わせ</th><th>L送信数</th>
               </tr>
               </thead>
               <tbody id="summary-date-body"></tbody>
@@ -2371,15 +2612,16 @@ tbody tr:nth-child(even) td {
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="inquiry-modal-title">
       <div class="modal-head">
         <div>
-          <h2 id="inquiry-modal-title">蝠上＞蜷医ｏ縺幄ｩｳ邏ｰ</h2>
+          <h2 id="inquiry-modal-title">問い合わせ詳細</h2>
           <p class="muted" id="inquiry-modal-subtitle"></p>
         </div>
-        <button class="btn" type="button" id="close-inquiry-modal">髢峨§繧・/button>
+        <button class="btn" type="button" id="close-inquiry-modal">閉じる</button>
       </div>
       <div class="modal-controls">
-        <button class="btn" type="button" id="modal-prev-week">蜑埼ｱ</button>
-        <button class="btn" type="button" id="modal-next-week">鄙碁ｱ</button>
-        <label class="week-select-label">騾ｱ繝悶Ο繝・け<select id="modal-week-select" aria-label="蝠上＞蜷医ｏ縺幄ｩｳ邏ｰ縺ｮ謚慕ｨｿ騾ｱ"></select></label>
+        <button class="btn" type="button" id="modal-prev-week">前週</button>
+        <button class="btn" type="button" id="modal-next-week">翌週</button>
+        <label class="month-select-label">月ブロック<select id="modal-month-select" aria-label="問い合わせ詳細の投稿月"></select></label>
+        <label class="week-select-label">週ブロック<select id="modal-week-select" aria-label="問い合わせ詳細の投稿週"></select></label>
         <input type="hidden" id="modal-week-start">
       </div>
       <div id="inquiry-modal-body"></div>
@@ -2389,11 +2631,21 @@ tbody tr:nth-child(even) td {
   <script>
     const STORAGE_KEY = "sns_operation_report_single_site_v3";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
-    const businesses = ["閾ｪ莠区･ｭ謇"];
-    const monitoringUsers = ["螟ｧ蝣ｴ", "A", "B", "C", "D", "E", "F"];
+    const businesses = ["自事業所"];
+    const monitoringUsers = ["大場", "A", "B", "C", "D", "E", "F"];
     const snsTypes = ["X", "Instagram", "TikTok", "Threads", "YouTube"];
-    const inquiryTypes = ["蛻ｩ逕ｨ閠・撫縺・粋繧上○", "閨ｷ蜩｡蝠上＞蜷医ｏ縺・, "縺昴・莉・];
-    const inquiryStatuses = ["譛ｪ蟇ｾ蠢・, "蟇ｾ蠢應ｸｭ", "蟇ｾ蠢懈ｸ・, "菫晉蕗"];
+    const postTypes = ["画像", "動画", "文章", "リール", "その他"];
+    const engagementFields = ["likes", "comments", "shares", "saves", "profileAccesses", "linkClicks"];
+    const engagementLabels = {
+      likes: "いいね",
+      comments: "コメント/リプライ",
+      shares: "シェア/リポスト",
+      saves: "保存数",
+      profileAccesses: "プロフィールアクセス数",
+      linkClicks: "リンククリック数"
+    };
+    const inquiryTypes = ["利用者問い合わせ", "職員問い合わせ", "その他"];
+    const inquiryStatuses = ["未対応", "対応中", "対応済", "保留"];
     const SUMMARY_ROW_LIMIT = 120;
     const WORK_DATE_LIMIT = 12;
     let postSort = { key: "date", direction: "desc" };
@@ -2455,22 +2707,68 @@ tbody tr:nth-child(even) td {
     }
 
     function weekBlockLabel(start, end = addDays(start, 6)) {
-      return `${dateLabelWithYear(start)}縲・{dateLabel(end)}・域律縲懷悄・荏;
+      return `${dateLabelWithYear(start)}〜${dateLabel(end)}（日〜土）`;
     }
 
-    function weekBlockOptions(selectedStart) {
-      const center = weekRangeFromStart(selectedStart || todayIso()).start;
-      return Array.from({ length: 41 }, (_, index) => {
-        const start = addDays(center, (index - 20) * 7);
+    function monthLabel(month) {
+      const [year, monthNumber] = String(month || "").split("-");
+      return year && monthNumber ? `${year}年${Number(monthNumber)}月` : month || "";
+    }
+
+    function addMonths(month, amount) {
+      const [year, monthNumber] = String(month || todayIso().slice(0, 7)).split("-").map(Number);
+      const d = new Date(year, monthNumber - 1 + amount, 1);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function weekMonth(value) {
+      return weekRangeFromStart(value || todayIso()).start.slice(0, 7);
+    }
+
+    function monthBlockOptions(selectedMonth = todayIso().slice(0, 7)) {
+      const months = new Set();
+      for (let i = -12; i <= 12; i += 1) months.add(addMonths(selectedMonth, i));
+      [...data.posts, ...data.workMetrics, ...data.followers, ...data.inquiries, ...data.lsteps]
+        .map(item => String(item.date || item.checkDate || item.weekStart || "").slice(0, 7))
+        .filter(month => /^\d{4}-\d{2}$/.test(month))
+        .forEach(month => months.add(month));
+      months.add(selectedMonth);
+      return Array.from(months).sort().map(month => ({ month, label: monthLabel(month) }));
+    }
+
+    function fillMonthSelect(select, selectedMonth) {
+      if (!select) return;
+      const month = selectedMonth || todayIso().slice(0, 7);
+      select.innerHTML = monthBlockOptions(month)
+        .map(option => `<option value="${escapeHtml(option.month)}">${escapeHtml(option.label)}</option>`)
+        .join("");
+      select.value = month;
+    }
+
+    function weekBlockOptions(selectedStart, selectedMonth = weekMonth(selectedStart)) {
+      const month = selectedMonth || weekMonth(selectedStart);
+      const first = `${month}-01`;
+      const lastDate = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0);
+      const last = iso(lastDate);
+      const weeks = [];
+      let start = weekRangeFromStart(first).start;
+      while (start <= last) {
         const end = addDays(start, 6);
-        return { start, end, label: weekBlockLabel(start, end) };
-      });
+        weeks.push({ start, end, label: weekBlockLabel(start, end) });
+        start = addDays(start, 7);
+      }
+      const selected = weekRangeFromStart(selectedStart || first).start;
+      if (!weeks.some(option => option.start === selected)) {
+        weeks.push({ start: selected, end: addDays(selected, 6), label: weekBlockLabel(selected) });
+        weeks.sort((a, b) => a.start.localeCompare(b.start));
+      }
+      return weeks;
     }
 
-    function fillWeekSelect(select, selectedStart) {
+    function fillWeekSelect(select, selectedStart, selectedMonth = weekMonth(selectedStart)) {
       if (!select) return;
       const start = weekRangeFromStart(selectedStart || todayIso()).start;
-      select.innerHTML = weekBlockOptions(start)
+      select.innerHTML = weekBlockOptions(start, selectedMonth)
         .map(option => `<option value="${escapeHtml(option.start)}">${escapeHtml(option.label)}</option>`)
         .join("");
       select.value = start;
@@ -2506,46 +2804,78 @@ tbody tr:nth-child(even) td {
       const posts = [];
       businesses.forEach((business, bIndex) => {
         const businessFollowers = 3320 + bIndex * 110;
-        ["蛻ｶ蠎ｦ縺ｮ繝昴う繝ｳ繝育ｴｹ莉・, "謾ｯ謠ｴ莠倶ｾ九・邏ｹ莉・, "繧医￥縺ゅｋ雉ｪ蝠・, "隕句ｭｦ譯亥・", "莉企ｱ縺ｮ豢ｻ蜍募ｱ蜻・].forEach((content, i) => {
+        ["制度のポイント紹介", "支援事例の紹介", "よくある質問", "見学案内", "今週の活動報告"].forEach((content, i) => {
           posts.push({
             id: uid(), weekStart, weekEnd, date: iso(new Date(2026, 4, 25 + i)), business,
             account: `${business}_X`, sns: "X", content, impressions: 900 + bIndex * 80 + i * 45,
-            followers: businessFollowers, operator: "蜈･蜉幄・し繝ｳ繝励Ν",
-            inputAt: new Date(2026, 4, 31, 10, 30 + i).toISOString(), note: "X縺ｯ騾ｱ5謚慕ｨｿ諠ｳ螳・
+            postTime: `${String(9 + i).padStart(2, "0")}:00`,
+            postType: i % 2 === 0 ? "画像" : "テキスト",
+            likes: 18 + i * 3,
+            comments: 2 + i,
+            shares: 1 + i,
+            saves: 4 + i,
+            profileAccesses: 28 + i * 4,
+            linkClicks: 7 + i,
+            followers: businessFollowers, operator: "入力者サンプル",
+            inputAt: new Date(2026, 4, 31, 10, 30 + i).toISOString(), note: "Xは週5投稿想定"
           });
         });
         [
-          ["Instagram", "繝｡繝ｳ繧ｿ繝ｫ繧ｱ繧｢縺ｫ縺､縺・※", 360, 820],
-          ["TikTok", "遏ｭ蟆ｺ蜍慕判繧ｵ繝ｳ繝励Ν", 520, 610],
-          ["Threads", "譌･縲・・豌励▼縺肴兜遞ｿ", 180, 420],
-          ["YouTube", "豢ｻ蜍慕ｴｹ莉句虚逕ｻ", 210, 260]
+          ["Instagram", "メンタルケアについて", 360, 820],
+          ["TikTok", "短尺動画サンプル", 520, 610],
+          ["Threads", "日々の気づき投稿", 180, 420],
+          ["YouTube", "活動紹介動画", 210, 260]
         ].forEach(([sns, content, impressions, followers], i) => {
           posts.push({
             id: uid(), weekStart, weekEnd, date: iso(new Date(2026, 4, 25 + i)), business,
             account: `${business}_${sns}`, sns, content, impressions: impressions + bIndex * 35,
-            followers: businessFollowers, operator: "蜈･蜉幄・し繝ｳ繝励Ν",
-            inputAt: new Date(2026, 4, 31, 10, 40 + i).toISOString(), note: "騾ｱ1謚慕ｨｿ諠ｳ螳・
+            postTime: `${String(10 + i).padStart(2, "0")}:30`,
+            postType: sns === "YouTube" || sns === "TikTok" ? "動画" : "画像",
+            likes: 12 + i * 4,
+            comments: 1 + i,
+            shares: 1 + i,
+            saves: 3 + i,
+            profileAccesses: 22 + i * 5,
+            linkClicks: 6 + i,
+            followers: businessFollowers, operator: "入力者サンプル",
+            inputAt: new Date(2026, 4, 31, 10, 40 + i).toISOString(), note: "週1投稿想定"
           });
         });
-        ["6譛医く繝｣繝ｳ繝壹・繝ｳ蜻顔衍", "蛻ｩ逕ｨ閠・う繝ｳ繧ｿ繝薙Η繝ｼ", "謾ｯ謠ｴ蜀・ｮｹ縺ｾ縺ｨ繧・, "繧医￥縺ゅｋ逶ｸ隲・, "騾ｱ谺｡豢ｻ蜍輔Ξ繝昴・繝・].forEach((content, i) => {
+        ["6月キャンペーン告知", "利用者インタビュー", "支援内容まとめ", "よくある相談", "週次活動レポート"].forEach((content, i) => {
           posts.push({
             id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: iso(new Date(2026, 5, 8 + i)), business,
             account: `${business}_X`, sns: "X", content, impressions: 1120 + i * 80,
-            followers: 3440, operator: "蜈･蜉幄・し繝ｳ繝励Ν",
-            inputAt: new Date(2026, 5, 14, 10, 10 + i).toISOString(), note: "繝・せ繝育畑X謚慕ｨｿ"
+            postTime: `${String(9 + i).padStart(2, "0")}:15`,
+            postType: i % 2 === 0 ? "動画" : "画像",
+            likes: 22 + i * 3,
+            comments: 3 + i,
+            shares: 2 + i,
+            saves: 5 + i,
+            profileAccesses: 34 + i * 4,
+            linkClicks: 8 + i,
+            followers: 3440, operator: "入力者サンプル",
+            inputAt: new Date(2026, 5, 14, 10, 10 + i).toISOString(), note: "テスト用X投稿"
           });
         });
         [
-          ["Instagram", "6譛医・豢ｻ蜍募・逵・, 540],
-          ["TikTok", "遏ｭ蟆ｺ蜍慕判繝・せ繝・, 760],
-          ["Threads", "莉頑律縺ｮ謾ｯ謠ｴ繝｡繝｢", 310],
-          ["YouTube", "隕句ｭｦ譯亥・蜍慕判", 420]
+          ["Instagram", "6月の活動写真", 540],
+          ["TikTok", "短尺動画テスト", 760],
+          ["Threads", "今日の支援メモ", 310],
+          ["YouTube", "見学案内動画", 420]
         ].forEach(([sns, content, impressions], i) => {
           posts.push({
             id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: iso(new Date(2026, 5, 9 + i)), business,
             account: `${business}_${sns}`, sns, content, impressions,
-            followers: 3440, operator: "蜈･蜉幄・し繝ｳ繝励Ν",
-            inputAt: new Date(2026, 5, 14, 10, 30 + i).toISOString(), note: "繝・せ繝育畑SNS謚慕ｨｿ"
+            postTime: `${String(11 + i).padStart(2, "0")}:00`,
+            postType: sns === "YouTube" || sns === "TikTok" ? "動画" : "文章",
+            likes: 16 + i * 3,
+            comments: 2 + i,
+            shares: 1 + i,
+            saves: 4 + i,
+            profileAccesses: 24 + i * 4,
+            linkClicks: 6 + i,
+            followers: 3440, operator: "入力者サンプル",
+            inputAt: new Date(2026, 5, 14, 10, 30 + i).toISOString(), note: "テスト用SNS投稿"
           });
         });
       });
@@ -2554,38 +2884,46 @@ tbody tr:nth-child(even) td {
         accounts: defaultAccounts(),
         posts,
         workMetrics: [
-          ...["謚慕ｨｿ1", "謚慕ｨｿ2", "謚慕ｨｿ3", "謚慕ｨｿ4"].flatMap((workName, index) => [
-            { id: uid(), date: "2026-06-03", workName, impressions: [100, 120, 90, 80][index], operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 3, 10, index).toISOString() },
-            { id: uid(), date: "2026-06-08", workName, impressions: [160, 180, 140, 130][index], operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 8, 10, index).toISOString() },
-            { id: uid(), date: "2026-06-10", workName, impressions: [200, 230, 210, 190][index], operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 10, 10, index).toISOString() },
-            { id: uid(), date: "2026-06-12", workName, impressions: [300, 280, 260, 240][index], operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 12, 10, index).toISOString() }
+          ...["投稿1", "投稿2", "投稿3", "投稿4"].flatMap((workName, index) => [
+            { id: uid(), date: "2026-06-03", sns: ["X", "Instagram", "TikTok", "Threads"][index], workName, content: workName, impressions: [100, 120, 90, 80][index], likes: [10, 12, 9, 8][index], comments: [2, 3, 1, 1][index], shares: [1, 2, 1, 1][index], saves: [4, 5, 3, 2][index], profileAccesses: [20, 22, 18, 16][index], linkClicks: [5, 6, 4, 3][index], operator: "入力者サンプル", inputAt: new Date(2026, 5, 3, 10, index).toISOString() },
+            { id: uid(), date: "2026-06-08", sns: ["X", "Instagram", "TikTok", "Threads"][index], workName, content: workName, impressions: [160, 180, 140, 130][index], likes: [16, 18, 14, 13][index], comments: [3, 4, 2, 2][index], shares: [2, 3, 2, 2][index], saves: [6, 7, 5, 4][index], profileAccesses: [30, 34, 28, 26][index], linkClicks: [8, 9, 7, 6][index], operator: "入力者サンプル", inputAt: new Date(2026, 5, 8, 10, index).toISOString() },
+            { id: uid(), date: "2026-06-10", sns: ["X", "Instagram", "TikTok", "Threads"][index], workName, content: workName, impressions: [200, 230, 210, 190][index], likes: [20, 23, 21, 19][index], comments: [4, 5, 4, 3][index], shares: [3, 4, 3, 3][index], saves: [8, 9, 8, 7][index], profileAccesses: [38, 42, 40, 36][index], linkClicks: [10, 12, 11, 9][index], operator: "入力者サンプル", inputAt: new Date(2026, 5, 10, 10, index).toISOString() },
+            { id: uid(), date: "2026-06-12", sns: ["X", "Instagram", "TikTok", "Threads"][index], workName, content: workName, impressions: [300, 280, 260, 240][index], likes: [30, 28, 26, 24][index], comments: [6, 6, 5, 5][index], shares: [5, 4, 4, 4][index], saves: [11, 10, 10, 9][index], profileAccesses: [55, 52, 48, 46][index], linkClicks: [16, 15, 14, 13][index], operator: "入力者サンプル", inputAt: new Date(2026, 5, 12, 10, index).toISOString() }
           ])
         ],
         followers: [
-          { id: uid(), date: "2026-05-17", business: businesses[0], followers: 3180, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 4, 17, 10, 0).toISOString() },
-          { id: uid(), date: "2026-05-24", business: businesses[0], followers: 3240, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 4, 24, 10, 0).toISOString() },
-          { id: uid(), date: "2026-05-31", business: businesses[0], followers: 3320, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 4, 31, 10, 0).toISOString() },
-          { id: uid(), date: "2026-06-07", business: businesses[0], followers: 3415, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 7, 10, 0).toISOString() },
-          { id: uid(), date: "2026-06-08", business: businesses[0], followers: 3440, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 8, 10, 0).toISOString() }
-        ],
+          { date: "2026-05-17", values: [1100, 850, 600, 350, 280] },
+          { date: "2026-05-24", values: [1120, 870, 610, 360, 280] },
+          { date: "2026-05-31", values: [1150, 900, 620, 370, 280] },
+          { date: "2026-06-07", values: [1180, 930, 630, 380, 295] },
+          { date: "2026-06-08", values: [1190, 940, 635, 380, 295] }
+        ].flatMap(snapshot => snsTypes.map((sns, index) => ({
+          id: uid(),
+          date: snapshot.date,
+          business: businesses[0],
+          sns,
+          followers: snapshot.values[index],
+          operator: "入力者サンプル",
+          inputAt: new Date(`${snapshot.date}T10:00:00+09:00`).toISOString()
+        }))),
         inquiries: [
-          { id: uid(), weekStart, weekEnd, date: "2026-05-26", business: businesses[0], sns: "Instagram", type: "蛻ｩ逕ｨ閠・撫縺・粋繧上○", content: "隕句ｭｦ蟶梧悍縺ｮDM", status: "蟇ｾ蠢應ｸｭ", operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 4, 31, 11, 0).toISOString() },
-          { id: uid(), weekStart, weekEnd, date: "2026-05-27", business: businesses[0], sns: "X", type: "閨ｷ蜩｡蝠上＞蜷医ｏ縺・, content: "謚慕ｨｿ蜀・ｮｹ縺ｮ遒ｺ隱堺ｾ晞ｼ", status: "蟇ｾ蠢懈ｸ・, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 4, 31, 11, 5).toISOString() },
-          { id: uid(), weekStart, weekEnd, date: "2026-05-28", business: businesses[0], sns: "TikTok", type: "蛻ｩ逕ｨ閠・撫縺・粋繧上○", content: "繧ｵ繝ｼ繝薙せ蜀・ｮｹ縺ｫ縺､縺・※雉ｪ蝠・, status: "譛ｪ蟇ｾ蠢・, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 4, 31, 11, 10).toISOString() },
-          { id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: "2026-06-08", business: businesses[0], sns: "Instagram", type: "蛻ｩ逕ｨ閠・撫縺・粋繧上○", content: "隕句ｭｦ莠育ｴ・↓縺､縺・※DM", status: "蟇ｾ蠢應ｸｭ", operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 8, 11, 0).toISOString() },
-          { id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: "2026-06-10", business: businesses[0], sns: "X", type: "閨ｷ蜩｡蝠上＞蜷医ｏ縺・, content: "謚慕ｨｿ譁・・遒ｺ隱堺ｾ晞ｼ", status: "蟇ｾ蠢懈ｸ・, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 10, 11, 5).toISOString() },
-          { id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: "2026-06-12", business: businesses[0], sns: "TikTok", type: "蛻ｩ逕ｨ閠・撫縺・粋繧上○", content: "繧ｵ繝ｼ繝薙せ蛻ｩ逕ｨ譚｡莉ｶ縺ｮ雉ｪ蝠・, status: "譛ｪ蟇ｾ蠢・, operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 12, 11, 10).toISOString() }
+          { id: uid(), weekStart, weekEnd, date: "2026-05-26", business: businesses[0], sns: "Instagram", type: "利用者問い合わせ", content: "見学希望のDM", status: "対応中", operator: "入力者サンプル", inputAt: new Date(2026, 4, 31, 11, 0).toISOString() },
+          { id: uid(), weekStart, weekEnd, date: "2026-05-27", business: businesses[0], sns: "X", type: "職員問い合わせ", content: "投稿内容の確認依頼", status: "対応済", operator: "入力者サンプル", inputAt: new Date(2026, 4, 31, 11, 5).toISOString() },
+          { id: uid(), weekStart, weekEnd, date: "2026-05-28", business: businesses[0], sns: "TikTok", type: "利用者問い合わせ", content: "サービス内容について質問", status: "未対応", operator: "入力者サンプル", inputAt: new Date(2026, 4, 31, 11, 10).toISOString() },
+          { id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: "2026-06-08", business: businesses[0], sns: "Instagram", type: "利用者問い合わせ", content: "見学予約についてDM", status: "対応中", operator: "入力者サンプル", inputAt: new Date(2026, 5, 8, 11, 0).toISOString() },
+          { id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: "2026-06-10", business: businesses[0], sns: "X", type: "職員問い合わせ", content: "投稿文の確認依頼", status: "対応済", operator: "入力者サンプル", inputAt: new Date(2026, 5, 10, 11, 5).toISOString() },
+          { id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, date: "2026-06-12", business: businesses[0], sns: "TikTok", type: "利用者問い合わせ", content: "サービス利用条件の質問", status: "未対応", operator: "入力者サンプル", inputAt: new Date(2026, 5, 12, 11, 10).toISOString() }
         ],
         lsteps: [
           ...businesses.map((business, index) => ({
             id: uid(), weekStart, weekEnd, checkDate: "2026-05-31", business,
             previous: 22 + index, current: 20 + index, limit: 200,
-            operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 4, 31, 11, 30).toISOString()
+            operator: "入力者サンプル", inputAt: new Date(2026, 4, 31, 11, 30).toISOString()
           })),
           ...businesses.map((business, index) => ({
             id: uid(), weekStart: testWeekStart, weekEnd: testWeekEnd, checkDate: "2026-06-14", business,
             previous: 20 + index, current: 31 + index, limit: 200,
-            operator: "蜈･蜉幄・し繝ｳ繝励Ν", inputAt: new Date(2026, 5, 14, 11, 30).toISOString()
+            operator: "入力者サンプル", inputAt: new Date(2026, 5, 14, 11, 30).toISOString()
           }))
         ],
         monitoring: monitoringUsers.map((userName, index) => ({
@@ -2603,7 +2941,7 @@ tbody tr:nth-child(even) td {
           billingDone: index < 2,
           billingSent: index === 0,
           addOn: index === 1 || index === 2,
-          continueType: "邯咏ｶ・,
+          continueType: "継続",
           note: ""
         })),
         agencyNotices: monitoringUsers.map((userName, index) => ({
@@ -2625,12 +2963,46 @@ tbody tr:nth-child(even) td {
       return record;
     }
 
+    function normalizeEngagementFields(record = {}) {
+      engagementFields.forEach(field => {
+        record[field] = Number(record[field] || 0);
+      });
+      return record;
+    }
+
+    function normalizePostRecord(item = {}) {
+      const record = normalizeWeeklyRecord(item, "date");
+      record.postTime = record.postTime || "";
+      const normalizedType = record.postType === "テキスト" ? "文章" : record.postType;
+      record.postType = postTypes.includes(normalizedType) ? normalizedType : "画像";
+      return normalizeEngagementFields(record);
+    }
+
+    function normalizeWorkMetricRecord(item = {}) {
+      const record = { ...item };
+      record.date = record.date || todayIso();
+      record.sns = record.sns || "";
+      record.content = record.content || record.workName || "";
+      record.workName = record.workName || record.content || "";
+      record.impressions = Number(record.impressions || 0);
+      return normalizeEngagementFields(record);
+    }
+
+    function normalizeFollowerRecord(item = {}) {
+      const record = { ...item };
+      record.date = record.date || todayIso();
+      record.business = record.business || businesses[0];
+      record.sns = snsTypes.includes(record.sns) ? record.sns : "";
+      record.followers = Number(record.followers || 0);
+      return record;
+    }
+
     function normalizeData(parsed = {}) {
       return {
         accounts: parsed.accounts?.length ? parsed.accounts : defaultAccounts(),
-        posts: (parsed.posts || []).map(item => normalizeWeeklyRecord(item, "date")),
-        workMetrics: parsed.workMetrics || [],
-        followers: parsed.followers || [],
+        posts: (parsed.posts || []).map(normalizePostRecord),
+        workMetrics: (parsed.workMetrics || []).map(normalizeWorkMetricRecord),
+        followers: (parsed.followers || []).map(normalizeFollowerRecord),
         inquiries: (parsed.inquiries || []).map(item => normalizeWeeklyRecord(item, "date")),
         lsteps: (parsed.lsteps || []).map(item => normalizeWeeklyRecord(item, "checkDate")),
         monitoring: parsed.monitoring || [],
@@ -2682,7 +3054,7 @@ tbody tr:nth-child(even) td {
     }
 
     async function cloudRequest(action, payload = {}) {
-      if (!cloudEnabled()) throw new Error("菫晏ｭ伜・URL縺梧悴險ｭ螳壹〒縺吶・);
+      if (!cloudEnabled()) throw new Error("保存先URLが未設定です。");
       const response = await fetch(CLOUD_API_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -2693,9 +3065,9 @@ tbody tr:nth-child(even) td {
       try {
         result = JSON.parse(text);
       } catch {
-        throw new Error("Apps Script縺ｮ蛻晏屓謇ｿ隱阪∪縺溘・蜈ｬ髢玖ｨｭ螳壹ｒ遒ｺ隱阪＠縺ｦ縺上□縺輔＞縲・);
+        throw new Error("Apps Scriptの初回承認または公開設定を確認してください。");
       }
-      if (!response.ok || !result.ok) throw new Error(result.error || "繧ｷ繝ｼ繝井ｿ晏ｭ倥↓螟ｱ謨励＠縺ｾ縺励◆縲・);
+      if (!response.ok || !result.ok) throw new Error(result.error || "シート保存に失敗しました。");
       return result.data || {};
     }
 
@@ -2708,25 +3080,25 @@ tbody tr:nth-child(even) td {
       if (!cloudEnabled()) return;
       const payload = normalizeData(cloneRecord(snapshot));
       clearTimeout(cloudSaveTimer);
-      setCloudStatus("繧ｷ繝ｼ繝井ｿ晏ｭ倅ｸｭ", "syncing");
+      setCloudStatus("シート保存中", "syncing");
       cloudSaveTimer = setTimeout(() => saveCloudData(payload), 500);
     }
 
     async function saveCloudData(snapshot) {
       try {
         await cloudRequest("saveData", { data: snapshot });
-        setCloudStatus("繧ｷ繝ｼ繝井ｿ晏ｭ俶ｸ医∩", "ok");
+        setCloudStatus("シート保存済み", "ok");
       } catch (error) {
-        setCloudStatus("繧ｷ繝ｼ繝井ｿ晏ｭ倥お繝ｩ繝ｼ: " + error.message, "error");
+        setCloudStatus("シート保存エラー: " + error.message, "error");
       }
     }
 
     async function initCloudSync() {
       if (!cloudEnabled()) {
-        setCloudStatus("繝ｭ繝ｼ繧ｫ繝ｫ菫晏ｭ倅ｸｭ", "error");
+        setCloudStatus("ローカル保存中", "error");
         return;
       }
-      setCloudStatus("繧ｷ繝ｼ繝郁ｪｭ霎ｼ荳ｭ", "syncing");
+      setCloudStatus("シート読込中", "syncing");
       try {
         cloudSyncReady = false;
         const result = await cloudRequest("loadData");
@@ -2736,14 +3108,14 @@ tbody tr:nth-child(even) td {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
           setupForms();
           renderAll();
-          setCloudStatus("繧ｷ繝ｼ繝郁ｪｭ霎ｼ貂医∩", "ok");
+          setCloudStatus("シート読込済み", "ok");
         } else {
-          setCloudStatus("繧ｷ繝ｼ繝井ｿ晏ｭ俶ｺ門ｙ螳御ｺ・, "ok");
+          setCloudStatus("シート保存準備完了", "ok");
         }
         cloudSyncReady = true;
       } catch (error) {
         cloudSyncReady = true;
-        setCloudStatus("繧ｷ繝ｼ繝域磁邯壹お繝ｩ繝ｼ: " + error.message, "error");
+        setCloudStatus("シート接続エラー: " + error.message, "error");
       }
     }
 
@@ -2755,21 +3127,21 @@ tbody tr:nth-child(even) td {
     }
 
     const recordTypeLabels = {
-      post: "謚慕ｨｿ",
-      work: "菴懷刀蛻･謗ｨ遘ｻ",
-      follower: "繝輔か繝ｭ繝ｯ繝ｼ",
-      inquiry: "蝠上＞蜷医ｏ縺・,
-      lstep: "L繧ｹ繝・ャ繝・,
-      backup: "繝舌ャ繧ｯ繧｢繝・・"
+      post: "投稿",
+      work: "作品別推移",
+      follower: "フォロワー",
+      inquiry: "問い合わせ",
+      lstep: "Lステップ",
+      backup: "バックアップ"
     };
 
     function recordLabel(type, record = {}) {
       if (type === "post") return `${record.date || ""} ${record.sns || ""} ${record.content || ""}`.trim();
       if (type === "work") return `${record.date || ""} ${record.workName || ""} ${record.impressions ?? ""}`.trim();
-      if (type === "follower") return `${record.date || ""} ${record.business || ""} ${record.followers ?? ""}`.trim();
+      if (type === "follower") return `${record.date || ""} ${record.sns || "合計（旧入力）"} ${record.followers ?? ""}`.trim();
       if (type === "inquiry") return `${record.date || ""} ${record.sns || ""} ${record.type || ""} ${record.content || ""}`.trim();
-      if (type === "lstep") return `${record.weekStart || ""}-${record.weekEnd || ""} ${record.current ?? ""}騾啻.trim();
-      if (type === "backup") return record.label || "繝舌ャ繧ｯ繧｢繝・・蠕ｩ蜈・;
+      if (type === "lstep") return `${record.weekStart || ""}-${record.weekEnd || ""} ${record.current ?? ""}通`.trim();
+      if (type === "backup") return record.label || "バックアップ復元";
       return record.id || "";
     }
 
@@ -2873,6 +3245,31 @@ tbody tr:nth-child(even) td {
         .reduce((sum, item) => sum + Number(item.impressions || 0), 0);
     }
 
+    function followerRecordKey(item = {}) {
+      return item.sns ? `sns:${item.sns}` : `legacy:${item.business || "未設定"}`;
+    }
+
+    function followerRecordLabel(item = {}) {
+      return item.sns || "合計（旧入力）";
+    }
+
+    function followerRowsForTotal(rows = []) {
+      const snsRows = rows.filter(item => snsTypes.includes(item.sns));
+      return snsRows.length ? snsRows : rows.filter(item => !item.sns);
+    }
+
+    function followerRowsForHistory(rows = []) {
+      const snsRows = rows.filter(item => snsTypes.includes(item.sns));
+      if (!snsRows.length) return rows.filter(item => !item.sns);
+      const firstSnsDate = snsRows.reduce((earliest, item) =>
+        !earliest || item.date < earliest ? item.date : earliest, ""
+      );
+      return [
+        ...rows.filter(item => !item.sns && item.date < firstSnsDate),
+        ...snsRows
+      ];
+    }
+
     function latestFollowerTotal(posts) {
       const scope = new Set(posts.map(post => post.business).filter(Boolean));
       const scopedFollowerRows = data.followers.filter(item =>
@@ -2880,7 +3277,7 @@ tbody tr:nth-child(even) td {
         isThroughToday(item.date)
       );
       if (scopedFollowerRows.length) {
-        return latestFollowerRows(scopedFollowerRows)
+        return latestFollowerRows(followerRowsForTotal(scopedFollowerRows))
           .reduce((sum, item) => sum + Number(item.followers || 0), 0);
       }
 
@@ -2888,7 +3285,7 @@ tbody tr:nth-child(even) td {
       posts.filter(post => isThroughToday(post.date)).forEach(post => {
         const followers = Number(post.followers || 0);
         if (!followers) return;
-        const key = post.business || "譛ｪ險ｭ螳・;
+        const key = post.business || "未設定";
         const current = latestByBusiness.get(key);
         const stamp = `${post.date || ""}_${post.inputAt || ""}`;
         if (!current || stamp >= current.stamp) {
@@ -2899,35 +3296,39 @@ tbody tr:nth-child(even) td {
     }
 
     function latestFollowerRows(rows = data.followers) {
-      const latestByBusiness = new Map();
-      rows.forEach(item => {
+      const latestByKey = new Map();
+      followerRowsForTotal(rows).forEach(item => {
         const followers = Number(item.followers || 0);
-        if (!followers) return;
-        const key = item.business || "譛ｪ險ｭ螳・;
+        const key = followerRecordKey(item);
         const stamp = `${item.date || ""}_${item.inputAt || ""}`;
-        const current = latestByBusiness.get(key);
+        const current = latestByKey.get(key);
         if (!current || stamp >= current.stamp) {
-          latestByBusiness.set(key, { ...item, stamp, followers });
+          latestByKey.set(key, { ...item, stamp, followers });
         }
       });
-      return Array.from(latestByBusiness.values()).sort((a, b) => (a.business || "").localeCompare(b.business || "", "ja"));
+      return Array.from(latestByKey.values()).sort((a, b) => {
+        const aIndex = snsTypes.indexOf(a.sns);
+        const bIndex = snsTypes.indexOf(b.sns);
+        if (aIndex >= 0 || bIndex >= 0) return (aIndex < 0 ? 999 : aIndex) - (bIndex < 0 ? 999 : bIndex);
+        return followerRecordLabel(a).localeCompare(followerRecordLabel(b), "ja");
+      });
     }
 
     function filteredPosts() {
       const business = businesses[0];
       const { start, end } = currentWeekDefaults();
-      return data.posts.filter(post => (business === "蜷郁ｨ・ || post.business === business) && post.weekStart === start && post.weekEnd === end);
+      return data.posts.filter(post => (business === "合計" || post.business === business) && post.weekStart === start && post.weekEnd === end);
     }
 
     function filteredInquiries() {
       const business = $("#report-business").value;
       const { start, end } = currentWeekDefaults();
-      return data.inquiries.filter(item => (business === "蜷郁ｨ・ || item.business === business) && item.weekStart === start && item.weekEnd === end);
+      return data.inquiries.filter(item => (business === "合計" || item.business === business) && item.weekStart === start && item.weekEnd === end);
     }
 
     function latestLstep(business = $("#report-business").value) {
       const { start, end } = currentWeekDefaults();
-      if (business === "蜷郁ｨ・) {
+      if (business === "合計") {
         const weekly = data.lsteps.filter(item => item.weekStart === start && item.weekEnd === end);
         const source = weekly.length ? weekly : data.lsteps;
         if (!source.length) return null;
@@ -2958,7 +3359,7 @@ tbody tr:nth-child(even) td {
       const remaining = limit - used;
       return {
         previous, current, limit, used, remaining,
-        note: remaining < 0 ? "辟｡譁呎棧雜・℃" : remaining <= 20 ? "谿九ｊ20騾壻ｻ･荳・ : ""
+        note: remaining < 0 ? "無料枠超過" : remaining <= 20 ? "残り20通以下" : ""
       };
     }
 
@@ -2967,22 +3368,22 @@ tbody tr:nth-child(even) td {
       const posts = filteredPosts();
       const inquiries = filteredInquiries();
       const lstep = lstepInfo(latestLstep());
-      const totalScopePosts = data.posts.filter(post => business === "蜷郁ｨ・ || post.business === business);
+      const totalScopePosts = data.posts.filter(post => business === "合計" || post.business === business);
       const totalImpressions = totalImpressionsThroughToday(totalScopePosts);
       const latestFollowers = latestFollowerTotal(totalScopePosts);
-      const userInquiries = inquiries.filter(item => item.type === "蛻ｩ逕ｨ閠・撫縺・粋繧上○").length;
-      const staffInquiries = inquiries.filter(item => item.type === "閨ｷ蜩｡蝠上＞蜷医ｏ縺・).length;
+      const userInquiries = inquiries.filter(item => item.type === "利用者問い合わせ").length;
+      const staffInquiries = inquiries.filter(item => item.type === "職員問い合わせ").length;
       const start = $("#week-start").value;
       const end = $("#week-end").value;
-      $("#period-label").textContent = `${dateLabel(start)}・・{dateLabel(end)}縲謚慕ｨｿ`;
-      $("#total-impressions").textContent = `${totalImpressions.toLocaleString()}蝗杼;
-      $("#total-followers").textContent = `${latestFollowers.toLocaleString()}莠ｺ`;
+      $("#period-label").textContent = `${dateLabel(start)}～${dateLabel(end)}　投稿`;
+      $("#total-impressions").textContent = `${totalImpressions.toLocaleString()}回`;
+      $("#total-followers").textContent = `${latestFollowers.toLocaleString()}人`;
       $("#report-kpis").innerHTML = `
-        <div class="month-title">${new Date(`${start}T00:00:00`).getMonth() + 1}譛医蝠上＞蜷医ｏ縺帑ｻｶ謨ｰ</div>
+        <div class="month-title">${new Date(`${start}T00:00:00`).getMonth() + 1}月　問い合わせ件数</div>
         <div class="sub-counts">
-          <span>蛻ｩ逕ｨ閠・撫縺・粋繧上○</span><strong>${userInquiries}莉ｶ</strong>
-          <span>閨ｷ蜩｡蝠上＞蜷医ｏ縺・/span><strong>${staffInquiries}莉ｶ</strong>
-          <span>蜷郁ｨ・/span><strong>${inquiries.length}莉ｶ</strong>
+          <span>利用者問い合わせ</span><strong>${userInquiries}件</strong>
+          <span>職員問い合わせ</span><strong>${staffInquiries}件</strong>
+          <span>合計</span><strong>${inquiries.length}件</strong>
         </div>
       `;
 
@@ -2996,14 +3397,14 @@ tbody tr:nth-child(even) td {
       const lstepItem = latestLstep();
       $("#lstep-check-label").textContent = dateLabel(lstepItem?.checkDate || todayIso());
       $("#lstep-report").innerHTML = `
-        <div>蜑埼ｱ縺ｾ縺ｧ騾∽ｿ｡謨ｰ<br>${lstep.previous}騾・/div>
-        <div>莉企ｱ騾∽ｿ｡謨ｰ<br>${lstep.current}騾・/div>
-        <div>谿矩壽焚<br>${lstep.remaining}騾・/div>
+        <div>前週まで送信数<br>${lstep.previous}通</div>
+        <div>今週送信数<br>${lstep.current}通</div>
+        <div>残通数<br>${lstep.remaining}通</div>
       `;
       const firstInquiry = inquiries[0];
       $("#inquiry-report").innerHTML = firstInquiry
         ? `<span>${dateLabel(firstInquiry.date)}</span><span>${escapeHtml(firstInquiry.sns)}</span><span>${escapeHtml(firstInquiry.content)}</span>`
-        : `<span>謚慕ｨｿ譌･</span><span>SNS遞ｮ蛻･</span><span>蝠上＞蜷医ｏ縺帛・螳ｹ</span>`;
+        : `<span>投稿日</span><span>SNS種別</span><span>問い合わせ内容</span>`;
     }
 
     function renderPostArea(selector, posts) {
@@ -3012,14 +3413,14 @@ tbody tr:nth-child(even) td {
         <div class="mock-post-row">
           <span>${dateLabel(post.date)}</span>
           <span>${escapeHtml(post.content)}</span>
-          <small>${Number(post.impressions || 0).toLocaleString()}${post.sns === "YouTube" ? "蜀咲函" : ""}</small>
+          <small>${Number(post.impressions || 0).toLocaleString()}${post.sns === "YouTube" ? "再生" : ""}</small>
         </div>
       `).join("");
     }
 
     function reportRowsForSns(posts, sns, business) {
       const rows = posts.filter(post => post.sns === sns);
-      if (business !== "蜷郁ｨ・) {
+      if (business !== "合計") {
         return rows.sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.inputAt || "").localeCompare(b.inputAt || ""));
       }
 
@@ -3027,7 +3428,7 @@ tbody tr:nth-child(even) td {
       rows.forEach(post => {
         const key = `${post.date || ""}_${post.sns || ""}_${post.content || ""}`;
         if (!grouped.has(key)) {
-          grouped.set(key, { ...post, business: "蜷郁ｨ・, impressions: 0 });
+          grouped.set(key, { ...post, business: "合計", impressions: 0 });
         }
         const row = grouped.get(key);
         row.impressions += Number(post.impressions || 0);
@@ -3037,7 +3438,7 @@ tbody tr:nth-child(even) td {
 
     function renderPie(selector) {
       $(selector).innerHTML = `
-        <span class="pie-caption">SNS蛻･讒区・</span>
+        <span class="pie-caption">SNS別構成</span>
         <div class="pie-chart"></div>
         <div class="pie-legend">
           <span><i style="background:#ea580c"></i>Instagram 18.5%</span>
@@ -3083,15 +3484,15 @@ tbody tr:nth-child(even) td {
       const visiblePosts = query || recordAllMode ? sortedPosts : sortedPosts.slice(0, 30);
       const tables = {
         all: allRecordsHtml(),
-        post: `<h3>謚慕ｨｿ ${recordCountLabel(sortedPosts.length)}</h3>${postTableHtml(visiblePosts)}`,
-        work: `<h3>菴懷刀蛻･謗ｨ遘ｻ ${recordCountLabel(workRows.length)}</h3>${workRecordsHtml(workRows)}`,
-        follower: `<h3>繝輔か繝ｭ繝ｯ繝ｼ ${recordCountLabel(followerRows.length)}</h3>${followerRecordsHtml(followerRows)}`,
-        inquiry: `<h3>蝠上＞蜷医ｏ縺・${recordCountLabel(weeklyInquiries.length)}</h3>${inquiryRecordsHtml(weeklyInquiries)}`,
-        lstep: `<h3>L繧ｹ繝・ャ繝・${recordCountLabel(weeklyLsteps.length)}</h3>${lstepRecordsHtml(weeklyLsteps)}`
+        post: `<h3>投稿 ${recordCountLabel(sortedPosts.length)}</h3>${postTableHtml(visiblePosts)}`,
+        work: `<h3>作品別推移 ${recordCountLabel(workRows.length)}</h3>${workRecordsHtml(workRows)}`,
+        follower: `<h3>フォロワー ${recordCountLabel(followerRows.length)}</h3>${followerRecordsHtml(followerRows)}`,
+        inquiry: `<h3>問い合わせ ${recordCountLabel(weeklyInquiries.length)}</h3>${inquiryRecordsHtml(weeklyInquiries)}`,
+        lstep: `<h3>Lステップ ${recordCountLabel(weeklyLsteps.length)}</h3>${lstepRecordsHtml(weeklyLsteps)}`
       };
       $("#record-tables").innerHTML = tables[active] || tables.all;
-      const labels = { all: "蜈ｨ繝・・繧ｿ", post: "謚慕ｨｿ蜈･蜉・, work: "菴懷刀蛻･謗ｨ遘ｻ", follower: "繝輔か繝ｭ繝ｯ繝ｼ邂｡逅・, inquiry: "蝠上＞蜷医ｏ縺帛・蜉・, lstep: "L繧ｹ繝・ャ繝礼ｮ｡逅・ };
-      $("#export-excel").textContent = `${labels[active] || "蜈ｨ繝・・繧ｿ"}繧脱xcel蜃ｺ蜉嫣;
+      const labels = { all: "全データ", post: "投稿入力", work: "作品別推移", follower: "フォロワー管理", inquiry: "問い合わせ入力", lstep: "Lステップ管理" };
+      $("#export-excel").textContent = `${labels[active] || "全データ"}をExcel出力`;
       bindRecordRowActions();
       if (active === "post") {
         bindPostSortHeaders();
@@ -3108,50 +3509,98 @@ tbody tr:nth-child(even) td {
       });
       const periods = Array.from(periodMap.entries()).sort(([a], [b]) => a.localeCompare(b)).slice(-WORK_DATE_LIMIT);
       const periodKeys = periods.map(([key]) => key);
-      const works = Array.from(new Set(rows.map(row => row.workName).filter(Boolean))).sort((a, b) => a.localeCompare(b, "ja", { numeric: true }));
+      const works = Array.from(new Map(rows
+        .filter(row => row.workName)
+        .map(row => {
+          const key = `${row.sns || "-"}__${row.workName}`;
+          return [key, { key, sns: row.sns || "-", workName: row.workName, label: `${row.sns || "-"} / ${row.workName}` }];
+        })).values())
+        .sort((a, b) => a.sns.localeCompare(b.sns, "ja") || a.workName.localeCompare(b.workName, "ja", { numeric: true }));
       const valueMap = new Map();
       rows.forEach(row => {
         if (!row.workName || !row.date) return;
         const period = summaryPeriodInfo(row.date, mode);
-        const key = `${row.workName}__${period.key}`;
+        const key = `${row.sns || "-"}__${row.workName}__${period.key}`;
         valueMap.set(key, (Number(valueMap.get(key) || 0) + Number(row.impressions || 0)));
       });
       if (!periods.length || !works.length) {
-        return tableHtml(["菴懷刀蜷・, "謨ｰ蛟､"], []);
+        return tableHtml(["作品名", "数値"], []);
       }
-      const headers = ["菴懷刀蜷・, ...periods.map(([, label]) => label), "蜷郁ｨ・];
+      const headers = ["SNS", "作品/投稿内容", ...periods.map(([, label]) => label), "合計"];
       const bodyRows = works.map(work => {
-        const values = periodKeys.map(key => Number(valueMap.get(`${work}__${key}`) || 0));
-        return [work, ...values.map(value => value.toLocaleString()), values.reduce((sum, value) => sum + value, 0).toLocaleString()];
+        const values = periodKeys.map(key => Number(valueMap.get(`${work.key}__${key}`) || 0));
+        return [work.sns, work.workName, ...values.map(value => value.toLocaleString()), values.reduce((sum, value) => sum + value, 0).toLocaleString()];
       });
-      const totalRow = ["蜷郁ｨ・, ...periodKeys.map(key => works.reduce((sum, work) => sum + Number(valueMap.get(`${work}__${key}`) || 0), 0).toLocaleString())];
+      const totalRow = ["合計", "", ...periodKeys.map(key => works.reduce((sum, work) => sum + Number(valueMap.get(`${work.key}__${key}`) || 0), 0).toLocaleString())];
       totalRow.push(rows.reduce((sum, row) => sum + Number(row.impressions || 0), 0).toLocaleString());
-      return workMetricChartHtml(periods, works, valueMap) + tableHtml(headers, [...bodyRows, totalRow]);
+      return workMetricChartHtml(periods, works, valueMap) + tableHtml(headers, [...bodyRows, totalRow]) + workMetricEngagementSummaryHtml(rows);
+    }
+
+    function workMetricEngagementSummaryHtml(rows) {
+      const grouped = new Map();
+      rows.forEach(row => {
+        const key = `${row.sns || "-"}__${row.workName || row.content || "-"}`;
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            sns: row.sns || "-",
+            workName: row.workName || row.content || "-",
+            impressions: 0,
+            likes: 0,
+            comments: 0,
+            shares: 0,
+            saves: 0,
+            profileAccesses: 0,
+            linkClicks: 0
+          });
+        }
+        const target = grouped.get(key);
+        target.impressions += Number(row.impressions || 0);
+        engagementFields.forEach(field => {
+          target[field] += Number(row[field] || 0);
+        });
+      });
+      const detailRows = Array.from(grouped.values())
+        .sort((a, b) => a.sns.localeCompare(b.sns, "ja") || a.workName.localeCompare(b.workName, "ja", { numeric: true }))
+        .map(row => [
+          row.sns,
+          row.workName,
+          row.impressions.toLocaleString(),
+          row.likes.toLocaleString(),
+          row.comments.toLocaleString(),
+          row.shares.toLocaleString(),
+          row.saves.toLocaleString(),
+          row.profileAccesses.toLocaleString(),
+          row.linkClicks.toLocaleString()
+        ]);
+      return `<h4 class="summary-section-title">作品別反応数</h4>` + tableHtml(
+        ["SNS", "作品/投稿内容", "Imp/再生", "いいね", "コメント", "シェア", "保存", "プロフィール", "リンク"],
+        detailRows
+      );
     }
 
     function workMetricChartHtml(periods, works, valueMap) {
       const periodKeys = periods.map(([key]) => key);
-      const totals = periodKeys.map(key => works.reduce((sum, work) => sum + Number(valueMap.get(`${work}__${key}`) || 0), 0));
+      const totals = periodKeys.map(key => works.reduce((sum, work) => sum + Number(valueMap.get(`${work.key}__${key}`) || 0), 0));
       const max = Math.max(...totals, 1);
       return `
         <div class="work-chart">
           <div class="follower-chart-legend">
-            ${works.map((work, index) => `<span><i style="background:${workColor(index)}"></i>${escapeHtml(work)}</span>`).join("")}
+            ${works.map((work, index) => `<span><i style="background:${workColor(index)}"></i>${escapeHtml(work.label)}</span>`).join("")}
           </div>
           <div class="work-chart-bars">
             ${periods.map(([key, label], index) => {
               const total = totals[index] || 0;
               const height = Math.max(12, Math.round((total / max) * 150));
               const segments = works.map((work, workIndex) => {
-                const value = Number(valueMap.get(`${work}__${key}`) || 0);
+                const value = Number(valueMap.get(`${work.key}__${key}`) || 0);
                 if (!value) return "";
                 const segmentHeight = total ? Math.max(18, Math.round((value / total) * height)) : 0;
-                return `<div class="work-segment" title="${escapeHtml(work)} ${value.toLocaleString()}" style="height:${segmentHeight}px; background:${workColor(workIndex)}">${value.toLocaleString()}</div>`;
+                return `<div class="work-segment" title="${escapeHtml(work.label)} ${value.toLocaleString()}" style="height:${segmentHeight}px; background:${workColor(workIndex)}">${value.toLocaleString()}</div>`;
               }).join("");
               return `
                 <div class="work-chart-col">
                   <div class="work-chart-bar" style="height:${height}px">${segments}</div>
-                  <div class="follower-chart-label">蜷郁ｨ・${total.toLocaleString()}</div>
+                  <div class="follower-chart-label">合計 ${total.toLocaleString()}</div>
                   <div class="follower-chart-label">${escapeHtml(label)}</div>
                 </div>
               `;
@@ -3166,7 +3615,7 @@ tbody tr:nth-child(even) td {
     }
 
     function recordCountLabel(count) {
-      return isRecordAllMode() ? `蜈ｨ${count}莉ｶ` : `${count}莉ｶ`;
+      return isRecordAllMode() ? `全${count}件` : `${count}件`;
     }
 
     function sortedPostRows() {
@@ -3186,40 +3635,56 @@ tbody tr:nth-child(even) td {
     }
 
     function postSortValue(post, key) {
-      if (key === "impressions") return Number(post.impressions || 0);
+      if (["impressions", ...engagementFields].includes(key)) return Number(post[key] || 0);
       if (key === "inputAt") return post.inputAt || "";
       return post[key] || "";
     }
 
     function postTableHtml(posts) {
       const columns = [
-        ["date", "謚慕ｨｿ譌･"],
+        ["date", "投稿日"],
+        ["postTime", "投稿時間"],
         ["sns", "SNS"],
-        ["content", "蜀・ｮｹ"],
+        ["postType", "投稿形式"],
+        ["content", "内容"],
         ["impressions", "Imp"],
-        ["operator", "蜈･蜉幄・],
-        ["inputAt", "蜈･蜉帶凾髢・]
+        ["likes", "いいね"],
+        ["comments", "コメント"],
+        ["shares", "シェア"],
+        ["saves", "保存"],
+        ["profileAccesses", "プロフィール"],
+        ["linkClicks", "リンク"],
+        ["operator", "入力者"],
+        ["inputAt", "入力時間"]
       ];
       return `<table><thead><tr>${columns.map(([key, label]) => `
         <th class="sortable ${postSort.key === key ? `sorted-${postSort.direction}` : ""}" data-post-sort="${key}">${label}</th>
-      `).join("")}<th>謫堺ｽ・/th></tr></thead><tbody>
+      `).join("")}<th>操作</th></tr></thead><tbody>
         ${posts.map(p => `<tr>
           <td>${dateLabel(p.date)}</td>
+          <td>${escapeHtml(p.postTime || "")}</td>
           <td>${escapeHtml(p.sns)}</td>
+          <td>${escapeHtml(p.postType || "")}</td>
           <td>${escapeHtml(p.content)}</td>
           <td>${Number(p.impressions || 0).toLocaleString()}</td>
+          <td>${Number(p.likes || 0).toLocaleString()}</td>
+          <td>${Number(p.comments || 0).toLocaleString()}</td>
+          <td>${Number(p.shares || 0).toLocaleString()}</td>
+          <td>${Number(p.saves || 0).toLocaleString()}</td>
+          <td>${Number(p.profileAccesses || 0).toLocaleString()}</td>
+          <td>${Number(p.linkClicks || 0).toLocaleString()}</td>
           <td>${escapeHtml(p.operator)}</td>
           <td>${escapeHtml(fullDateTime(p.inputAt))}</td>
           <td>${recordActionButtons("post", p.id)}</td>
-        </tr>`).join("") || `<tr><td colspan="7">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`}
+        </tr>`).join("") || `<tr><td colspan="15">データはありません。</td></tr>`}
       </tbody></table>`;
     }
 
     function recordActionButtons(type, id) {
       return `
         <div class="record-actions">
-          <button class="btn small" type="button" data-edit-record="${escapeHtml(type)}" data-record-id="${escapeHtml(id)}">邱ｨ髮・/button>
-          <button class="btn danger small" type="button" data-delete-record="${escapeHtml(type)}" data-record-id="${escapeHtml(id)}">蜑企勁</button>
+          <button class="btn small" type="button" data-edit-record="${escapeHtml(type)}" data-record-id="${escapeHtml(id)}">編集</button>
+          <button class="btn danger small" type="button" data-delete-record="${escapeHtml(type)}" data-record-id="${escapeHtml(id)}">削除</button>
         </div>
       `;
     }
@@ -3231,12 +3696,12 @@ tbody tr:nth-child(even) td {
 
     function recordSummary(type, item = {}) {
       if (type === "post") return `${item.sns || ""} / ${item.content || ""} / ${Number(item.impressions || 0).toLocaleString()}Imp`.trim();
-      if (type === "work") return `${item.workName || ""} / ${Number(item.impressions || 0).toLocaleString()}`.trim();
-      if (type === "follower") return `${item.business || ""} / ${Number(item.followers || 0).toLocaleString()}莠ｺ`.trim();
+      if (type === "work") return `${item.sns || ""} / ${item.workName || ""} / ${Number(item.impressions || 0).toLocaleString()}Imp`.trim();
+      if (type === "follower") return `${followerRecordLabel(item)} / ${Number(item.followers || 0).toLocaleString()}人`.trim();
       if (type === "inquiry") return `${item.sns || ""} / ${item.type || ""} / ${item.content || ""} / ${item.status || ""}`.trim();
       if (type === "lstep") {
         const info = lstepInfo(item);
-        return `莉企ｱ ${Number(item.current || 0).toLocaleString()}騾・/ 谿・${Number(info.remaining || 0).toLocaleString()}騾啻;
+        return `今週 ${Number(item.current || 0).toLocaleString()}通 / 残 ${Number(info.remaining || 0).toLocaleString()}通`;
       }
       return recordLabel(type, item);
     }
@@ -3263,9 +3728,9 @@ tbody tr:nth-child(even) td {
 
     function allRecordsHtml() {
       const rows = allRecordRows();
-      return `<h3>蜈ｨ繝・・繧ｿ ${recordCountLabel(rows.length)}</h3>
+      return `<h3>全データ ${recordCountLabel(rows.length)}</h3>
         <table><thead><tr>
-          <th>遞ｮ蛻･</th><th>譌･莉・/th><th>蜀・ｮｹ</th><th>蜈･蜉幄・/th><th>蜈･蜉帶凾髢・/th><th>謫堺ｽ・/th>
+          <th>種別</th><th>日付</th><th>内容</th><th>入力者</th><th>入力時間</th><th>操作</th>
         </tr></thead><tbody>
           ${rows.map(({ type, item }) => `<tr>
             <td><span class="pill">${escapeHtml(recordTypeLabels[type] || type)}</span></td>
@@ -3274,43 +3739,58 @@ tbody tr:nth-child(even) td {
             <td>${escapeHtml(item.operator || "")}</td>
             <td>${escapeHtml(fullDateTime(item.inputAt))}</td>
             <td>${recordActionButtons(type, item.id)}</td>
-          </tr>`).join("") || `<tr><td colspan="6">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`}
+          </tr>`).join("") || `<tr><td colspan="6">データはありません。</td></tr>`}
         </tbody></table>`;
     }
 
     function workRecordsHtml(rows) {
       const detailRows = rows.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.inputAt || "").localeCompare(a.inputAt || ""));
-      return workMetricTableHtml(rows) + `<h4 class="summary-section-title">蜈･蜉帶・邏ｰ</h4><table><thead><tr>
-        <th>遒ｺ隱肴律</th><th>菴懷刀蜷・/th><th>謨ｰ蛟､</th><th>蜈･蜉幄・/th><th>蜈･蜉帶凾髢・/th><th>謫堺ｽ・/th>
+      return workMetricTableHtml(rows) + `<h4 class="summary-section-title">入力明細</h4><table><thead><tr>
+        <th>投稿日</th><th>SNS</th><th>作品/投稿内容</th><th>Imp/再生</th><th>いいね</th><th>コメント</th><th>シェア</th><th>保存</th><th>プロフィール</th><th>リンク</th><th>入力者</th><th>入力時間</th><th>操作</th>
       </tr></thead><tbody>
         ${detailRows.map(item => `<tr>
           <td>${dateLabel(item.date)}</td>
+          <td>${escapeHtml(item.sns || "")}</td>
           <td>${escapeHtml(item.workName)}</td>
           <td>${Number(item.impressions || 0).toLocaleString()}</td>
+          <td>${Number(item.likes || 0).toLocaleString()}</td>
+          <td>${Number(item.comments || 0).toLocaleString()}</td>
+          <td>${Number(item.shares || 0).toLocaleString()}</td>
+          <td>${Number(item.saves || 0).toLocaleString()}</td>
+          <td>${Number(item.profileAccesses || 0).toLocaleString()}</td>
+          <td>${Number(item.linkClicks || 0).toLocaleString()}</td>
           <td>${escapeHtml(item.operator)}</td>
           <td>${escapeHtml(fullDateTime(item.inputAt))}</td>
           <td>${recordActionButtons("work", item.id)}</td>
-        </tr>`).join("") || `<tr><td colspan="6">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`}
+        </tr>`).join("") || `<tr><td colspan="13">データはありません。</td></tr>`}
       </tbody></table>`;
     }
 
     function followerRecordsHtml(rows) {
       return `<table><thead><tr>
-        <th>謚慕ｨｿ譌･</th><th>繝輔か繝ｭ繝ｯ繝ｼ謨ｰ</th><th>蜈･蜉幄・/th><th>蜈･蜉帶凾髢・/th><th>謫堺ｽ・/th>
+        <th>投稿日</th><th>SNS種別</th><th>フォロワー数</th><th>入力者</th><th>入力時間</th><th>操作</th>
       </tr></thead><tbody>
-        ${rows.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.inputAt || "").localeCompare(a.inputAt || "")).map(item => `<tr>
+        ${rows.slice().sort((a, b) => {
+          const dateCompare = (b.date || "").localeCompare(a.date || "");
+          if (dateCompare) return dateCompare;
+          const aIndex = snsTypes.indexOf(a.sns);
+          const bIndex = snsTypes.indexOf(b.sns);
+          const snsCompare = (aIndex < 0 ? 999 : aIndex) - (bIndex < 0 ? 999 : bIndex);
+          return snsCompare || (b.inputAt || "").localeCompare(a.inputAt || "");
+        }).map(item => `<tr>
           <td>${dateLabel(item.date)}</td>
+          <td>${escapeHtml(followerRecordLabel(item))}</td>
           <td>${Number(item.followers || 0).toLocaleString()}</td>
           <td>${escapeHtml(item.operator)}</td>
           <td>${escapeHtml(fullDateTime(item.inputAt))}</td>
           <td>${recordActionButtons("follower", item.id)}</td>
-        </tr>`).join("") || `<tr><td colspan="5">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`}
+        </tr>`).join("") || `<tr><td colspan="6">データはありません。</td></tr>`}
       </tbody></table>`;
     }
 
     function inquiryRecordsHtml(rows) {
       return `<table><thead><tr>
-        <th>謚慕ｨｿ譌･</th><th>SNS</th><th>蛹ｺ蛻・/th><th>蜀・ｮｹ</th><th>蟇ｾ蠢・/th><th>蜈･蜉幄・/th><th>蜈･蜉帶凾髢・/th><th>謫堺ｽ・/th>
+        <th>投稿日</th><th>SNS</th><th>区分</th><th>内容</th><th>対応</th><th>入力者</th><th>入力時間</th><th>操作</th>
       </tr></thead><tbody>
         ${rows.slice().sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.inputAt || "").localeCompare(a.inputAt || "")).map(item => `<tr>
           <td>${dateLabel(item.date)}</td>
@@ -3321,13 +3801,13 @@ tbody tr:nth-child(even) td {
           <td>${escapeHtml(item.operator)}</td>
           <td>${escapeHtml(fullDateTime(item.inputAt))}</td>
           <td>${recordActionButtons("inquiry", item.id)}</td>
-        </tr>`).join("") || `<tr><td colspan="8">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`}
+        </tr>`).join("") || `<tr><td colspan="8">データはありません。</td></tr>`}
       </tbody></table>`;
     }
 
     function lstepRecordsHtml(rows) {
       return `<table><thead><tr>
-        <th>騾ｱ</th><th>謚慕ｨｿ譌･</th><th>蜑埼ｱ縺ｾ縺ｧ騾∽ｿ｡謨ｰ</th><th>莉企ｱ騾∽ｿ｡謨ｰ</th><th>辟｡譁呎棧</th><th>谿矩壽焚</th><th>蜈･蜉幄・/th><th>蜈･蜉帶凾髢・/th><th>謫堺ｽ・/th>
+        <th>週</th><th>投稿日</th><th>前週まで送信数</th><th>今週送信数</th><th>無料枠</th><th>残通数</th><th>入力者</th><th>入力時間</th><th>操作</th>
       </tr></thead><tbody>
         ${rows.slice().sort((a, b) => (b.checkDate || "").localeCompare(a.checkDate || "") || (b.inputAt || "").localeCompare(a.inputAt || "")).map(item => {
           const info = lstepInfo(item);
@@ -3342,7 +3822,7 @@ tbody tr:nth-child(even) td {
             <td>${escapeHtml(fullDateTime(item.inputAt))}</td>
             <td>${recordActionButtons("lstep", item.id)}</td>
           </tr>`;
-        }).join("") || `<tr><td colspan="9">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`}
+        }).join("") || `<tr><td colspan="9">データはありません。</td></tr>`}
       </tbody></table>`;
     }
 
@@ -3389,11 +3869,11 @@ tbody tr:nth-child(even) td {
     }
 
     const editButtonLabels = {
-      post: ["謚慕ｨｿ繧堤匳骭ｲ", "謚慕ｨｿ繧呈峩譁ｰ"],
-      work: ["菴懷刀蛻･謗ｨ遘ｻ繧堤匳骭ｲ", "菴懷刀蛻･謗ｨ遘ｻ繧呈峩譁ｰ"],
-      follower: ["繝輔か繝ｭ繝ｯ繝ｼ謨ｰ繧剃ｸ諡ｬ騾∽ｿ｡", "繝輔か繝ｭ繝ｯ繝ｼ謨ｰ繧呈峩譁ｰ"],
-      inquiry: ["蝠上＞蜷医ｏ縺帙ｒ逋ｻ骭ｲ", "蝠上＞蜷医ｏ縺帙ｒ譖ｴ譁ｰ"],
-      lstep: ["L繧ｹ繝・ャ繝励ｒ逋ｻ骭ｲ", "L繧ｹ繝・ャ繝励ｒ譖ｴ譁ｰ"]
+      post: ["投稿を登録", "投稿を更新"],
+      work: ["作品別推移を登録", "作品別推移を更新"],
+      follower: ["フォロワー数を一括送信", "フォロワー数を更新"],
+      inquiry: ["問い合わせを登録", "問い合わせを更新"],
+      lstep: ["Lステップを登録", "Lステップを更新"]
     };
 
     function setRecordFormMode(type, mode) {
@@ -3434,7 +3914,12 @@ tbody tr:nth-child(even) td {
       fields.weekEnd.value = editWeek.end;
       fields.date.value = post.date || todayIso();
       fields.sns.value = post.sns || "X";
+      fields.postTime.value = post.postTime || "";
+      fields.postType.value = post.postType || "画像";
       fields.impressions.value = Number(post.impressions || 0);
+      engagementFields.forEach(field => {
+        if (fields[field]) fields[field].value = Number(post[field] || 0);
+      });
       fields.content.value = post.content || "";
       fields.operator.value = post.operator || "";
       updateFormWeekLabel(form);
@@ -3454,7 +3939,7 @@ tbody tr:nth-child(even) td {
       if (idField) idField.value = "";
       setRecordFormMode(type, "new");
       setupForms();
-      if (showNotice) window.alert("縺薙・邱ｨ髮・ｒ繧ｭ繝｣繝ｳ繧ｻ繝ｫ縺励∪縺励◆");
+      if (showNotice) window.alert("この編集をキャンセルしました");
     }
 
     function recordCollection(type) {
@@ -3480,14 +3965,21 @@ tbody tr:nth-child(even) td {
       if (type === "work") {
         form.elements.date.value = item.date || todayIso();
         form.elements.operator.value = item.operator || "";
-        renderWorkMetricRows([{ workName: item.workName || "", impressions: Number(item.impressions || 0) }]);
+        form.elements.workSnsFilter.value = item.sns || "";
+        form.elements.workMonthFilter.value = (item.date || todayIso()).slice(0, 7);
+        renderWorkMetricRows([{ ...item }]);
       }
       if (type === "follower") {
         form.elements.date.value = item.date || todayIso();
         form.elements.operator.value = item.operator || "";
+        const latest = new Map(
+          latestFollowerRows(data.followers.filter(row => row.sns && isThroughToday(row.date))).map(row => [row.sns, row.followers])
+        );
         Array.from(form.querySelectorAll("#follower-bulk-body input")).forEach(input => {
-          input.value = input.name === `followers_${item.business}` ? Number(item.followers || 0) : 0;
+          const sns = input.dataset.followerSns || "";
+          input.value = sns === item.sns ? Number(item.followers || 0) : Number(latest.get(sns) || 0);
         });
+        updateFollowerTotal();
       }
       if (type === "inquiry") {
         const editWeek = weekRangeFromStart(item.date || item.weekStart || $("#week-start").value || thisWeekRange().start);
@@ -3541,10 +4033,10 @@ tbody tr:nth-child(even) td {
       if (index < 0) return;
       const before = cloneRecord(collection[index]);
       const label = recordLabel(type, before);
-      if (!confirm(`${recordTypeLabels[type] || "繝・・繧ｿ"}縲・{label}縲阪ｒ蜑企勁縺励∪縺吶ゅｈ繧阪＠縺・〒縺吶°・歔)) return;
+      if (!confirm(`${recordTypeLabels[type] || "データ"}「${label}」を削除します。よろしいですか？`)) return;
       collection.splice(index, 1);
       if (type === "lstep") recalculateLstepPreviousValues();
-      addHistory("蜑企勁", type, before, null);
+      addHistory("削除", type, before, null);
       saveData(data);
       const form = $(`#${type}-form`);
       if (form?.querySelector(`[name="${type}Id"]`)?.value === id) cancelRecordEdit(type);
@@ -3565,7 +4057,7 @@ tbody tr:nth-child(even) td {
           <span>${escapeHtml(item.label || "-")}</span>
           <span class="history-meta">${escapeHtml(fullDateTime(item.at))}</span>
         </div>
-      `).join("") || `<p class="muted">螻･豁ｴ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/p>`;
+      `).join("") || `<p class="muted">履歴はありません。</p>`;
     }
 
     function downloadJson(filename, payload) {
@@ -3579,7 +4071,7 @@ tbody tr:nth-child(even) td {
     }
 
     function exportBackup() {
-      downloadJson(`SNS驕狗畑_繝舌ャ繧ｯ繧｢繝・・_${todayIso()}.json`, {
+      downloadJson(`SNS運用_バックアップ_${todayIso()}.json`, {
         exportedAt: new Date().toISOString(),
         storageKey: STORAGE_KEY,
         data
@@ -3587,7 +4079,7 @@ tbody tr:nth-child(even) td {
     }
 
     function exportHistory() {
-      downloadJson(`SNS驕狗畑_謫堺ｽ懷ｱ･豁ｴ_${todayIso()}.json`, {
+      downloadJson(`SNS運用_操作履歴_${todayIso()}.json`, {
         exportedAt: new Date().toISOString(),
         history: data.history || []
       });
@@ -3600,14 +4092,14 @@ tbody tr:nth-child(even) td {
         try {
           const parsed = JSON.parse(String(reader.result || "{}"));
           const restored = normalizeData(parsed.data || parsed);
-          if (!confirm("迴ｾ蝨ｨ縺ｮ繝・・繧ｿ繧偵ヰ繝・け繧｢繝・・蜀・ｮｹ縺ｧ鄂ｮ縺肴鋤縺医∪縺吶ゅｈ繧阪＠縺・〒縺吶°・・)) return;
+          if (!confirm("現在のデータをバックアップ内容で置き換えます。よろしいですか？")) return;
           data = restored;
-          addHistory("蠕ｩ蜈・, "backup", null, { id: uid(), label: file.name });
+          addHistory("復元", "backup", null, { id: uid(), label: file.name });
           saveData(data);
           setupForms();
           renderAll();
         } catch {
-          alert("繝舌ャ繧ｯ繧｢繝・・繝輔ぃ繧､繝ｫ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆縲・SON蠖｢蠑上・繝舌ャ繧ｯ繧｢繝・・繧帝∈謚槭＠縺ｦ縺上□縺輔＞縲・);
+          alert("バックアップファイルを読み込めませんでした。JSON形式のバックアップを選択してください。");
         } finally {
           $("#restore-backup").value = "";
         }
@@ -3617,7 +4109,7 @@ tbody tr:nth-child(even) td {
 
     function tableHtml(headers, rows) {
       return `<table><thead><tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join("")}</tr></thead><tbody>
-        ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${headers.length}">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`}
+        ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${headers.length}">データはありません。</td></tr>`}
       </tbody></table>`;
     }
 
@@ -3636,9 +4128,9 @@ tbody tr:nth-child(even) td {
         item.weekStart === start &&
         item.weekEnd === end
       );
-      $("#inquiry-modal-subtitle").textContent = `${dateLabel(start)}縲・{dateLabel(end)}`;
+      $("#inquiry-modal-subtitle").textContent = `${dateLabel(start)}〜${dateLabel(end)}`;
       $("#inquiry-modal-body").innerHTML = tableHtml(
-        ["謚慕ｨｿ譌･", "SNS遞ｮ蛻･", "蛹ｺ蛻・, "蝠上＞蜷医ｏ縺帛・螳ｹ", "蟇ｾ蠢懃憾豕・, "蜈･蜉幄・, "蜈･蜉帶凾髢・],
+        ["投稿日", "SNS種別", "区分", "問い合わせ内容", "対応状況", "入力者", "入力時間"],
         inquiries.map(item => [dateLabel(item.date), item.sns, item.type, item.content, item.status, item.operator, fullDateTime(item.inputAt)])
       );
     }
@@ -3657,7 +4149,7 @@ tbody tr:nth-child(even) td {
     function renderSummary() {
       const selectedBusiness = businesses[0];
       const visibleBusinesses = businesses;
-      const summaryPosts = data.posts.filter(post => selectedBusiness === "蜷郁ｨ・ || post.business === selectedBusiness);
+      const summaryPosts = data.posts.filter(post => selectedBusiness === "合計" || post.business === selectedBusiness);
       const allImpressions = totalImpressionsThroughToday(summaryPosts);
       const allFollowers = latestFollowerTotal(summaryPosts);
       $("#summary-body").innerHTML = visibleBusinesses.map(business => {
@@ -3668,8 +4160,8 @@ tbody tr:nth-child(even) td {
           <td>${totalImpressionsThroughToday(posts).toLocaleString()}</td>
           <td>${latestFollowerTotal(posts).toLocaleString()}</td>
           <td>${inquiries.length}</td>
-          <td>${inquiries.filter(i => i.type === "蛻ｩ逕ｨ閠・撫縺・粋繧上○").length}</td>
-          <td>${inquiries.filter(i => i.type === "閨ｷ蜩｡蝠上＞蜷医ｏ縺・).length}</td>
+          <td>${inquiries.filter(i => i.type === "利用者問い合わせ").length}</td>
+          <td>${inquiries.filter(i => i.type === "職員問い合わせ").length}</td>
           <td>${lstep.previous}</td><td>${lstep.current}</td>
           <td><span class="pill ${lstep.remaining <= 20 ? "danger" : "ok"}">${lstep.remaining}</span></td>
         </tr>`;
@@ -3677,10 +4169,10 @@ tbody tr:nth-child(even) td {
       renderFollowerSummary(selectedBusiness);
       renderSummaryWorkMetrics();
       const periodLabel = summaryBreakdownLabels()[summaryBreakdownMode];
-      $("#summary-breakdown-title").textContent = `${periodLabel}蜀・ｨｳ`;
+      $("#summary-breakdown-title").textContent = `${periodLabel}内訳`;
       $("#summary-date-head").innerHTML = `
         <tr>
-          <th>${periodLabel}</th><th>謚慕ｨｿ謨ｰ</th><th>X</th><th>Instagram</th><th>TikTok</th><th>Threads</th><th>YouTube</th><th>蜷郁ｨ・mp/蜀咲函</th><th>蝠上＞蜷医ｏ縺・/th><th>L騾∽ｿ｡謨ｰ</th>
+          <th>${periodLabel}</th><th>投稿数</th><th>X</th><th>Instagram</th><th>TikTok</th><th>Threads</th><th>YouTube</th><th>合計Imp/再生</th><th>問い合わせ</th><th>L送信数</th>
         </tr>
       `;
       $$("[data-summary-mode]").forEach(button => {
@@ -3699,32 +4191,54 @@ tbody tr:nth-child(even) td {
           <td>${row.inquiries}</td>
           <td>${row.lstep.toLocaleString()}</td>
         </tr>
-      `).join("") || `<tr><td colspan="10">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`;
-      $("#summary-total-impressions").textContent = `${allImpressions.toLocaleString()}蝗杼;
-      $("#summary-total-followers").textContent = `${allFollowers.toLocaleString()}莠ｺ`;
+      `).join("") || `<tr><td colspan="10">データはありません。</td></tr>`;
+      $("#summary-total-impressions").textContent = `${allImpressions.toLocaleString()}回`;
+      $("#summary-total-followers").textContent = `${allFollowers.toLocaleString()}人`;
     }
 
     function renderSummaryWorkMetrics() {
       $$("[data-work-mode]").forEach(button => {
         button.classList.toggle("active", button.dataset.workMode === workBreakdownMode);
       });
-      const rows = data.workMetrics.filter(item => isInSummaryRange(item.date));
+      const sns = $("#summary-work-sns")?.value || "";
+      const month = $("#summary-work-month")?.value || "";
+      const rows = data.workMetrics.filter(item =>
+        isInSummaryRange(item.date) &&
+        (!sns || item.sns === sns) &&
+        (!month || String(item.date || "").startsWith(month))
+      );
       $("#summary-work-metrics").innerHTML = workMetricTableHtml(rows, workBreakdownMode);
     }
 
     function renderFollowerSummary(selectedBusiness) {
-      const weekRows = followerTrendRows("week", selectedBusiness).slice(-12).reverse();
-      const monthRows = followerTrendRows("month", selectedBusiness).slice(-12).reverse();
-      $("#follower-week-body").innerHTML = followerTrendTableRows(weekRows) || `<tr><td colspan="4">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`;
-      $("#follower-month-body").innerHTML = followerTrendTableRows(monthRows) || `<tr><td colspan="4">繝・・繧ｿ縺ｯ縺ゅｊ縺ｾ縺帙ｓ縲・/td></tr>`;
-      $("#follower-chart-legend").innerHTML = `<span><i style="background:${followerColor(0)}"></i>繝輔か繝ｭ繝ｯ繝ｼ謨ｰ</span>`;
+      const weekRows = latestFollowerPeriodRows(followerTrendRows("week", selectedBusiness), 12);
+      const monthRows = latestFollowerPeriodRows(followerTrendRows("month", selectedBusiness), 12);
+      $("#follower-week-body").innerHTML = followerTrendTableRows(weekRows) || `<tr><td colspan="5">データはありません。</td></tr>`;
+      $("#follower-month-body").innerHTML = followerTrendTableRows(monthRows) || `<tr><td colspan="5">データはありません。</td></tr>`;
+      const categories = visibleFollowerCategories(selectedBusiness);
+      $("#follower-chart-legend").innerHTML = categories.map((category, index) =>
+        `<span><i style="background:${followerColor(index)}"></i>${escapeHtml(category)}</span>`
+      ).join("");
       $("#follower-chart-bars").innerHTML = followerChartHtml(selectedBusiness);
+    }
+
+    function latestFollowerPeriodRows(rows, limit) {
+      const periods = Array.from(new Set(rows.map(row => row.period))).sort().slice(-limit);
+      const periodSet = new Set(periods);
+      return rows.filter(row => periodSet.has(row.period)).sort((a, b) => {
+        const periodCompare = b.period.localeCompare(a.period);
+        if (periodCompare) return periodCompare;
+        const aIndex = snsTypes.indexOf(a.category);
+        const bIndex = snsTypes.indexOf(b.category);
+        return (aIndex < 0 ? 999 : aIndex) - (bIndex < 0 ? 999 : bIndex);
+      });
     }
 
     function followerTrendTableRows(rows) {
       return rows.map(row => `
         <tr>
           <td>${escapeHtml(row.label)}</td>
+          <td>${escapeHtml(row.category)}</td>
           <td>${row.followers.toLocaleString()}</td>
           <td>${followerDiffText(row.diff)}</td>
           <td>${followerRateText(row.diff, row.previous)}</td>
@@ -3732,25 +4246,36 @@ tbody tr:nth-child(even) td {
       `).join("");
     }
 
-    function visibleFollowerBusinesses(selectedBusiness) {
-      return selectedBusiness === "蜷郁ｨ・ ? businesses : businesses.filter(business => business === selectedBusiness);
+    function visibleFollowerCategories(selectedBusiness) {
+      const rows = data.followers.filter(item =>
+        (selectedBusiness === "合計" || item.business === selectedBusiness) && isThroughToday(item.date)
+      );
+      const historyRows = followerRowsForHistory(rows);
+      const categories = [];
+      if (historyRows.some(item => !item.sns)) categories.push("合計（旧入力）");
+      if (historyRows.some(item => item.sns)) categories.push(...snsTypes);
+      return categories.length ? categories : snsTypes;
     }
 
-    function followerTrendRows(mode, selectedBusiness = "蜷郁ｨ・) {
-      const targetBusinesses = visibleFollowerBusinesses(selectedBusiness);
+    function followerTrendRows(mode, selectedBusiness = "合計") {
       const grouped = new Map();
-      data.followers
-        .filter(item => targetBusinesses.includes(item.business) && isThroughToday(item.date) && isInSummaryRange(item.date))
+      const scopedRows = data.followers.filter(item =>
+        (selectedBusiness === "合計" || item.business === selectedBusiness) &&
+        isThroughToday(item.date) &&
+        isInSummaryRange(item.date)
+      );
+      followerRowsForHistory(scopedRows)
         .forEach(item => {
           const period = summaryPeriodInfo(item.date, mode);
-          const key = `${period.key}_${item.business}`;
+          const category = followerRecordLabel(item);
+          const key = `${period.key}_${category}`;
           const stamp = `${item.date || ""}_${item.inputAt || ""}`;
           const current = grouped.get(key);
           if (!current || stamp >= current.stamp) {
             grouped.set(key, {
               period: period.key,
               label: period.label,
-              business: item.business,
+              category,
               followers: Number(item.followers || 0),
               stamp
             });
@@ -3758,17 +4283,17 @@ tbody tr:nth-child(even) td {
         });
 
       const chronological = Array.from(grouped.values()).sort((a, b) =>
-        a.business.localeCompare(b.business, "ja") || a.period.localeCompare(b.period)
+        a.category.localeCompare(b.category, "ja") || a.period.localeCompare(b.period)
       );
-      const previousByBusiness = new Map();
+      const previousByCategory = new Map();
       chronological.forEach(row => {
-        const previous = previousByBusiness.get(row.business);
+        const previous = previousByCategory.get(row.category);
         row.previous = previous?.followers || 0;
         row.diff = previous ? row.followers - previous.followers : null;
-        previousByBusiness.set(row.business, row);
+        previousByCategory.set(row.category, row);
       });
       return chronological.sort((a, b) =>
-        a.period.localeCompare(b.period) || a.business.localeCompare(b.business, "ja")
+        a.period.localeCompare(b.period) || a.category.localeCompare(b.category, "ja")
       );
     }
 
@@ -3792,9 +4317,9 @@ tbody tr:nth-child(even) td {
     function followerChartHtml(selectedBusiness) {
       const rows = followerTrendRows("month", selectedBusiness);
       const periods = Array.from(new Map(rows.map(row => [row.period, row.label])).entries()).slice(-6);
-      const targetBusinesses = visibleFollowerBusinesses(selectedBusiness);
-      const byPeriodBusiness = new Map(rows.map(row => [`${row.period}_${row.business}`, row.followers]));
-      const totals = periods.map(([period]) => targetBusinesses.reduce((sum, business) => sum + Number(byPeriodBusiness.get(`${period}_${business}`) || 0), 0));
+      const categories = visibleFollowerCategories(selectedBusiness);
+      const byPeriodCategory = new Map(rows.map(row => [`${row.period}_${row.category}`, row.followers]));
+      const totals = periods.map(([period]) => categories.reduce((sum, category) => sum + Number(byPeriodCategory.get(`${period}_${category}`) || 0), 0));
       const validTotals = totals.filter(total => total > 0);
       const max = Math.max(...validTotals, 1);
       const min = Math.min(...validTotals, max);
@@ -3802,43 +4327,52 @@ tbody tr:nth-child(even) td {
       return periods.map(([period, label], periodIndex) => {
         const total = totals[periodIndex] || 0;
         const height = total ? Math.max(36, Math.round(42 + ((total - min) / range) * 105)) : 12;
+        let offset = 0;
+        const colorStops = total ? categories.flatMap((category, index) => {
+          const value = Number(byPeriodCategory.get(`${period}_${category}`) || 0);
+          const start = (offset / total) * 100;
+          offset += value;
+          const end = (offset / total) * 100;
+          return [`${followerColor(index)} ${start.toFixed(2)}%`, `${followerColor(index)} ${end.toFixed(2)}%`];
+        }).join(",") : "";
+        const background = colorStops ? `linear-gradient(to top, ${colorStops})` : "#cbd5e1";
         return `
           <div class="follower-chart-col">
-            <div class="follower-bar" style="height:${height}px">${total.toLocaleString()}</div>
+            <div class="follower-bar" style="height:${height}px;background:${background}" title="${escapeHtml(label)} 合計 ${total.toLocaleString()}人">${total.toLocaleString()}</div>
             <div class="follower-chart-label">${escapeHtml(label)}</div>
           </div>
         `;
-      }).join("") || `<div class="empty-state">繧ｰ繝ｩ繝輔↓陦ｨ遉ｺ縺吶ｋ繝・・繧ｿ縺後≠繧翫∪縺帙ｓ縲・/div>`;
+      }).join("") || `<div class="empty-state">グラフに表示するデータがありません。</div>`;
     }
 
     function summaryBreakdownLabels() {
-      return { day: "譌･蛻･", week: "騾ｱ蛻･", month: "譛亥挨" };
+      return { day: "日別", week: "週別", month: "月別" };
     }
 
     function summaryPeriodInfo(value, mode) {
       if (!value) return { key: "", label: "-" };
       if (mode === "month") {
         const [year, month] = value.split("-");
-        return { key: `${year}-${month}`, label: `${year}/${Number(month)}譛・ };
+        return { key: `${year}-${month}`, label: `${year}/${Number(month)}月` };
       }
       if (mode === "week") {
         const start = weekStartIso(value);
         const end = addDays(start, 6);
-        return { key: start, label: `${dateLabelWithYear(start)}縲・{dateLabel(end)}` };
+        return { key: start, label: `${dateLabelWithYear(start)}〜${dateLabel(end)}` };
       }
       return { key: value, label: dateLabelWithYear(value) };
     }
 
-    function summaryDateRows(selectedBusiness = "蜷郁ｨ・, mode = summaryBreakdownMode) {
+    function summaryDateRows(selectedBusiness = "合計", mode = summaryBreakdownMode) {
       const rows = new Map();
       const ensure = (date, business) => {
         const period = summaryPeriodInfo(date, mode);
-        const key = `${period.key}_${business || "譛ｪ險ｭ螳・}`;
+        const key = `${period.key}_${business || "未設定"}`;
         if (!rows.has(key)) {
           rows.set(key, {
             date: period.key,
             label: period.label,
-            business: business || "譛ｪ險ｭ螳・,
+            business: business || "未設定",
             posts: 0,
             x: 0,
             instagram: 0,
@@ -3853,7 +4387,7 @@ tbody tr:nth-child(even) td {
         return rows.get(key);
       };
 
-      data.posts.filter(post => (selectedBusiness === "蜷郁ｨ・ || post.business === selectedBusiness) && isThroughToday(post.date) && isInSummaryRange(post.date)).forEach(post => {
+      data.posts.filter(post => (selectedBusiness === "合計" || post.business === selectedBusiness) && isThroughToday(post.date) && isInSummaryRange(post.date)).forEach(post => {
         const row = ensure(post.date, post.business);
         const value = Number(post.impressions || 0);
         row.posts += 1;
@@ -3865,11 +4399,11 @@ tbody tr:nth-child(even) td {
         if (post.sns === "YouTube") row.youtube += value;
       });
 
-      data.inquiries.filter(item => (selectedBusiness === "蜷郁ｨ・ || item.business === selectedBusiness) && isThroughToday(item.date) && isInSummaryRange(item.date)).forEach(item => {
+      data.inquiries.filter(item => (selectedBusiness === "合計" || item.business === selectedBusiness) && isThroughToday(item.date) && isInSummaryRange(item.date)).forEach(item => {
         ensure(item.date, item.business).inquiries += 1;
       });
 
-      data.lsteps.filter(item => (selectedBusiness === "蜷郁ｨ・ || item.business === selectedBusiness) && isThroughToday(item.checkDate) && isInSummaryRange(item.checkDate)).forEach(item => {
+      data.lsteps.filter(item => (selectedBusiness === "合計" || item.business === selectedBusiness) && isThroughToday(item.checkDate) && isInSummaryRange(item.checkDate)).forEach(item => {
         ensure(item.checkDate, item.business).lstep += Number(item.current || 0);
       });
 
@@ -3888,11 +4422,11 @@ tbody tr:nth-child(even) td {
     function workMetricNameFromPost(post) {
       const date = post.date ? dateLabel(post.date) : "";
       const sns = post.sns || "";
-      const content = String(post.content || "").trim() || "謚慕ｨｿ蜀・ｮｹ譛ｪ蜈･蜉・;
+      const content = String(post.content || "").trim() || "投稿内容未入力";
       return [date, sns, content].filter(Boolean).join(" ");
     }
 
-    function workMetricCandidates(selected = "") {
+    function workMetricCandidates(selected = "", filters = currentWorkMetricFilters()) {
       const seen = new Set();
       const items = [];
       const add = name => {
@@ -3901,33 +4435,138 @@ tbody tr:nth-child(even) td {
         seen.add(value);
         items.push(value);
       };
+      const inFilter = item => {
+        const snsMatch = !filters.sns || item.sns === filters.sns;
+        const monthMatch = !filters.month || String(item.date || "").startsWith(filters.month);
+        return snsMatch && monthMatch;
+      };
       [...data.posts]
-        .sort((a, b) => `${b.date || ""}_${b.inputAt || ""}`.localeCompare(`${a.date || ""}_${a.inputAt || ""}`))
+        .filter(inFilter)
+        .sort((a, b) => (a.sns || "").localeCompare(b.sns || "", "ja") || `${b.date || ""}_${b.inputAt || ""}`.localeCompare(`${a.date || ""}_${a.inputAt || ""}`))
         .forEach(post => add(workMetricNameFromPost(post)));
-      data.workMetrics.forEach(item => add(item.workName));
+      data.workMetrics
+        .filter(inFilter)
+        .sort((a, b) => (a.sns || "").localeCompare(b.sns || "", "ja") || `${b.date || ""}_${b.inputAt || ""}`.localeCompare(`${a.date || ""}_${a.inputAt || ""}`))
+        .forEach(item => add(item.workName));
       add(selected);
-      if (!items.length) ["謚慕ｨｿ1", "謚慕ｨｿ2", "謚慕ｨｿ3", "謚慕ｨｿ4"].forEach(add);
+      if (!items.length) ["投稿1", "投稿2", "投稿3", "投稿4"].forEach(add);
       return items;
     }
 
-    function workMetricOptions(selected = "") {
-      return ['<option value="">菴懷刀繧帝∈謚・/option>'].concat(
-        workMetricCandidates(selected).map(name => `<option value="${escapeHtml(name)}" ${name === selected ? "selected" : ""}>${escapeHtml(name)}</option>`)
+    function workMetricOptions(selected = "", filters = currentWorkMetricFilters()) {
+      return ['<option value="">作品を選択</option>'].concat(
+        workMetricCandidates(selected, filters).map(name => `<option value="${escapeHtml(name)}" ${name === selected ? "selected" : ""}>${escapeHtml(name)}</option>`)
       ).join("");
     }
 
+    function currentWorkMetricFilters() {
+      const form = $("#work-form");
+      const sns = form?.elements.workSnsFilter?.value || "";
+      const month = form?.elements.workMonthFilter?.value || "";
+      return { sns, month };
+    }
+
+    function latestWorkMetricMonth() {
+      const months = [...data.workMetrics, ...data.posts]
+        .map(item => String(item.date || "").slice(0, 7))
+        .filter(month => /^\d{4}-\d{2}$/.test(month))
+        .sort();
+      return months.at(-1) || todayIso().slice(0, 7);
+    }
+
+    function latestWorkMetricMap(sns = "", month = "") {
+      const map = new Map();
+      data.workMetrics
+        .filter(item => (!sns || item.sns === sns) && (!month || String(item.date || "").startsWith(month)))
+        .sort((a, b) => `${a.date || ""}_${a.inputAt || ""}`.localeCompare(`${b.date || ""}_${b.inputAt || ""}`))
+        .forEach(item => {
+          const key = `${item.sns || ""}__${item.workName || item.content || ""}`;
+          map.set(key, item);
+        });
+      return map;
+    }
+
+    function latestWorkMetricByName(sns = "", month = "") {
+      const map = new Map();
+      data.workMetrics
+        .filter(item => (!sns || item.sns === sns) && (!month || String(item.date || "").startsWith(month)))
+        .sort((a, b) => `${a.date || ""}_${a.inputAt || ""}`.localeCompare(`${b.date || ""}_${b.inputAt || ""}`))
+        .forEach(item => {
+          const key = item.workName || item.content || "";
+          if (key) map.set(key, item);
+        });
+      return map;
+    }
+
+    function guessSnsFromWorkName(workName = "") {
+      return snsTypes.find(sns => String(workName).includes(sns)) || "";
+    }
+
     function defaultWorkMetricEntries() {
-      return workMetricCandidates().map(workName => ({ workName, impressions: 0 }));
+      const { sns, month } = currentWorkMetricFilters();
+      const latestMap = latestWorkMetricMap(sns, month);
+      const latestByName = latestWorkMetricByName(sns, month);
+      const latestPostByName = new Map();
+      [...data.posts]
+        .filter(item => (!sns || item.sns === sns) && (!month || String(item.date || "").startsWith(month)))
+        .sort((a, b) => `${a.date || ""}_${a.inputAt || ""}`.localeCompare(`${b.date || ""}_${b.inputAt || ""}`))
+        .forEach(post => latestPostByName.set(workMetricNameFromPost(post), post));
+      const formDate = $("#work-form")?.elements.date?.value || todayIso();
+      const fallbackDate = month && !formDate.startsWith(month) ? `${month}-01` : formDate;
+      const candidates = workMetricCandidates("", { sns, month });
+      return candidates.map((workName, index) => {
+        const byName = latestByName.get(workName);
+        const sourcePost = latestPostByName.get(workName);
+        const fallbackSns = sns || byName?.sns || sourcePost?.sns || guessSnsFromWorkName(workName) || snsTypes[index % snsTypes.length];
+        const latest = latestMap.get(`${fallbackSns}__${workName}`) || byName || latestMap.get(`__${workName}`);
+        if (!latest && sourcePost) {
+          return {
+            sns: sourcePost.sns || fallbackSns,
+            workName,
+            content: workName,
+            date: sourcePost.date || fallbackDate,
+            impressions: Number(sourcePost.impressions || 0),
+            likes: Number(sourcePost.likes || 0),
+            comments: Number(sourcePost.comments || 0),
+            shares: Number(sourcePost.shares || 0),
+            saves: Number(sourcePost.saves || 0),
+            profileAccess: Number(sourcePost.profileAccess || 0),
+            linkClicks: Number(sourcePost.linkClicks || 0)
+          };
+        }
+        return latest ? { ...latest } : {
+          sns: fallbackSns,
+          workName,
+          content: workName,
+          date: fallbackDate,
+          impressions: 0
+        };
+      });
+    }
+
+    function engagementInputsHtml(entry = {}) {
+      return engagementFields.map(field => {
+        const label = engagementLabels[field] || field;
+        return `<td><input type="number" min="0" name="${field}" value="${Number(entry[field] || 0)}" aria-label="${escapeHtml(label)}"></td>`;
+      }).join("");
     }
 
     function workMetricRowHtml(entry = {}) {
-      const workName = entry.workName || "";
+      const workName = entry.workName || entry.content || "";
       const impressions = Number(entry.impressions || 0);
+      const sns = entry.sns || currentWorkMetricFilters().sns || "X";
+      const date = entry.date || todayIso();
       return `
-        <tr>
-          <td><select name="workName" aria-label="菴懷刀繧帝∈謚・>${workMetricOptions(workName)}</select></td>
-          <td><input type="number" min="0" name="workValue" value="${impressions}" aria-label="繧､繝ｳ繝励Ξ繝・す繝ｧ繝ｳ/蜀咲函謨ｰ"></td>
-          <td><button class="btn small" type="button" data-remove-work-row>蜑企勁</button></td>
+        <tr data-work-row data-work-id="${escapeHtml(entry.id || "")}" data-work-sns="${escapeHtml(sns)}" data-work-date="${escapeHtml(date)}">
+          <td><select name="workName" aria-label="作品を選択">${workMetricOptions(workName)}</select></td>
+          <td><input type="number" min="0" name="workValue" value="${impressions}" aria-label="インプレッション/再生数"></td>
+          ${engagementInputsHtml(entry)}
+          <td>
+            <div class="record-actions">
+              <button class="btn primary small" type="button" data-save-work-row>保存</button>
+              <button class="btn small" type="button" data-remove-work-row>削除</button>
+            </div>
+          </td>
         </tr>
       `;
     }
@@ -3937,6 +4576,19 @@ tbody tr:nth-child(even) td {
       if (!body) return;
       const rows = entries && entries.length ? entries : defaultWorkMetricEntries();
       body.innerHTML = rows.map(workMetricRowHtml).join("");
+      updateWorkFilterStatus(rows.length);
+    }
+
+    function updateWorkFilterStatus(visibleCount = 0) {
+      const label = $("#work-filter-count");
+      if (!label) return;
+      const { sns, month } = currentWorkMetricFilters();
+      const totalCandidates = workMetricCandidates("", { sns: "", month: "" }).length;
+      const condition = [
+        sns ? `SNS: ${sns}` : "SNS: 全SNS",
+        month ? `月: ${month}` : "月: 全期間"
+      ].join(" / ");
+      label.textContent = `${condition} / 表示 ${visibleCount}件 / 全候補 ${totalCandidates}件`;
     }
 
     function addWorkMetricRow(entry = {}) {
@@ -3968,25 +4620,46 @@ tbody tr:nth-child(even) td {
       if (!$("#summary-end").value) $("#summary-end").value = summaryBounds.end;
 
       $$("select[name='business']").forEach(select => setOptions(select, businesses));
-      $$("select[name='sns']").forEach(select => setOptions(select, ["X", "Instagram", "TikTok", "Threads", "YouTube", "縺昴・莉・]));
+      $$("select[name='sns']").forEach(select => setOptions(select, ["X", "Instagram", "TikTok", "Threads", "YouTube", "その他"]));
+      $$("select[name='postType']").forEach(select => setOptions(select, postTypes, "画像"));
+      $$("select[name='workSnsFilter']").forEach(select => {
+        setOptions(select, ["", ...snsTypes, "その他"], "");
+        if (select.options[0]) select.options[0].textContent = "全SNS";
+      });
       $$("select[name='type']").forEach(select => setOptions(select, inquiryTypes));
       $$("select[name='status']").forEach(select => setOptions(select, inquiryStatuses));
       $$("select[name='account']").forEach(select => setOptions(select, data.accounts.map(a => a.name)));
-      renderWorkMetricRows();
+      if ($("#summary-work-sns")) {
+        setOptions($("#summary-work-sns"), ["", ...snsTypes, "その他"], "");
+        $("#summary-work-sns").options[0].textContent = "全SNS";
+      }
       renderFollowerBulkInputs();
       $$("input[name='date'], input[name='checkDate']").forEach(input => input.value = todayIso());
+      renderWorkMetricRows();
       syncInputWeeks();
     }
 
     function renderFollowerBulkInputs() {
-      const latest = new Map(latestFollowerRows().map(item => [item.business, item.followers]));
-      const business = businesses[0];
-      $("#follower-bulk-body").innerHTML = `
-        <div class="follower-bulk-row">
-          <strong>繝輔か繝ｭ繝ｯ繝ｼ謨ｰ</strong>
-          <input type="number" min="0" name="followers_${escapeHtml(business)}" value="${Number(latest.get(business) || 0)}">
-        </div>
-      `;
+      const latest = new Map(
+        latestFollowerRows(data.followers.filter(item => item.sns && isThroughToday(item.date))).map(item => [item.sns, item.followers])
+      );
+      $("#follower-bulk-body").innerHTML = snsTypes.map(sns => `
+        <label class="follower-bulk-row">
+          <strong>${escapeHtml(sns)}</strong>
+          <input type="number" min="0" name="followers_${escapeHtml(sns)}" data-follower-sns="${escapeHtml(sns)}" value="${Number(latest.get(sns) || 0)}">
+        </label>
+      `).join("");
+      $$("#follower-bulk-body [data-follower-sns]").forEach(input => {
+        input.addEventListener("input", updateFollowerTotal);
+      });
+      updateFollowerTotal();
+    }
+
+    function updateFollowerTotal() {
+      const total = $$("#follower-bulk-body [data-follower-sns]")
+        .reduce((sum, input) => sum + Math.max(0, Number(input.value || 0)), 0);
+      const output = $("#follower-total");
+      if (output) output.textContent = `${total.toLocaleString()}人`;
     }
 
     function syncInputWeeks() {
@@ -4019,28 +4692,39 @@ tbody tr:nth-child(even) td {
       if (label && start) label.textContent = weekBlockLabel(start, end);
     }
 
-    function setMainWeek(value) {
+    function setMainWeek(value, selectedMonth = weekMonth(value)) {
       const { start, end } = weekRangeFromStart(value);
+      const month = selectedMonth || weekMonth(start);
       $("#week-start").value = start;
       $("#week-end").value = end;
-      fillWeekSelect($("#week-select"), start);
-      fillWeekSelect($("#input-week-select"), start);
+      fillMonthSelect($("#month-select"), month);
+      fillMonthSelect($("#input-month-select"), month);
+      fillWeekSelect($("#week-select"), start, month);
+      fillWeekSelect($("#input-week-select"), start, month);
       $("#week-range-label").textContent = weekBlockLabel(start, end);
       $("#input-week-range-label").textContent = weekBlockLabel(start, end);
       syncInputWeeks();
     }
 
-    function setRecordWeek(value) {
+    function setRecordWeek(value, selectedMonth = weekMonth(value)) {
       const { start, end } = weekRangeFromStart(value);
+      const month = selectedMonth || weekMonth(start);
       $("#record-week-start").value = start;
       $("#record-week-end").value = end;
-      fillWeekSelect($("#record-week-select"), start);
+      fillMonthSelect($("#record-month-select"), month);
+      fillWeekSelect($("#record-week-select"), start, month);
     }
 
-    function setModalWeek(value) {
+    function setModalWeek(value, selectedMonth = weekMonth(value)) {
       const { start } = weekRangeFromStart(value);
+      const month = selectedMonth || weekMonth(start);
       $("#modal-week-start").value = start;
-      fillWeekSelect($("#modal-week-select"), start);
+      fillMonthSelect($("#modal-month-select"), month);
+      fillWeekSelect($("#modal-week-select"), start, month);
+    }
+
+    function firstWeekStartForMonth(month) {
+      return weekRangeFromStart(`${month || todayIso().slice(0, 7)}-01`).start;
     }
 
     function moveWeek(days) {
@@ -4093,7 +4777,7 @@ tbody tr:nth-child(even) td {
     function monthLabel(value) {
       if (!value) return "-";
       const [year, month] = value.split("-");
-      return `${year}蟷ｴ${Number(month)}譛・;
+      return `${year}年${Number(month)}月`;
     }
 
     function ensureMonitoringRows(month) {
@@ -4116,7 +4800,7 @@ tbody tr:nth-child(even) td {
             billingDone: false,
             billingSent: false,
             addOn: false,
-            continueType: "邯咏ｶ・,
+            continueType: "継続",
             note: ""
           });
           changed = true;
@@ -4152,24 +4836,24 @@ tbody tr:nth-child(even) td {
     }
 
     function monitoringStatus(row) {
-      if (monitoringComplete(row)) return { text: "螳御ｺ・, type: "done" };
-      if (row.mailed && !row.returned) return { text: "鄂ｲ蜷崎ｿ秘∝ｾ・■", type: "wait" };
-      if (row.returned && !row.officeSent) return { text: "蠖ｹ謇騾∽ｻ伜ｾ・■", type: "danger" };
-      return { text: "譛ｪ螳御ｺ・, type: "danger" };
+      if (monitoringComplete(row)) return { text: "完了", type: "done" };
+      if (row.mailed && !row.returned) return { text: "署名返送待ち", type: "wait" };
+      if (row.returned && !row.officeSent) return { text: "役所送付待ち", type: "danger" };
+      return { text: "未完了", type: "danger" };
     }
 
     function billingStatus(row) {
       const ready = row.recordDone && (!row.meetingRequired || row.meetingDone) && row.reportDone;
-      if (row.billingDone && row.billingSent) return { text: "螳御ｺ・, type: "done" };
-      if (!ready) return { text: "雉・侭荳崎ｶｳ", type: "danger" };
-      if (row.billingDone && !row.billingSent) return { text: "騾∽ｿ｡蠕・■", type: "wait" };
-      return { text: "隲区ｱょｾ・■", type: "danger" };
+      if (row.billingDone && row.billingSent) return { text: "完了", type: "done" };
+      if (!ready) return { text: "資料不足", type: "danger" };
+      if (row.billingDone && !row.billingSent) return { text: "送信待ち", type: "wait" };
+      return { text: "請求待ち", type: "danger" };
     }
 
     function noticeStatus(row) {
-      if (row.created && row.sent) return { text: "螳御ｺ・, type: "done" };
-      if (row.created && !row.sent) return { text: "騾∽ｻ伜ｾ・■", type: "wait" };
-      return { text: "譛ｪ菴懈・", type: "danger" };
+      if (row.created && row.sent) return { text: "完了", type: "done" };
+      if (row.created && !row.sent) return { text: "送付待ち", type: "wait" };
+      return { text: "未作成", type: "danger" };
     }
 
     function monitoringCheckbox(kind, row, field, label = "") {
@@ -4183,18 +4867,18 @@ tbody tr:nth-child(even) td {
       const billingRows = ensureMonitoringRows(billingSourceMonth);
       const noticeRows = ensureAgencyNoticeRows(month);
 
-      $("#monitoring-work-title").textContent = `${monthLabel(month)} 繝｢繝九ち繝ｪ繝ｳ繧ｰ螳滓命邂｡逅・;
-      $("#monitoring-billing-title").textContent = `${monthLabel(month)} 隲区ｱらｮ｡逅・ｼ・{monthLabel(billingSourceMonth)}螳滓命蛻・ｼ荏;
-      $("#monitoring-notice-title").textContent = `${monthLabel(month)} 莉｣逅・女鬆倬夂衍邂｡逅・;
+      $("#monitoring-work-title").textContent = `${monthLabel(month)} モニタリング実施管理`;
+      $("#monitoring-billing-title").textContent = `${monthLabel(month)} 請求管理（${monthLabel(billingSourceMonth)}実施分）`;
+      $("#monitoring-notice-title").textContent = `${monthLabel(month)} 代理受領通知管理`;
 
       const alertCount = workRows.filter(row => !monitoringComplete(row)).length;
       const returnCount = workRows.filter(row => row.mailed && !row.returned).length;
       const billingCount = billingRows.filter(row => !(row.billingDone && row.billingSent)).length;
       const noticeCount = noticeRows.filter(row => !row.sent).length;
-      $("#monitoring-alert-count").textContent = `${alertCount}莉ｶ`;
-      $("#monitoring-return-count").textContent = `${returnCount}莉ｶ`;
-      $("#monitoring-billing-count").textContent = `${billingCount}莉ｶ`;
-      $("#monitoring-notice-count").textContent = `${noticeCount}莉ｶ`;
+      $("#monitoring-alert-count").textContent = `${alertCount}件`;
+      $("#monitoring-return-count").textContent = `${returnCount}件`;
+      $("#monitoring-billing-count").textContent = `${billingCount}件`;
+      $("#monitoring-notice-count").textContent = `${noticeCount}件`;
 
       $("#monitoring-work-body").innerHTML = workRows.map(row => {
         const status = monitoringStatus(row);
@@ -4203,8 +4887,8 @@ tbody tr:nth-child(even) td {
           <td><strong>${escapeHtml(row.userName)}</strong></td>
           <td>${monitoringCheckbox("monitoring", row, "visited")}</td>
           <td>${monitoringCheckbox("monitoring", row, "recordDone")}</td>
-          <td>${monitoringCheckbox("monitoring", row, "meetingRequired", "隕・)}</td>
-          <td>${row.meetingRequired ? monitoringCheckbox("monitoring", row, "meetingDone") : '<span class="pill ok">荳崎ｦ・/span>'}</td>
+          <td>${monitoringCheckbox("monitoring", row, "meetingRequired", "要")}</td>
+          <td>${row.meetingRequired ? monitoringCheckbox("monitoring", row, "meetingDone") : '<span class="pill ok">不要</span>'}</td>
           <td>${monitoringCheckbox("monitoring", row, "reportDone")}</td>
           <td>${monitoringCheckbox("monitoring", row, "mailed")}</td>
           <td>${monitoringCheckbox("monitoring", row, "returned")}</td>
@@ -4215,14 +4899,14 @@ tbody tr:nth-child(even) td {
 
       $("#monitoring-billing-body").innerHTML = billingRows.map(row => {
         const status = billingStatus(row);
-        const meetingText = row.meetingRequired ? (row.meetingDone ? "貂・ : "譛ｪ") : "荳崎ｦ・;
+        const meetingText = row.meetingRequired ? (row.meetingDone ? "済" : "未") : "不要";
         const rowClass = status.type === "done" ? "" : status.type === "wait" ? "monitoring-row-warn" : "monitoring-row-alert";
         return `<tr class="${rowClass}">
           <td><strong>${escapeHtml(row.userName)}</strong></td>
           <td>${escapeHtml(monthLabel(row.month))}</td>
-          <td>${row.recordDone ? "貂・ : "譛ｪ"}</td>
+          <td>${row.recordDone ? "済" : "未"}</td>
           <td>${meetingText}</td>
-          <td>${row.reportDone ? "貂・ : "譛ｪ"}</td>
+          <td>${row.reportDone ? "済" : "未"}</td>
           <td>${monitoringCheckbox("monitoring", row, "addOn")}</td>
           <td>${monitoringCheckbox("monitoring", row, "billingDone")}</td>
           <td>${monitoringCheckbox("monitoring", row, "billingSent")}</td>
@@ -4258,7 +4942,7 @@ tbody tr:nth-child(even) td {
 
     function defaultPostBusiness() {
       const selected = $("#report-business")?.value || "";
-      return selected && selected !== "蜷郁ｨ・ ? selected : businesses[0];
+      return selected && selected !== "合計" ? selected : businesses[0];
     }
 
     function defaultPostAccount(business, sns) {
@@ -4279,19 +4963,24 @@ tbody tr:nth-child(even) td {
         ...value,
         business,
         account: defaultPostAccount(business, value.sns),
+        postTime: value.postTime || "",
+        postType: value.postType || "画像",
         impressions: Number(value.impressions || 0)
       };
+      engagementFields.forEach(field => {
+        payload[field] = Number(value[field] || 0);
+      });
       if (postId) {
         const target = data.posts.find(item => item.id === postId);
         if (!target) {
-          alert("邱ｨ髮・ｯｾ雎｡縺ｮ謚慕ｨｿ縺瑚ｦ九▽縺九ｊ縺ｾ縺帙ｓ縲よ兜遞ｿ荳隕ｧ縺九ｉ蜀榊ｺｦ驕ｸ謚槭＠縺ｦ縺上□縺輔＞縲・);
+          alert("編集対象の投稿が見つかりません。投稿一覧から再度選択してください。");
           cancelPostEdit();
           renderAll();
           return;
         }
         const before = cloneRecord(target);
         Object.assign(target, payload, { updatedAt: new Date().toISOString() });
-        addHistory("邱ｨ髮・, "post", before, target);
+        addHistory("編集", "post", before, target);
       } else {
         const row = {
           id: uid(),
@@ -4299,7 +4988,7 @@ tbody tr:nth-child(even) td {
           inputAt: new Date().toISOString()
         };
         data.posts.push(row);
-        addHistory("逋ｻ骭ｲ", "post", null, row);
+        addHistory("登録", "post", null, row);
       }
       saveData(data);
       cancelPostEdit();
@@ -4313,68 +5002,81 @@ tbody tr:nth-child(even) td {
     $("#lstep-edit-cancel").addEventListener("click", () => cancelRecordEdit("lstep", true));
     $("#add-work-row").addEventListener("click", () => addWorkMetricRow());
     $("#work-metric-body").addEventListener("click", event => {
+      const saveButton = event.target.closest("[data-save-work-row]");
+      if (saveButton) {
+        saveWorkMetricRow(saveButton.closest("tr"));
+        return;
+      }
       const button = event.target.closest("[data-remove-work-row]");
       if (button) removeWorkMetricRow(button);
     });
+    $("#work-form").elements.workSnsFilter.addEventListener("change", () => renderWorkMetricRows());
+    $("#work-form").elements.workMonthFilter.addEventListener("change", () => renderWorkMetricRows());
+    $("#work-filter-all")?.addEventListener("click", () => {
+      const form = $("#work-form");
+      form.elements.workSnsFilter.value = "";
+      form.elements.workMonthFilter.value = "";
+      renderWorkMetricRows();
+    });
+
+    function workMetricPayloadFromRow(row, form) {
+      const workName = row.querySelector("[name='workName']")?.value.trim() || "";
+      const filters = currentWorkMetricFilters();
+      const sns = filters.sns || row.dataset.workSns || guessSnsFromWorkName(workName) || "X";
+      const date = form.elements.date.value || row.dataset.workDate || (filters.month ? `${filters.month}-01` : todayIso());
+      const payload = {
+        date,
+        sns,
+        workName,
+        content: workName,
+        impressions: Number(row.querySelector("[name='workValue']")?.value || 0),
+        operator: form.elements.operator.value || ""
+      };
+      engagementFields.forEach(field => {
+        payload[field] = Number(row.querySelector(`[name='${field}']`)?.value || 0);
+      });
+      return payload;
+    }
+
+    function saveWorkMetricRow(row, rerender = true) {
+      const form = $("#work-form");
+      if (!row || !form) return false;
+      const payload = workMetricPayloadFromRow(row, form);
+      if (!payload.workName) {
+        alert("作品/投稿内容を選択してください。");
+        return false;
+      }
+      if (!payload.operator) {
+        alert("入力者を入力してください。");
+        return false;
+      }
+      const inputAt = new Date().toISOString();
+      const rowId = row.dataset.workId || "";
+      const target = rowId ? data.workMetrics.find(item => item.id === rowId) : null;
+      if (target) {
+        const before = cloneRecord(target);
+        Object.assign(target, payload, { updatedAt: inputAt });
+        addHistory("編集", "work", before, target);
+        row.dataset.workId = target.id;
+      } else {
+        const created = { id: uid(), ...payload, inputAt };
+        data.workMetrics.push(created);
+        addHistory("登録", "work", null, created);
+        row.dataset.workId = created.id;
+      }
+      row.dataset.workSns = payload.sns;
+      row.dataset.workDate = payload.date;
+      saveData(data);
+      if (rerender) {
+        renderAll();
+        activateInputPanel("work");
+      }
+      return true;
+    }
 
     $("#work-form").addEventListener("submit", event => {
       event.preventDefault();
-      const form = event.currentTarget;
-      const value = formObject(form);
-      const workId = value.workId;
-      delete value.workId;
-      const entries = Array.from(form.querySelectorAll("#work-metric-body tr")).map(row => ({
-        workName: row.querySelector("[name='workName']")?.value.trim() || "",
-        impressions: Number(row.querySelector("[name='workValue']")?.value || 0)
-      })).filter(entry => entry.workName);
-      const inputAt = new Date().toISOString();
-      if (workId) {
-        const target = data.workMetrics.find(item => item.id === workId);
-        if (!target) {
-          alert("邱ｨ髮・ｯｾ雎｡縺ｮ菴懷刀蛻･謗ｨ遘ｻ縺瑚ｦ九▽縺九ｊ縺ｾ縺帙ｓ縲ょ・蜉帶ｸ医∩荳隕ｧ縺九ｉ蜀榊ｺｦ驕ｸ謚槭＠縺ｦ縺上□縺輔＞縲・);
-          cancelRecordEdit("work");
-          renderAll();
-          return;
-        }
-        if (!entries.length) {
-          alert("菴懷刀繧帝∈謚槭＠縺ｦ縺上□縺輔＞縲・);
-          return;
-        }
-        const entry = entries[0];
-        const before = cloneRecord(target);
-        Object.assign(target, {
-          date: value.date,
-          workName: entry.workName,
-          impressions: entry.impressions,
-          operator: value.operator,
-          updatedAt: inputAt
-        });
-        addHistory("邱ｨ髮・, "work", before, target);
-        saveData(data);
-        cancelRecordEdit("work");
-        renderAll();
-        return;
-      }
-      if (!entries.length) {
-        alert("菴懷刀繧・莉ｶ莉･荳企∈謚槭＠縺ｦ縺上□縺輔＞縲・);
-        return;
-      }
-      entries.forEach(entry => {
-        const row = {
-          id: uid(),
-          date: value.date,
-          workName: entry.workName,
-          impressions: entry.impressions,
-          operator: value.operator,
-          inputAt
-        };
-        data.workMetrics.push(row);
-        addHistory("逋ｻ骭ｲ", "work", null, row);
-      });
-      saveData(data);
-      form.reset();
-      setupForms();
-      renderAll();
+      alert("作品別推移は各行の「保存」ボタンで1件ずつ保存してください。");
     });
 
     $("#follower-form").addEventListener("submit", event => {
@@ -4387,37 +5089,40 @@ tbody tr:nth-child(even) td {
       if (followerId) {
         const target = data.followers.find(item => item.id === followerId);
         if (!target) {
-          alert("邱ｨ髮・ｯｾ雎｡縺ｮ繝輔か繝ｭ繝ｯ繝ｼ險倬鹸縺瑚ｦ九▽縺九ｊ縺ｾ縺帙ｓ縲ょ・蜉帶ｸ医∩荳隕ｧ縺九ｉ蜀榊ｺｦ驕ｸ謚槭＠縺ｦ縺上□縺輔＞縲・);
+          alert("編集対象のフォロワー記録が見つかりません。入力済み一覧から再度選択してください。");
           cancelRecordEdit("follower");
           renderAll();
           return;
         }
         const before = cloneRecord(target);
+        const followers = target.sns
+          ? Number(value[`followers_${target.sns}`] || 0)
+          : snsTypes.reduce((sum, sns) => sum + Number(value[`followers_${sns}`] || 0), 0);
         Object.assign(target, {
           date: value.date,
-          followers: Number(value[`followers_${target.business}`] || 0),
+          followers,
           operator: value.operator,
           updatedAt: inputAt
         });
-        addHistory("邱ｨ髮・, "follower", before, target);
+        addHistory("編集", "follower", before, target);
         saveData(data);
         cancelRecordEdit("follower");
         renderAll();
         return;
       }
-      businesses.forEach(business => {
-        const followers = Number(value[`followers_${business}`] || 0);
-        if (!followers) return;
+      snsTypes.forEach(sns => {
+        const followers = Math.max(0, Number(value[`followers_${sns}`] || 0));
         const row = {
           id: uid(),
           date: value.date,
-          business,
+          business: businesses[0],
+          sns,
           followers,
           operator: value.operator,
           inputAt
         };
         data.followers.push(row);
-        addHistory("逋ｻ骭ｲ", "follower", null, row);
+        addHistory("登録", "follower", null, row);
       });
       saveData(data);
       setupForms();
@@ -4437,18 +5142,18 @@ tbody tr:nth-child(even) td {
       if (inquiryId) {
         const target = data.inquiries.find(item => item.id === inquiryId);
         if (!target) {
-          alert("邱ｨ髮・ｯｾ雎｡縺ｮ蝠上＞蜷医ｏ縺帙′隕九▽縺九ｊ縺ｾ縺帙ｓ縲ょ・蜉帶ｸ医∩荳隕ｧ縺九ｉ蜀榊ｺｦ驕ｸ謚槭＠縺ｦ縺上□縺輔＞縲・);
+          alert("編集対象の問い合わせが見つかりません。入力済み一覧から再度選択してください。");
           cancelRecordEdit("inquiry");
           renderAll();
           return;
         }
         const before = cloneRecord(target);
         Object.assign(target, payload, { updatedAt: new Date().toISOString() });
-        addHistory("邱ｨ髮・, "inquiry", before, target);
+        addHistory("編集", "inquiry", before, target);
       } else {
         const row = { id: uid(), ...payload, inputAt: new Date().toISOString() };
         data.inquiries.push(row);
-        addHistory("逋ｻ骭ｲ", "inquiry", null, row);
+        addHistory("登録", "inquiry", null, row);
       }
       saveData(data);
       cancelRecordEdit("inquiry");
@@ -4475,7 +5180,7 @@ tbody tr:nth-child(even) td {
       if (lstepId) {
         const target = data.lsteps.find(item => item.id === lstepId);
         if (!target) {
-          alert("邱ｨ髮・ｯｾ雎｡縺ｮL繧ｹ繝・ャ繝苓ｨ倬鹸縺瑚ｦ九▽縺九ｊ縺ｾ縺帙ｓ縲ょ・蜉帶ｸ医∩荳隕ｧ縺九ｉ蜀榊ｺｦ驕ｸ謚槭＠縺ｦ縺上□縺輔＞縲・);
+          alert("編集対象のLステップ記録が見つかりません。入力済み一覧から再度選択してください。");
           cancelRecordEdit("lstep");
           renderAll();
           return;
@@ -4483,7 +5188,7 @@ tbody tr:nth-child(even) td {
         const before = cloneRecord(target);
         Object.assign(target, payload, { updatedAt: new Date().toISOString() });
         recalculateLstepPreviousValues();
-        addHistory("邱ｨ髮・, "lstep", before, target);
+        addHistory("編集", "lstep", before, target);
       } else {
         const row = { 
           id: uid(), 
@@ -4493,7 +5198,7 @@ tbody tr:nth-child(even) td {
         };
         data.lsteps.push(row);
         recalculateLstepPreviousValues();
-        addHistory("逋ｻ骭ｲ", "lstep", null, row);
+        addHistory("登録", "lstep", null, row);
       }
       saveData(data);
       cancelRecordEdit("lstep");
@@ -4512,14 +5217,32 @@ tbody tr:nth-child(even) td {
     $("#report-business").addEventListener("change", renderAll);
     $("#week-select").addEventListener("change", () => {
       recordAllMode = false;
-      setMainWeek($("#week-select").value);
-      setRecordWeek($("#week-select").value);
+      const month = $("#month-select").value;
+      setMainWeek($("#week-select").value, month);
+      setRecordWeek($("#week-select").value, month);
       renderAll();
     });
     $("#input-week-select").addEventListener("change", () => {
       recordAllMode = false;
-      setMainWeek($("#input-week-select").value);
-      setRecordWeek($("#input-week-select").value);
+      const month = $("#input-month-select").value;
+      setMainWeek($("#input-week-select").value, month);
+      setRecordWeek($("#input-week-select").value, month);
+      renderAll();
+    });
+    $("#month-select").addEventListener("change", () => {
+      recordAllMode = false;
+      const month = $("#month-select").value;
+      const start = firstWeekStartForMonth(month);
+      setMainWeek(start, month);
+      setRecordWeek(start, month);
+      renderAll();
+    });
+    $("#input-month-select").addEventListener("change", () => {
+      recordAllMode = false;
+      const month = $("#input-month-select").value;
+      const start = firstWeekStartForMonth(month);
+      setMainWeek(start, month);
+      setRecordWeek(start, month);
       renderAll();
     });
     $("#prev-week").addEventListener("click", () => moveWeek(-7));
@@ -4554,6 +5277,13 @@ tbody tr:nth-child(even) td {
         renderSummaryWorkMetrics();
       });
     });
+    $("#summary-work-sns")?.addEventListener("change", renderSummaryWorkMetrics);
+    $("#summary-work-month")?.addEventListener("change", renderSummaryWorkMetrics);
+    $("#summary-work-clear")?.addEventListener("click", () => {
+      $("#summary-work-sns").value = "";
+      $("#summary-work-month").value = "";
+      renderSummaryWorkMetrics();
+    });
     $$("[data-summary-tab]").forEach(button => {
       button.addEventListener("click", () => setSummaryTab(button.dataset.summaryTab));
     });
@@ -4565,7 +5295,12 @@ tbody tr:nth-child(even) td {
     $("#modal-prev-week").addEventListener("click", () => moveModalWeek(-7));
     $("#modal-next-week").addEventListener("click", () => moveModalWeek(7));
     $("#modal-week-select").addEventListener("change", () => {
-      setModalWeek($("#modal-week-select").value);
+      setModalWeek($("#modal-week-select").value, $("#modal-month-select").value);
+      renderInquiryDetail();
+    });
+    $("#modal-month-select").addEventListener("change", () => {
+      const month = $("#modal-month-select").value;
+      setModalWeek(firstWeekStartForMonth(month), month);
       renderInquiryDetail();
     });
 
@@ -4604,7 +5339,13 @@ tbody tr:nth-child(even) td {
     $("#record-next-week").addEventListener("click", () => moveRecordWeek(7));
     $("#record-week-select").addEventListener("change", () => {
       recordAllMode = false;
-      setRecordWeek($("#record-week-select").value);
+      setRecordWeek($("#record-week-select").value, $("#record-month-select").value);
+      renderRecords();
+    });
+    $("#record-month-select").addEventListener("change", () => {
+      recordAllMode = false;
+      const month = $("#record-month-select").value;
+      setRecordWeek(firstWeekStartForMonth(month), month);
       renderRecords();
     });
 
@@ -4643,7 +5384,7 @@ tbody tr:nth-child(even) td {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `SNS驕狗畑_${active === "all" ? "蜈ｨ繝・・繧ｿ" : sheets[0].name}_${todayIso()}.xls`;
+      a.download = `SNS運用_${active === "all" ? "全データ" : sheets[0].name}_${todayIso()}.xls`;
       a.click();
       URL.revokeObjectURL(url);
     });
@@ -4653,9 +5394,9 @@ tbody tr:nth-child(even) td {
       if (type === "inquiry") {
         const rows = data.inquiries.filter(item => isRecordAllMode() || recordInScope(item, "inquiry", start, end));
         return {
-          name: "蝠上＞蜷医ｏ縺帛・蜉・,
+          name: "問い合わせ入力",
           rows: [
-            ["騾ｱ髢句ｧ区律", "騾ｱ邨ゆｺ・律", "謚慕ｨｿ譌･", "SNS遞ｮ蛻･", "蛹ｺ蛻・, "蝠上＞蜷医ｏ縺帛・螳ｹ", "蟇ｾ蠢懃憾豕・, "蜈･蜉幄・, "蜈･蜉帶凾髢・],
+            ["週開始日", "週終了日", "投稿日", "SNS種別", "区分", "問い合わせ内容", "対応状況", "入力者", "入力時間"],
             ...rows.map(i => [i.weekStart, i.weekEnd, i.date, i.sns, i.type, i.content, i.status, i.operator, fullDateTime(i.inputAt)])
           ]
         };
@@ -4663,43 +5404,29 @@ tbody tr:nth-child(even) td {
       if (type === "follower") {
         const rows = data.followers.filter(item => isRecordAllMode() || (item.date >= start && item.date <= end));
         return {
-          name: "繝輔か繝ｭ繝ｯ繝ｼ邂｡逅・,
+          name: "フォロワー管理",
           rows: [
-            ["謚慕ｨｿ譌･", "繝輔か繝ｭ繝ｯ繝ｼ謨ｰ", "蜈･蜉幄・, "蜈･蜉帶凾髢・],
-            ...rows.map(item => [item.date, item.followers, item.operator, fullDateTime(item.inputAt)])
+            ["投稿日", "SNS種別", "フォロワー数", "入力者", "入力時間"],
+            ...rows.map(item => [item.date, followerRecordLabel(item), item.followers, item.operator, fullDateTime(item.inputAt)])
           ]
         };
       }
       if (type === "work") {
         const rows = data.workMetrics.filter(item => isRecordAllMode() || (item.date >= start && item.date <= end));
-        const dates = Array.from(new Set(rows.map(row => row.date).filter(Boolean))).sort();
-        const works = Array.from(new Set(rows.map(row => row.workName).filter(Boolean))).sort((a, b) => a.localeCompare(b, "ja", { numeric: true }));
-        const valueMap = new Map();
-        rows.forEach(row => {
-          const key = `${row.workName}__${row.date}`;
-          valueMap.set(key, Number(valueMap.get(key) || 0) + Number(row.impressions || 0));
-        });
-        const pivotRows = works.map(work => {
-          const values = dates.map(date => Number(valueMap.get(`${work}__${date}`) || 0));
-          return [work, ...values, values.reduce((sum, value) => sum + value, 0)];
-        });
-        const totalRow = ["蜷郁ｨ・, ...dates.map(date => works.reduce((sum, work) => sum + Number(valueMap.get(`${work}__${date}`) || 0), 0))];
-        totalRow.push(rows.reduce((sum, row) => sum + Number(row.impressions || 0), 0));
         return {
-          name: "菴懷刀蛻･謗ｨ遘ｻ",
+          name: "作品別推移",
           rows: [
-            ["菴懷刀蜷・, ...dates.map(dateLabel), "蜷郁ｨ・],
-            ...pivotRows,
-            ...(rows.length ? [totalRow] : [])
+            ["投稿日", "SNS種別", "作品/投稿内容", "インプレッション/再生数", "いいね", "コメント/リプライ", "シェア/リポスト", "保存数", "プロフィールアクセス数", "リンククリック数", "入力者", "入力時間"],
+            ...rows.map(item => [item.date, item.sns, item.workName, item.impressions, item.likes, item.comments, item.shares, item.saves, item.profileAccesses, item.linkClicks, item.operator, fullDateTime(item.inputAt)])
           ]
         };
       }
       if (type === "lstep") {
         const rows = data.lsteps.filter(item => isRecordAllMode() || recordInScope(item, "lstep", start, end));
         return {
-          name: "L繧ｹ繝・ャ繝礼ｮ｡逅・,
+          name: "Lステップ管理",
           rows: [
-            ["騾ｱ髢句ｧ区律", "騾ｱ邨ゆｺ・律", "謚慕ｨｿ譌･", "蜑埼ｱ縺ｾ縺ｧ騾∽ｿ｡謨ｰ", "莉企ｱ騾∽ｿ｡謨ｰ", "辟｡譁呎棧", "蜑埼ｱ縺ｾ縺ｧ+莉企ｱ", "谿九ｊ騾壽焚", "豕ｨ諢・, "蜈･蜉幄・, "蜈･蜉帶凾髢・],
+            ["週開始日", "週終了日", "投稿日", "前週まで送信数", "今週送信数", "無料枠", "前週まで+今週", "残り通数", "注意", "入力者", "入力時間"],
             ...rows.map(l => {
               const info = lstepInfo(l);
               return [l.weekStart, l.weekEnd, l.checkDate, l.previous, l.current, l.limit, info.used, info.remaining, info.note, l.operator, fullDateTime(l.inputAt)];
@@ -4708,10 +5435,10 @@ tbody tr:nth-child(even) td {
         };
       }
       return {
-        name: "謚慕ｨｿ蜈･蜉・,
+        name: "投稿入力",
         rows: [
-          ["騾ｱ髢句ｧ区律", "騾ｱ邨ゆｺ・律", "謚慕ｨｿ譌･", "SNS遞ｮ蛻･", "謚慕ｨｿ蜀・ｮｹ", "繧､繝ｳ繝励Ξ繝・す繝ｧ繝ｳ/蜀咲函謨ｰ", "蜈･蜉幄・, "蜈･蜉帶凾髢・],
-          ...sortedPostRows().map(p => [p.weekStart, p.weekEnd, p.date, p.sns, p.content, p.impressions, p.operator, fullDateTime(p.inputAt)])
+          ["週開始日", "週終了日", "投稿日", "投稿時間", "SNS種別", "投稿形式", "投稿内容", "インプレッション/再生数", "いいね", "コメント/リプライ", "シェア/リポスト", "保存数", "プロフィールアクセス数", "リンククリック数", "入力者", "入力時間"],
+          ...sortedPostRows().map(p => [p.weekStart, p.weekEnd, p.date, p.postTime, p.sns, p.postType, p.content, p.impressions, p.likes, p.comments, p.shares, p.saves, p.profileAccesses, p.linkClicks, p.operator, fullDateTime(p.inputAt)])
         ]
       };
     }
@@ -4752,5 +5479,3 @@ tbody tr:nth-child(even) td {
   </script>
 </body>
 </html>
-
-
