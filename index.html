@@ -3103,7 +3103,9 @@ tbody tr:nth-child(even) td {
         cloudSyncReady = false;
         const result = await cloudRequest("loadData");
         const cloudData = normalizeData(result.data || {});
-        if (cloudDataHasRows(cloudData)) {
+        // Once the cloud sheet has been saved, an intentionally empty dataset is authoritative.
+        // This prevents an old browser-local dataset from repopulating a freshly initialized sheet.
+        if (cloudDataHasRows(cloudData) || result.updatedAt) {
           data = cloudData;
           localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
           setupForms();
