@@ -1,4 +1,13 @@
 const SPREADSHEET_ID = '1J2Jfv4PIj2C3RMoX2ZH5jW946FFBN6p25FJkk8TsvGU';
+const SPREADSHEET_IDS = Object.freeze({
+  yokazu2: '17H7ADWm1j3JrnsPS8OkWZocuOWa-LgFRd5i5BSP88QE',
+  yokazu3: '1B3NK5mt7JyNxhW8RxZEFZVyKBQjBoLZ_K9_4cS2LvII',
+  yokazu4: '1PQHhwKMYXPUcW6EfreYR1YWYf2Zt2Hx4uPi2sV-ueWQ',
+  yokazu5: SPREADSHEET_ID,
+  yokazu6: '1jSqqwpje5yokIrBlrwtNW5XrcbC__Q8KhSlHFZsXiJg'
+});
+let ACTIVE_SPREADSHEET_ID = SPREADSHEET_ID;
+let ACTIVE_SYSTEM_KEY = 'yokazu5';
 const SHEETS = {
   state: { name: 'State', headers: ['key', 'json', 'updatedAt'] },
   posts: { name: 'Posts', headers: ['id', 'weekStart', 'weekEnd', 'date', 'postTime', 'business', 'account', 'sns', 'postType', 'content', 'impressions', 'likes', 'comments', 'shares', 'saves', 'profileAccesses', 'linkClicks', 'followers', 'operator', 'inputAt', 'updatedAt', 'note', 'json'] },
@@ -8,30 +17,46 @@ const SHEETS = {
   lsteps: { name: 'LSteps', headers: ['id', 'weekStart', 'weekEnd', 'checkDate', 'business', 'previous', 'current', 'limit', 'operator', 'inputAt', 'updatedAt', 'used', 'remaining', 'json'] },
   monitoring: { name: 'Monitoring', headers: ['id', 'userName', 'month', 'visited', 'recordDone', 'meetingRequired', 'meetingDone', 'reportDone', 'mailed', 'returned', 'officeSent', 'billingDone', 'billingSent', 'addOn', 'continueType', 'note', 'operator', 'inputAt', 'updatedAt', 'json'] },
   agencyNotices: { name: 'AgencyNotices', headers: ['id', 'userName', 'month', 'created', 'sent', 'note', 'json'] },
-  history: { name: 'History', headers: ['id', 'at', 'action', 'type', 'recordId', 'label', 'beforeJson', 'afterJson'] }
+  history: { name: 'History', headers: ['id', 'at', 'action', 'type', 'recordId', 'label', 'beforeJson', 'afterJson'] },
+  syncHistory: { name: 'SyncHistory', headers: ['at', 'result', 'expectedRevision', 'serverRevisionBefore', 'serverRevisionAfter', 'posts', 'workMetrics', 'followers', 'inquiries', 'lsteps', 'clientId'] }
 };
 
-function doGet() {
+function doGet(e) {
+  const systemKey = selectSpreadsheet_(e && e.parameter && e.parameter.systemKey);
   ensureAllSheets_();
-  return json_({ ok: true, data: { status: 'ready', updatedAt: readUpdatedAt_(), data: readData_() } });
+  return json_({ ok: true, data: { status: 'ready', systemKey: systemKey, updatedAt: readUpdatedAt_() } });
 }
 
 function doPost(e) {
+  const lock = LockService.getScriptLock();
+  let locked = false;
   try {
-    ensureAllSheets_();
+    lock.waitLock(30000);
+    locked = true;
     const request = JSON.parse((e.postData && e.postData.contents) || '{}');
+    selectSpreadsheet_(request.systemKey);
+    ensureAllSheets_();
     const action = request.action || '';
     if (action === 'loadData') return json_({ ok: true, data: { data: readData_(), updatedAt: readUpdatedAt_() } });
-    if (action === 'saveData') return json_({ ok: true, data: saveData_(request.data || {}) });
+    if (action === 'saveData') {
+      return json_({ ok: true, data: saveData_(request.data || {}, request.expectedUpdatedAt || '', request.clientId || '') });
+    }
     throw new Error('未対応の操作です: ' + action);
   } catch (error) {
     return json_({ ok: false, error: error.message || String(error) });
+  } finally {
+    if (locked) lock.releaseLock();
   }
 }
 
-function saveData_(data) {
+function saveData_(data, expectedUpdatedAt, clientId) {
+  const currentUpdatedAt = readUpdatedAt_();
+  if (expectedUpdatedAt && currentUpdatedAt && expectedUpdatedAt !== currentUpdatedAt) {
+    appendSyncHistory_('conflict', expectedUpdatedAt, currentUpdatedAt, '', data, clientId);
+    throw new Error('CONFLICT: 他の端末で先に更新されています。再読み込みして内容を確認してください。');
+  }
+
   const normalized = normalizeData_(data);
-  writeState_(normalized);
   writeRows_(SHEETS.posts, normalized.posts, postRow_);
   writeRows_(SHEETS.workMetrics, normalized.workMetrics, workMetricRow_);
   writeRows_(SHEETS.followers, normalized.followers, followerRow_);
@@ -40,7 +65,30 @@ function saveData_(data) {
   writeRows_(SHEETS.monitoring, normalized.monitoring, monitoringRow_);
   writeRows_(SHEETS.agencyNotices, normalized.agencyNotices, agencyNoticeRow_);
   writeHistory_(normalized.history);
-  return { data: readData_(), updatedAt: readUpdatedAt_() };
+  writeState_(normalized);
+
+  const updatedAt = readUpdatedAt_();
+  appendSyncHistory_('saved', expectedUpdatedAt, currentUpdatedAt, updatedAt, normalized, clientId);
+  return { data: readData_(), updatedAt: updatedAt };
+}
+
+function appendSyncHistory_(result, expectedRevision, beforeRevision, afterRevision, data, clientId) {
+  const sheet = targetSpreadsheet_().getSheetByName(SHEETS.syncHistory.name);
+  const counts = data || {};
+  sheet.appendRow([
+    new Date().toISOString(),
+    result || '',
+    expectedRevision || '',
+    beforeRevision || '',
+    afterRevision || '',
+    array_(counts.posts).length,
+    array_(counts.workMetrics).length,
+    array_(counts.followers).length,
+    array_(counts.inquiries).length,
+    array_(counts.lsteps).length,
+    clientId || ''
+  ]);
+  if (sheet.getLastRow() > 5001) sheet.deleteRows(2, sheet.getLastRow() - 5001);
 }
 
 function readData_() {
@@ -210,7 +258,16 @@ function agencyNoticeRow_(item) {
 }
 
 function targetSpreadsheet_() {
-  return SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(SPREADSHEET_ID);
+  return SpreadsheetApp.openById(ACTIVE_SPREADSHEET_ID);
+}
+
+function selectSpreadsheet_(rawKey) {
+  const key = String(rawKey || 'yokazu5').trim();
+  const spreadsheetId = SPREADSHEET_IDS[key];
+  if (!spreadsheetId) throw new Error('保存先IDが不正です。');
+  ACTIVE_SYSTEM_KEY = key;
+  ACTIVE_SPREADSHEET_ID = spreadsheetId;
+  return key;
 }
 
 function array_(value) {

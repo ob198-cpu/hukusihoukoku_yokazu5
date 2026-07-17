@@ -2629,8 +2629,9 @@ tbody tr:nth-child(even) td {
   </div>
 
   <script>
-    const STORAGE_KEY = "sns_operation_report_single_site_v3";
+    const STORAGE_KEY = "sns_operation_report_yokazu5_v4";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
+    const CLOUD_SYSTEM_KEY = "yokazu5";
     const businesses = ["自事業所"];
     const monitoringUsers = ["大場", "A", "B", "C", "D", "E", "F"];
     const snsTypes = ["X", "Instagram", "TikTok", "Threads", "YouTube"];
@@ -2653,6 +2654,8 @@ tbody tr:nth-child(even) td {
     let workBreakdownMode = "day";
     let cloudSyncReady = false;
     let cloudSaveTimer = null;
+    let cloudSaveChain = Promise.resolve();
+    let cloudRevision = "";
 
     const $ = selector => document.querySelector(selector);
     const $$ = selector => Array.from(document.querySelectorAll(selector));
@@ -3058,7 +3061,7 @@ tbody tr:nth-child(even) td {
       const response = await fetch(CLOUD_API_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action, ...payload })
+        body: JSON.stringify({ action, systemKey: CLOUD_SYSTEM_KEY, ...payload })
       });
       const text = await response.text();
       let result;
@@ -3081,14 +3084,25 @@ tbody tr:nth-child(even) td {
       const payload = normalizeData(cloneRecord(snapshot));
       clearTimeout(cloudSaveTimer);
       setCloudStatus("シート保存中", "syncing");
-      cloudSaveTimer = setTimeout(() => saveCloudData(payload), 500);
+      cloudSaveTimer = setTimeout(() => {
+        cloudSaveChain = cloudSaveChain.then(() => saveCloudData(payload));
+      }, 500);
     }
 
     async function saveCloudData(snapshot) {
       try {
-        await cloudRequest("saveData", { data: snapshot });
-        setCloudStatus("シート保存済み", "ok");
+        const result = await cloudRequest("saveData", {
+          data: snapshot,
+          expectedUpdatedAt: cloudRevision
+        });
+        cloudRevision = result.updatedAt || cloudRevision;
+        setCloudStatus("シート保存済み（サーバー確認済み）", "ok");
       } catch (error) {
+        if (String(error.message || error).includes("CONFLICT")) {
+          cloudSyncReady = false;
+          setCloudStatus("他の端末で更新されています。画面を再読み込みして確認してください。", "error");
+          return;
+        }
         setCloudStatus("シート保存エラー: " + error.message, "error");
       }
     }
@@ -3102,6 +3116,7 @@ tbody tr:nth-child(even) td {
       try {
         cloudSyncReady = false;
         const result = await cloudRequest("loadData");
+        cloudRevision = result.updatedAt || "";
         const cloudData = normalizeData(result.data || {});
         // Once the cloud sheet has been saved, an intentionally empty dataset is authoritative.
         // This prevents an old browser-local dataset from repopulating a freshly initialized sheet.
