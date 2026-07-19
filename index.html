@@ -2632,6 +2632,9 @@ tbody tr:nth-child(even) td {
     const STORAGE_KEY = "sns_operation_report_yokazu5_v4";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
     const CLOUD_SYSTEM_KEY = "yokazu5";
+    const CLOUD_CLIENT_ID_KEY = STORAGE_KEY + ":cloud_client_id";
+    const CLOUD_CLIENT_ID = localStorage.getItem(CLOUD_CLIENT_ID_KEY) || ("client_" + Date.now() + "_" + Math.random().toString(36).slice(2));
+    localStorage.setItem(CLOUD_CLIENT_ID_KEY, CLOUD_CLIENT_ID);
     const businesses = ["自事業所"];
     const monitoringUsers = ["大場", "A", "B", "C", "D", "E", "F"];
     const snsTypes = ["X", "Instagram", "TikTok", "Threads", "YouTube"];
@@ -3093,7 +3096,8 @@ tbody tr:nth-child(even) td {
       try {
         const result = await cloudRequest("saveData", {
           data: snapshot,
-          expectedUpdatedAt: cloudRevision
+          expectedUpdatedAt: cloudRevision,
+          clientId: CLOUD_CLIENT_ID
         });
         cloudRevision = result.updatedAt || cloudRevision;
         setCloudStatus("シート保存済み（サーバー確認済み）", "ok");
