@@ -6,7 +6,9 @@ const SPREADSHEET_IDS = Object.freeze({
   yokazu3: '1B3NK5mt7JyNxhW8RxZEFZVyKBQjBoLZ_K9_4cS2LvII',
   yokazu4: '1PQHhwKMYXPUcW6EfreYR1YWYf2Zt2Hx4uPi2sV-ueWQ',
   yokazu5: SPREADSHEET_ID,
-  yokazu6: '1jSqqwpje5yokIrBlrwtNW5XrcbC__Q8KhSlHFZsXiJg'
+  yokazu6: '1jSqqwpje5yokIrBlrwtNW5XrcbC__Q8KhSlHFZsXiJg',
+  yokazu7: '1-XNCAYIogtPJGhiv8vnP5RHSlnTyRWJi59sABVLjFL0',
+  yokazu8: '1Jg9UWYmRXGQ7wCdh3kU7ZEONyYIWvq73-yReFr-7LMo'
 });
 let ACTIVE_SPREADSHEET_ID = SPREADSHEET_ID;
 let ACTIVE_SYSTEM_KEY = 'yokazu5';

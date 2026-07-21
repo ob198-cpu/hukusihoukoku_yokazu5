@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'backend', 'Code.gs'), 'utf8');
 const clasp = JSON.parse(fs.readFileSync(path.join(root, '.clasp.json'), 'utf8'));
 const expectedScriptId = '1dQTXk3OjzJ1TJpUzPnt7Y2ZfJObUCdgVhzhBwFQ2AYeljOiyWhFC3pwf';
-const systemKeys = ['hukusihoukoku', 'yokazu', 'yokazu2', 'yokazu3', 'yokazu4', 'yokazu5', 'yokazu6'];
+const systemKeys = ['hukusihoukoku', 'yokazu', 'yokazu2', 'yokazu3', 'yokazu4', 'yokazu5', 'yokazu6', 'yokazu7', 'yokazu8'];
 
 const failures = [];
 if (clasp.scriptId !== expectedScriptId) failures.push('正本GASのscriptIdが変更されています。');
