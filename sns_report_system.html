@@ -3017,25 +3017,17 @@ tbody tr:nth-child(even) td {
     function loadData() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        const data = normalizeData(sampleData());
-        data.history = [];
-        saveData(data);
+        const data = normalizeData({});
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         return data;
       }
       try {
         const loaded = normalizeData(JSON.parse(raw));
-        if (!loaded.posts.length && !loaded.workMetrics.length && !loaded.followers.length && !loaded.inquiries.length && !loaded.lsteps.length) {
-          const data = normalizeData(sampleData());
-          data.history = loaded.history || [];
-          saveData(data);
-          return data;
-        }
         saveData(loaded);
         return loaded;
       } catch {
-        const data = normalizeData(sampleData());
-        data.history = [];
-        saveData(data);
+        const data = normalizeData({});
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         return data;
       }
     }
@@ -3118,19 +3110,12 @@ tbody tr:nth-child(even) td {
         const result = await cloudRequest("loadData");
         cloudRevision = result.updatedAt || "";
         const cloudData = normalizeData(result.data || {});
-        // Once the cloud sheet has been saved, an intentionally empty dataset is authoritative.
-        // This prevents an old browser-local dataset from repopulating a freshly initialized sheet.
-        if (cloudDataHasRows(cloudData) || result.updatedAt) {
-          data = cloudData;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-          setupForms();
-          renderAll();
-          setCloudStatus("シート読込済み", "ok");
-        } else {
-          cloudSyncReady = true;
-          await saveCloudData(normalizeData(cloneRecord(data)));
-          return;
-        }
+        // 本番ではクラウド側を常に正とし、空の台帳へローカルのサンプルを自動送信しない。
+        data = cloudData;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        setupForms();
+        renderAll();
+        setCloudStatus("シート読込済み", "ok");
         cloudSyncReady = true;
       } catch (error) {
         cloudSyncReady = true;
