@@ -141,6 +141,13 @@ assert.equal(properties.getProperty('SNS_SAVE_TRANSACTION_yokazu5'), null);
 
 assert.throws(() => context.saveData_(newData, 'stale_revision', 'test_client'), /CONFLICT/);
 assert.equal(context.readUpdatedAt_(), 'rev_new');
+const conflictBackupRows = book.getSheetByName('ConflictBackups').rows;
+assert.equal(conflictBackupRows.length > 1, true);
+assert.equal(conflictBackupRows[1][2], 'yokazu5');
+assert.equal(conflictBackupRows[1][3], 'test_client');
+assert.equal(conflictBackupRows[1][4], 'stale_revision');
+assert.equal(conflictBackupRows[1][5], 'rev_new');
+assert.equal(JSON.parse(conflictBackupRows.slice(1).map(row => row[8]).join('')).posts[0].id, 'new');
 
 const tenYears = context.normalizeData_({
   posts: Array.from({ length: 3650 }, (_, index) => ({

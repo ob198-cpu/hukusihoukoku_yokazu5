@@ -23,7 +23,8 @@ const SHEETS = {
   monitoring: { name: 'Monitoring', headers: ['id', 'userName', 'month', 'visited', 'recordDone', 'meetingRequired', 'meetingDone', 'reportDone', 'mailed', 'returned', 'officeSent', 'billingDone', 'billingSent', 'addOn', 'continueType', 'note', 'operator', 'inputAt', 'updatedAt', 'json'] },
   agencyNotices: { name: 'AgencyNotices', headers: ['id', 'userName', 'month', 'created', 'sent', 'note', 'json'] },
   history: { name: 'History', headers: ['id', 'at', 'action', 'type', 'recordId', 'label', 'beforeJson', 'afterJson'] },
-  syncHistory: { name: 'SyncHistory', headers: ['at', 'result', 'expectedRevision', 'serverRevisionBefore', 'serverRevisionAfter', 'posts', 'workMetrics', 'followers', 'inquiries', 'lsteps', 'clientId'] }
+  syncHistory: { name: 'SyncHistory', headers: ['at', 'result', 'expectedRevision', 'serverRevisionBefore', 'serverRevisionAfter', 'posts', 'workMetrics', 'followers', 'inquiries', 'lsteps', 'clientId'] },
+  conflictBackups: { name: 'ConflictBackups', headers: ['backupId', 'at', 'systemKey', 'clientId', 'expectedRevision', 'serverRevision', 'chunkIndex', 'chunkCount', 'jsonChunk'] }
 };
 
 function doGet(e) {
@@ -59,10 +60,12 @@ function doPost(e) {
 function saveData_(data, expectedUpdatedAt, clientId) {
   const currentUpdatedAt = readUpdatedAt_();
   if (currentUpdatedAt && !expectedUpdatedAt) {
+    appendConflictBackupSafely_(data, expectedUpdatedAt, currentUpdatedAt, clientId);
     appendSyncHistory_('conflict', expectedUpdatedAt, currentUpdatedAt, '', data, clientId);
     throw new Error('CONFLICT: 保存元の版情報がありません。再読み込みして内容を確認してください。');
   }
   if (expectedUpdatedAt && currentUpdatedAt && expectedUpdatedAt !== currentUpdatedAt) {
+    appendConflictBackupSafely_(data, expectedUpdatedAt, currentUpdatedAt, clientId);
     appendSyncHistory_('conflict', expectedUpdatedAt, currentUpdatedAt, '', data, clientId);
     throw new Error('CONFLICT: 他の端末で先に更新されています。再読み込みして内容を確認してください。');
   }
@@ -220,6 +223,43 @@ function appendSyncHistory_(result, expectedRevision, beforeRevision, afterRevis
     clientId || ''
   ]);
   if (sheet.getLastRow() > 5001) sheet.deleteRows(2, sheet.getLastRow() - 5001);
+}
+
+function appendConflictBackupSafely_(data, expectedRevision, serverRevision, clientId) {
+  try {
+    appendConflictBackup_(data, expectedRevision, serverRevision, clientId);
+  } catch (error) {
+    console.error('Conflict backup write failed: ' + error.message);
+  }
+}
+
+function appendConflictBackup_(data, expectedRevision, serverRevision, clientId) {
+  const sheet = targetSpreadsheet_().getSheetByName(SHEETS.conflictBackups.name);
+  if (!sheet) throw new Error('ConflictBackupsシートがありません。');
+
+  const backupId = 'conflict_' + Date.now() + '_' + Utilities.getUuid().slice(0, 8);
+  const at = new Date().toISOString();
+  const json = JSON.stringify(normalizeData_(data || {}));
+  const chunkSize = 30000;
+  const chunkCount = Math.max(1, Math.ceil(json.length / chunkSize));
+
+  for (let index = 0; index < chunkCount; index += 1) {
+    sheet.appendRow([
+      backupId,
+      at,
+      ACTIVE_SYSTEM_KEY,
+      clientId || '',
+      expectedRevision || '',
+      serverRevision || '',
+      index + 1,
+      chunkCount,
+      json.slice(index * chunkSize, (index + 1) * chunkSize)
+    ]);
+  }
+
+  if (sheet.getLastRow() > 2001) {
+    sheet.deleteRows(2, sheet.getLastRow() - 2001);
+  }
 }
 
 function readData_() {
