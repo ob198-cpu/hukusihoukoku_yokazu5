@@ -3832,6 +3832,7 @@ body.modal-open {
               pruneConfirmedRecoverySnapshots();
               cloudConflictWaiting = false;
               setCloudStatus("シート保存済み（サーバー読戻し確認済み）", "ok");
+              finishInitialCloudLoading();
               return;
             }
             continue;
@@ -3893,7 +3894,7 @@ body.modal-open {
     }
 
 
-    function setInitialCloudLoading(active) {
+    function setInitialCloudLoading(active, message = "スプレッドシートの最新データを確認しています。") {
       const main = document.querySelector("main");
       if (!main) return;
       let notice = document.querySelector("#cloud-initial-loading");
@@ -3902,10 +3903,10 @@ body.modal-open {
         notice.id = "cloud-initial-loading";
         notice.setAttribute("role", "status");
         notice.setAttribute("aria-live", "polite");
-        notice.textContent = "スプレッドシートの最新データを確認しています。";
         notice.style.cssText = "max-width:760px;margin:48px auto;padding:24px;border:1px solid #cbd5e1;background:#fff;color:#17324d;text-align:center;font-weight:700";
         main.parentNode.insertBefore(notice, main);
       }
+      if (active) notice.textContent = message;
       notice.hidden = !active;
       main.hidden = active;
       main.setAttribute("aria-busy", active ? "true" : "false");
@@ -3955,17 +3956,27 @@ body.modal-open {
 
         cloudSyncReady = true;
         clearTimeout(cloudRetryTimer);
-        if (readPendingCloudWrite()) await flushCloudSave();
         startCloudRefresh();
+        if (readPendingCloudWrite()) await flushCloudSave();
+        if (readPendingCloudWrite()) {
+          setInitialCloudLoading(
+            true,
+            "未送信データをスプレッドシートへ保存しています。画面を閉じずにお待ちください。"
+          );
+          return;
+        }
+        finishInitialCloudLoading();
       } catch (error) {
         cloudSyncReady = false;
         setCloudStatus(
           "シート接続待ち・入力はこの端末に保全します。",
           "error"
         );
+        setInitialCloudLoading(
+          true,
+          "スプレッドシートに接続できません。再接続しています。画面を閉じずにお待ちください。"
+        );
         scheduleCloudReconnect();
-      } finally {
-        finishInitialCloudLoading();
       }
     }
 
