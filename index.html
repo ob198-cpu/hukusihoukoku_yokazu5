@@ -3102,11 +3102,32 @@ body.modal-open {
     </div>
   </div>
 
+  <script src="sync-engine.js?v=20260729"></script>
   <script>
     const STORAGE_KEY = "sns_operation_report_yokazu5_v4";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
     const CLOUD_SYSTEM_KEY = "yokazu5";
     const CLOUD_CLIENT_ID_KEY = STORAGE_KEY + ":cloud_client_id";
+    const CLOUD_BASE_KEY = STORAGE_KEY + ":cloud_base_v2";
+    const CLOUD_PENDING_PREFIX = STORAGE_KEY + ":cloud_pending_v2";
+    const CLOUD_LEGACY_PENDING_KEY = CLOUD_PENDING_PREFIX;
+    const CLOUD_TAB_ID_KEY = STORAGE_KEY + ":cloud_tab_id_v1";
+    const CLOUD_TAB_ID = (() => {
+      try {
+        const existing = window.sessionStorage.getItem(CLOUD_TAB_ID_KEY);
+        if (existing) return existing;
+        const created = "tab_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        window.sessionStorage.setItem(CLOUD_TAB_ID_KEY, created);
+        return created;
+      } catch {
+        return "tab_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+      }
+    })();
+    const CLOUD_PENDING_KEY = CLOUD_PENDING_PREFIX + ":" + CLOUD_TAB_ID;
+    const CLOUD_DIRTY_MARKER_KEY = STORAGE_KEY + ":cloud_dirty_v1";
+    const CLOUD_RECOVERY_KEY = STORAGE_KEY + ":recovery_snapshots_v2";
+    const CLOUD_MAX_MERGE_RETRIES = 6;
+    const CLOUD_RETRY_DELAY_MS = 15000;
     const CLOUD_CLIENT_ID = localStorage.getItem(CLOUD_CLIENT_ID_KEY) || ("client_" + Date.now() + "_" + Math.random().toString(36).slice(2));
     localStorage.setItem(CLOUD_CLIENT_ID_KEY, CLOUD_CLIENT_ID);
     const businesses = ["自事業所"];
@@ -3136,8 +3157,12 @@ body.modal-open {
     let followerTableMode = "week";
     let cloudSyncReady = false;
     let cloudSaveTimer = null;
-    let cloudSaveChain = Promise.resolve();
+    let cloudRetryTimer = null;
+    let cloudRefreshTimer = null;
+    let cloudSyncInFlight = false;
     let cloudRevision = "";
+    let cloudBaseData = null;
+    let volatilePendingCloudWrite = null;
 
     const $ = selector => document.querySelector(selector);
     const $$ = selector => Array.from(document.querySelectorAll(selector));
@@ -3437,25 +3462,167 @@ body.modal-open {
 
     function loadData() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        const data = normalizeData({});
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        return data;
-      }
+      if (!raw) return normalizeData({ accounts: defaultAccounts() });
       try {
-        const loaded = normalizeData(JSON.parse(raw));
-        saveData(loaded);
-        return loaded;
+        return normalizeData(JSON.parse(raw));
       } catch {
-        const data = normalizeData({});
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        return data;
+        return normalizeData({ accounts: defaultAccounts() });
       }
     }
 
-    function saveData(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      if (cloudSyncReady) scheduleCloudSave(data);
+    function readLocalJson(key, fallback = null) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function writeLocalJson(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function saveRecoverySnapshot(reason, snapshot) {
+      if (!snapshot) return;
+      const entries = readLocalJson(CLOUD_RECOVERY_KEY, []);
+      const next = [{
+        id: uid(),
+        at: new Date().toISOString(),
+        reason: reason,
+        data: normalizeData(cloneRecord(snapshot))
+      }, ...(Array.isArray(entries) ? entries : [])].slice(0, 3);
+      writeLocalJson(CLOUD_RECOVERY_KEY, next);
+    }
+
+    function readPendingCloudWrite() {
+      if (volatilePendingCloudWrite?.id && volatilePendingCloudWrite?.data) {
+        return volatilePendingCloudWrite;
+      }
+      const current = readLocalJson(CLOUD_PENDING_KEY, null);
+      if (current?.id && current?.data) {
+        return { ...current, storageKey: CLOUD_PENDING_KEY };
+      }
+      const legacy = readLocalJson(CLOUD_LEGACY_PENDING_KEY, null);
+      if (legacy?.id && legacy?.data) {
+        return { ...legacy, storageKey: CLOUD_LEGACY_PENDING_KEY };
+      }
+      const dirty = readLocalJson(CLOUD_DIRTY_MARKER_KEY, null);
+      const primary = readLocalJson(STORAGE_KEY, null);
+      return dirty?.id && primary
+        ? {
+            id: dirty.id,
+            at: dirty.at || "",
+            reason: "dirty-primary-recovery",
+            baseRevision: dirty.baseRevision || "",
+            data: normalizeData(primary),
+            storageKey: CLOUD_DIRTY_MARKER_KEY
+          }
+        : null;
+    }
+
+    function writePendingCloudWrite(snapshot, reason = "local-change") {
+      const pending = {
+        id: uid(),
+        at: new Date().toISOString(),
+        reason: reason,
+        baseRevision: cloudRevision || "",
+        data: normalizeData(cloneRecord(snapshot)),
+        storageKey: CLOUD_PENDING_KEY
+      };
+      volatilePendingCloudWrite = pending;
+      pending.dirtyStored = writeLocalJson(CLOUD_DIRTY_MARKER_KEY, {
+        id: pending.id,
+        at: pending.at,
+        baseRevision: pending.baseRevision
+      });
+      const stored = writeLocalJson(CLOUD_PENDING_KEY, pending);
+      pending.stored = stored;
+      if (stored && CLOUD_PENDING_KEY !== CLOUD_LEGACY_PENDING_KEY) {
+        const legacy = readLocalJson(CLOUD_LEGACY_PENDING_KEY, null);
+        if (legacy?.id && legacy.id !== pending.id) {
+          try {
+            localStorage.removeItem(CLOUD_LEGACY_PENDING_KEY);
+          } catch {
+            // The current tab-specific pending copy remains available.
+          }
+        }
+      }
+      if (!stored) {
+        setCloudStatus("未保存データの端末内退避に失敗しました。管理者へ連絡してください。", "error");
+      }
+      return pending;
+    }
+
+    function clearPendingCloudWrite(expectedId) {
+      if (!expectedId || volatilePendingCloudWrite?.id === expectedId) {
+        volatilePendingCloudWrite = null;
+      }
+      [CLOUD_PENDING_KEY, CLOUD_LEGACY_PENDING_KEY].forEach(key => {
+        const stored = readLocalJson(key, null);
+        if (!stored || !expectedId || stored.id === expectedId) {
+          try {
+            localStorage.removeItem(key);
+          } catch {
+            // A confirmed server save is authoritative even if local cleanup fails.
+          }
+        }
+      });
+      const dirty = readLocalJson(CLOUD_DIRTY_MARKER_KEY, null);
+      if (!dirty || !expectedId || dirty.id === expectedId) {
+        try {
+          localStorage.removeItem(CLOUD_DIRTY_MARKER_KEY);
+        } catch {
+          // A stale marker only causes a safe merge on the next load.
+        }
+      }
+    }
+
+    function removeLegacyPendingCloudWrite(expectedId) {
+      const stored = readLocalJson(CLOUD_LEGACY_PENDING_KEY, null);
+      if (stored && stored.id === expectedId) {
+        try {
+          localStorage.removeItem(CLOUD_LEGACY_PENDING_KEY);
+        } catch {
+          // It can be retried after reload without losing data.
+        }
+      }
+    }
+
+    function readStoredCloudBase() {
+      const stored = readLocalJson(CLOUD_BASE_KEY, null);
+      return stored && stored.data ? stored : null;
+    }
+
+    function persistCloudBase(snapshot, revision) {
+      cloudBaseData = normalizeData(cloneRecord(snapshot || {}));
+      cloudRevision = revision || "";
+      writeLocalJson(CLOUD_BASE_KEY, {
+        revision: cloudRevision,
+        at: new Date().toISOString(),
+        data: cloudBaseData
+      });
+    }
+
+    function saveData(nextData) {
+      const snapshot = normalizeData(cloneRecord(nextData));
+      const primaryStored = writeLocalJson(STORAGE_KEY, snapshot);
+      if (!cloudEnabled()) return;
+      const pending = writePendingCloudWrite(snapshot);
+      setCloudStatus(
+        !primaryStored && !pending.stored
+          ? "端末容量不足です。画面を閉じず、シート保存完了を待ってください。"
+          : cloudSyncReady
+            ? "この端末に退避済み・シート保存待ち"
+            : "この端末に退避済み・シート接続待ち",
+        !primaryStored && !pending.stored ? "error" : "syncing"
+      );
+      if (cloudSyncReady) scheduleCloudSave();
     }
 
     function cloudEnabled() {
@@ -3483,8 +3650,17 @@ body.modal-open {
       } catch {
         throw new Error("Apps Scriptの初回承認または公開設定を確認してください。");
       }
-      if (!response.ok || !result.ok) throw new Error(result.error || "シート保存に失敗しました。");
-      return result.data || {};
+      if (!response.ok || !result.ok) {
+        const error = new Error(result.error || "シート保存に失敗しました。");
+        error.code = String(result.error || "").includes("CONFLICT") ? "CONFLICT" : "SAVE_ERROR";
+        error.responseData = result.data || null;
+        throw error;
+      }
+      const responseData = result.data || {};
+      if (responseData.systemKey && String(responseData.systemKey) !== CLOUD_SYSTEM_KEY) {
+        throw new Error("保存先の確認に失敗しました。別事業所への保存を防止しました。");
+      }
+      return responseData;
     }
 
     function cloudDataHasRows(snapshot) {
@@ -3492,33 +3668,115 @@ body.modal-open {
         .some(key => Array.isArray(snapshot?.[key]) && snapshot[key].length);
     }
 
-    function scheduleCloudSave(snapshot) {
+    function scheduleCloudSave(delay = 500) {
       if (!cloudEnabled()) return;
-      const payload = normalizeData(cloneRecord(snapshot));
       clearTimeout(cloudSaveTimer);
-      setCloudStatus("シート保存中", "syncing");
       cloudSaveTimer = setTimeout(() => {
-        cloudSaveChain = cloudSaveChain.then(() => saveCloudData(payload));
-      }, 500);
+        flushCloudSave();
+      }, delay);
     }
 
-    async function saveCloudData(snapshot) {
-      try {
-        const result = await cloudRequest("saveData", {
-          data: snapshot,
-          expectedUpdatedAt: cloudRevision,
-          clientId: CLOUD_CLIENT_ID
-        });
-        cloudRevision = result.updatedAt || cloudRevision;
-        setCloudStatus("シート保存済み（サーバー確認済み）", "ok");
-      } catch (error) {
-        if (String(error.message || error).includes("CONFLICT")) {
-          cloudSyncReady = false;
-          setCloudStatus("他の端末で更新されています。画面を再読み込みして確認してください。", "error");
-          return;
-        }
-        setCloudStatus("シート保存エラー: " + error.message, "error");
+    function applySyncedData(snapshot, shouldRender = false) {
+      data = normalizeData(cloneRecord(snapshot || {}));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (shouldRender) {
+        setupForms();
+        renderAll();
       }
+    }
+
+    function mergeCloudData(baseSnapshot, localSnapshot, remoteSnapshot) {
+      if (!window.SnsSyncMerge) throw new Error("同期統合処理を読み込めませんでした。");
+      return window.SnsSyncMerge.mergeSnapshots(
+        normalizeData(cloneRecord(baseSnapshot || {})),
+        normalizeData(cloneRecord(localSnapshot || {})),
+        normalizeData(cloneRecord(remoteSnapshot || {})),
+        { now: new Date().toISOString(), id: uid() }
+      );
+    }
+
+    async function flushCloudSave() {
+      if (!cloudEnabled() || cloudSyncInFlight) return;
+      if (!cloudSyncReady) {
+        scheduleCloudReconnect();
+        return;
+      }
+
+      cloudSyncInFlight = true;
+      try {
+        for (let attempt = 0; attempt < CLOUD_MAX_MERGE_RETRIES; attempt += 1) {
+          const pending = readPendingCloudWrite();
+          if (!pending) {
+            setCloudStatus("シート保存済み（サーバー確認済み）", "ok");
+            return;
+          }
+
+          setCloudStatus(
+            attempt === 0 ? "シート保存中" : "競合した入力を自動統合して再保存中",
+            "syncing"
+          );
+
+          try {
+            const result = await cloudRequest("saveData", {
+              data: pending.data,
+              expectedUpdatedAt: cloudRevision,
+              clientId: CLOUD_CLIENT_ID
+            });
+            if (!result.data) throw new Error("サーバーから保存後の読戻しデータを取得できませんでした。");
+            const confirmed = normalizeData(result.data);
+            const expected = normalizeData(pending.data);
+            if (!window.SnsSyncMerge.equal(confirmed, expected)) {
+              throw new Error("サーバーの読戻し内容が送信内容と一致しません。");
+            }
+            persistCloudBase(confirmed, result.updatedAt || cloudRevision);
+
+            const latestPending = readPendingCloudWrite();
+            if (latestPending && latestPending.id === pending.id) {
+              clearPendingCloudWrite(pending.id);
+              applySyncedData(confirmed, false);
+              setCloudStatus("シート保存済み（サーバー読戻し確認済み）", "ok");
+              return;
+            }
+            continue;
+          } catch (error) {
+            if (error.code !== "CONFLICT" && !String(error.message || error).includes("CONFLICT")) {
+              throw error;
+            }
+
+            const conflictPending = readPendingCloudWrite() || pending;
+            saveRecoverySnapshot("競合発生時の未保存入力", conflictPending.data);
+            const remoteResult = await cloudRequest("loadData");
+            const remoteData = normalizeData(remoteResult.data || {});
+            const latestPending = readPendingCloudWrite() || conflictPending;
+            const storedBase = readStoredCloudBase();
+            const baseData = cloudBaseData || (storedBase && storedBase.data) || {};
+            const merged = mergeCloudData(baseData, latestPending.data, remoteData);
+
+            persistCloudBase(remoteData, remoteResult.updatedAt || "");
+            applySyncedData(merged.data, true);
+            writePendingCloudWrite(merged.data, "automatic-conflict-merge");
+          }
+        }
+
+        setCloudStatus("更新が集中しています。入力は端末内に保全し、自動再試行します。", "syncing");
+      } catch (error) {
+        const pending = readPendingCloudWrite();
+        if (pending) saveRecoverySnapshot("通信・保存エラー時の未保存入力", pending.data);
+        setCloudStatus(
+          "シート未保存・入力はこの端末に保全済みです。接続回復後に自動再試行します。",
+          "error"
+        );
+      } finally {
+        cloudSyncInFlight = false;
+        if (readPendingCloudWrite()) scheduleCloudSave(CLOUD_RETRY_DELAY_MS);
+      }
+    }
+
+    function scheduleCloudReconnect() {
+      clearTimeout(cloudRetryTimer);
+      cloudRetryTimer = setTimeout(() => {
+        initCloudSync();
+      }, CLOUD_RETRY_DELAY_MS);
     }
 
     async function initCloudSync() {
@@ -3530,19 +3788,79 @@ body.modal-open {
       try {
         cloudSyncReady = false;
         const result = await cloudRequest("loadData");
-        cloudRevision = result.updatedAt || "";
-        const cloudData = normalizeData(result.data || {});
-        // 本番ではクラウド側を常に正とし、空の台帳へローカルのサンプルを自動送信しない。
-        data = cloudData;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        setupForms();
-        renderAll();
-        setCloudStatus("シート読込済み", "ok");
+        const remoteData = normalizeData(result.data || {});
+        const remoteRevision = result.updatedAt || "";
+        const pending = readPendingCloudWrite();
+
+        if (pending) {
+          const storedBase = readStoredCloudBase();
+          const baseData = (storedBase && storedBase.data) || cloudBaseData || {};
+          saveRecoverySnapshot("起動時に検出した未保存入力", pending.data);
+          const merged = mergeCloudData(baseData, pending.data, remoteData);
+          persistCloudBase(remoteData, remoteRevision);
+          applySyncedData(merged.data, true);
+          const migrated = writePendingCloudWrite(merged.data, "startup-pending-merge");
+          if (migrated.stored && pending.storageKey === CLOUD_LEGACY_PENDING_KEY) {
+            removeLegacyPendingCloudWrite(pending.id);
+          }
+          setCloudStatus("未保存入力を復元し、シートへ保存中", "syncing");
+        } else {
+          if (cloudDataHasRows(data) && !window.sessionStorage.getItem(STORAGE_KEY + ":startup_backup")) {
+            saveRecoverySnapshot("クラウド読込前の端末データ", data);
+            window.sessionStorage.setItem(STORAGE_KEY + ":startup_backup", "1");
+          }
+          persistCloudBase(remoteData, remoteRevision);
+          applySyncedData(remoteData, true);
+          setCloudStatus("シート読込済み", "ok");
+        }
+
         cloudSyncReady = true;
+        clearTimeout(cloudRetryTimer);
+        if (readPendingCloudWrite()) scheduleCloudSave(0);
+        startCloudRefresh();
       } catch (error) {
-        cloudSyncReady = true;
-        setCloudStatus("シート接続エラー: " + error.message, "error");
+        cloudSyncReady = false;
+        setCloudStatus(
+          "シート接続待ち・入力はこの端末に保全します。",
+          "error"
+        );
+        scheduleCloudReconnect();
       }
+    }
+
+    function hasActiveFormInput() {
+      const active = document.activeElement;
+      return Boolean(active && ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName));
+    }
+
+    async function refreshCloudIfIdle() {
+      if (!cloudSyncReady || cloudSyncInFlight || document.hidden) return;
+      if (readPendingCloudWrite()) {
+        scheduleCloudSave(0);
+        return;
+      }
+      if (hasActiveFormInput()) return;
+
+      try {
+        const result = await cloudRequest("loadData");
+        if (!result.updatedAt || result.updatedAt === cloudRevision) return;
+        if (hasActiveFormInput() || readPendingCloudWrite()) {
+          if (readPendingCloudWrite()) scheduleCloudSave(0);
+          return;
+        }
+        const remoteData = normalizeData(result.data || {});
+        saveRecoverySnapshot("他端末更新反映前", data);
+        persistCloudBase(remoteData, result.updatedAt);
+        applySyncedData(remoteData, true);
+        setCloudStatus("他端末の更新を反映済み", "ok");
+      } catch {
+        // The next periodic refresh or online event retries without disturbing input.
+      }
+    }
+
+    function startCloudRefresh() {
+      clearInterval(cloudRefreshTimer);
+      cloudRefreshTimer = setInterval(refreshCloudIfIdle, 30000);
     }
 
     let data = loadData();
@@ -3711,15 +4029,14 @@ body.modal-open {
         rowsByBusiness.get(business).push(item);
       });
       return Array.from(rowsByBusiness.values()).flatMap(businessRows => {
-        const snsRows = businessRows.filter(item => snsTypes.includes(item.sns));
-        if (!snsRows.length) return businessRows.filter(item => !item.sns);
-        const firstSnsDate = snsRows.reduce((earliest, item) =>
-          !earliest || item.date < earliest ? item.date : earliest, ""
+        const business = businessRows[0]?.business || businesses[0];
+        const hasSnsHistory = data.followers.some(item =>
+          (item.business || businesses[0]) === business &&
+          snsTypes.includes(item.sns)
         );
-        return [
-          ...businessRows.filter(item => !item.sns && item.date < firstSnsDate),
-          ...snsRows
-        ];
+        const snsRows = businessRows.filter(item => snsTypes.includes(item.sns));
+        // SNS別管理へ移行済みなら、旧一括入力を同じ推移に混在させない。
+        return hasSnsHistory ? snsRows : businessRows.filter(item => !item.sns);
       });
     }
 
@@ -6104,6 +6421,44 @@ body.modal-open {
         '"': "&quot;"
       }[char]));
     }
+
+    window.addEventListener("online", () => {
+      if (cloudSyncReady) scheduleCloudSave(0);
+      else initCloudSync();
+    });
+
+    window.addEventListener("beforeunload", event => {
+      if (!readPendingCloudWrite()) return;
+      event.preventDefault();
+      event.returnValue = "";
+    });
+
+    window.addEventListener("storage", event => {
+      if (
+        event.key === STORAGE_KEY
+        && event.newValue
+        && !hasActiveFormInput()
+        && !readPendingCloudWrite()
+      ) {
+        try {
+          applySyncedData(JSON.parse(event.newValue), true);
+        } catch {
+          // Ignore an incomplete cross-tab storage event and keep the current view.
+        }
+      }
+      if (
+        event.key
+        && event.key.startsWith(CLOUD_PENDING_PREFIX + ":")
+        && event.key !== CLOUD_PENDING_KEY
+        && !readPendingCloudWrite()
+      ) {
+        refreshCloudIfIdle();
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshCloudIfIdle();
+    });
 
     setupForms();
     renderAll();

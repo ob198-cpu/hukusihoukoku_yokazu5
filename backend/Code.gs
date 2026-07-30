@@ -45,7 +45,11 @@ function doPost(e) {
     recoverPendingSave_();
     ensureAllSheets_();
     const action = request.action || '';
-    if (action === 'loadData') return json_({ ok: true, data: { data: readData_(), updatedAt: readUpdatedAt_() } });
+    if (action === 'loadData') return json_({ ok: true, data: {
+      data: readData_(),
+      updatedAt: readUpdatedAt_(),
+      systemKey: ACTIVE_SYSTEM_KEY
+    } });
     if (action === 'saveData') {
       return json_({ ok: true, data: saveData_(request.data || {}, request.expectedUpdatedAt || '', request.clientId || '') });
     }
@@ -79,7 +83,7 @@ function saveData_(data, expectedUpdatedAt, clientId) {
   } catch (historyError) {
     console.error('SyncHistory write failed: ' + historyError.message);
   }
-  return { data: readData_(), updatedAt: updatedAt };
+  return { data: readData_(), updatedAt: updatedAt, systemKey: ACTIVE_SYSTEM_KEY };
 }
 
 function commitDataSafely_(data, updatedAt) {
