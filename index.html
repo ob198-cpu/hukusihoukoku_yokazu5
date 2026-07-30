@@ -3165,6 +3165,7 @@ body.modal-open {
     let cloudBaseData = null;
     let volatilePendingCloudWrite = null;
     let cloudConflictWaiting = false;
+    let cloudInitialLoadPending = true;
 
     const $ = selector => document.querySelector(selector);
     const $$ = selector => Array.from(document.querySelectorAll(selector));
@@ -3891,8 +3892,34 @@ body.modal-open {
       }, CLOUD_RETRY_DELAY_MS);
     }
 
+
+    function setInitialCloudLoading(active) {
+      const main = document.querySelector("main");
+      if (!main) return;
+      let notice = document.querySelector("#cloud-initial-loading");
+      if (!notice) {
+        notice = document.createElement("div");
+        notice.id = "cloud-initial-loading";
+        notice.setAttribute("role", "status");
+        notice.setAttribute("aria-live", "polite");
+        notice.textContent = "スプレッドシートの最新データを確認しています。";
+        notice.style.cssText = "max-width:760px;margin:48px auto;padding:24px;border:1px solid #cbd5e1;background:#fff;color:#17324d;text-align:center;font-weight:700";
+        main.parentNode.insertBefore(notice, main);
+      }
+      notice.hidden = !active;
+      main.hidden = active;
+      main.setAttribute("aria-busy", active ? "true" : "false");
+    }
+
+    function finishInitialCloudLoading() {
+      if (!cloudInitialLoadPending) return;
+      cloudInitialLoadPending = false;
+      setInitialCloudLoading(false);
+    }
+
     async function initCloudSync() {
       if (!cloudEnabled()) {
+        finishInitialCloudLoading();
         setCloudStatus("ローカル保存中", "error");
         return;
       }
@@ -3928,7 +3955,7 @@ body.modal-open {
 
         cloudSyncReady = true;
         clearTimeout(cloudRetryTimer);
-        if (readPendingCloudWrite()) scheduleCloudSave(0);
+        if (readPendingCloudWrite()) await flushCloudSave();
         startCloudRefresh();
       } catch (error) {
         cloudSyncReady = false;
@@ -3937,6 +3964,8 @@ body.modal-open {
           "error"
         );
         scheduleCloudReconnect();
+      } finally {
+        finishInitialCloudLoading();
       }
     }
 
@@ -6574,6 +6603,7 @@ body.modal-open {
 
     setupForms();
     renderAll();
+    setInitialCloudLoading(cloudEnabled());
     initCloudSync();
   </script>
 </body>
