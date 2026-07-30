@@ -12,6 +12,7 @@ const SPREADSHEET_IDS = Object.freeze({
 });
 let ACTIVE_SPREADSHEET_ID = SPREADSHEET_ID;
 let ACTIVE_SYSTEM_KEY = 'yokazu5';
+const BACKEND_BUILD_ID = 'sns-multitenant-20260730-v1';
 const SAVE_TRANSACTION_KEY_PREFIX = 'SNS_SAVE_TRANSACTION_';
 const SHEETS = {
   state: { name: 'State', headers: ['key', 'json', 'updatedAt'] },
@@ -23,6 +24,7 @@ const SHEETS = {
   monitoring: { name: 'Monitoring', headers: ['id', 'userName', 'month', 'visited', 'recordDone', 'meetingRequired', 'meetingDone', 'reportDone', 'mailed', 'returned', 'officeSent', 'billingDone', 'billingSent', 'addOn', 'continueType', 'note', 'operator', 'inputAt', 'updatedAt', 'json'] },
   agencyNotices: { name: 'AgencyNotices', headers: ['id', 'userName', 'month', 'created', 'sent', 'note', 'json'] },
   history: { name: 'History', headers: ['id', 'at', 'action', 'type', 'recordId', 'label', 'beforeJson', 'afterJson'] },
+  historyArchive: { name: 'HistoryArchive', headers: ['id', 'at', 'action', 'type', 'recordId', 'label', 'beforeJson', 'afterJson'] },
   syncHistory: { name: 'SyncHistory', headers: ['at', 'result', 'expectedRevision', 'serverRevisionBefore', 'serverRevisionAfter', 'posts', 'workMetrics', 'followers', 'inquiries', 'lsteps', 'clientId'] },
   conflictBackups: { name: 'ConflictBackups', headers: ['backupId', 'at', 'systemKey', 'clientId', 'expectedRevision', 'serverRevision', 'chunkIndex', 'chunkCount', 'jsonChunk'] }
 };
@@ -31,7 +33,7 @@ function doGet(e) {
   const systemKey = selectSpreadsheet_(e && e.parameter && e.parameter.systemKey);
   recoverPendingSave_();
   ensureAllSheets_();
-  return json_({ ok: true, data: { status: 'ready', systemKey: systemKey, updatedAt: readUpdatedAt_() } });
+  return json_({ ok: true, data: { status: 'ready', systemKey: systemKey, updatedAt: readUpdatedAt_(), backendBuildId: BACKEND_BUILD_ID } });
 }
 
 function doPost(e) {
@@ -48,7 +50,8 @@ function doPost(e) {
     if (action === 'loadData') return json_({ ok: true, data: {
       data: readData_(),
       updatedAt: readUpdatedAt_(),
-      systemKey: ACTIVE_SYSTEM_KEY
+      systemKey: ACTIVE_SYSTEM_KEY,
+      backendBuildId: BACKEND_BUILD_ID
     } });
     if (action === 'saveData') {
       return json_({ ok: true, data: saveData_(request.data || {}, request.expectedUpdatedAt || '', request.clientId || '') });
@@ -76,6 +79,7 @@ function saveData_(data, expectedUpdatedAt, clientId) {
 
   const normalized = normalizeData_(data);
   const updatedAt = new Date().toISOString() + '#' + Utilities.getUuid().slice(0, 8);
+  archiveHistoryBeforeCommit_(normalized.history);
   commitDataSafely_(normalized, updatedAt);
 
   try {
@@ -83,7 +87,7 @@ function saveData_(data, expectedUpdatedAt, clientId) {
   } catch (historyError) {
     console.error('SyncHistory write failed: ' + historyError.message);
   }
-  return { data: readData_(), updatedAt: updatedAt, systemKey: ACTIVE_SYSTEM_KEY };
+  return { data: readData_(), updatedAt: updatedAt, systemKey: ACTIVE_SYSTEM_KEY, backendBuildId: BACKEND_BUILD_ID };
 }
 
 function commitDataSafely_(data, updatedAt) {
@@ -226,7 +230,6 @@ function appendSyncHistory_(result, expectedRevision, beforeRevision, afterRevis
     array_(counts.lsteps).length,
     clientId || ''
   ]);
-  if (sheet.getLastRow() > 5001) sheet.deleteRows(2, sheet.getLastRow() - 5001);
 }
 
 function appendConflictBackupSafely_(data, expectedRevision, serverRevision, clientId) {
@@ -261,9 +264,6 @@ function appendConflictBackup_(data, expectedRevision, serverRevision, clientId)
     ]);
   }
 
-  if (sheet.getLastRow() > 2001) {
-    sheet.deleteRows(2, sheet.getLastRow() - 2001);
-  }
 }
 
 function readData_() {
@@ -396,6 +396,34 @@ function historyRows_(history) {
   });
 }
 
+function archiveHistoryBeforeCommit_(incomingHistory) {
+  const activeHistory = readHistory_();
+  const incoming = array_(incomingHistory);
+  const activeIncoming = incoming.slice(0, 1000);
+  const activeIds = {};
+  activeIncoming.forEach(function(item) {
+    if (item && item.id) activeIds[item.id] = true;
+  });
+  const candidates = incoming.slice(1000).concat(activeHistory.filter(function(item) {
+    return item && item.id && !activeIds[item.id];
+  }));
+  if (!candidates.length) return;
+
+  const sheet = targetSpreadsheet_().getSheetByName(SHEETS.historyArchive.name);
+  const unique = {};
+  const rows = [];
+  candidates.forEach(function(item) {
+    const id = item && item.id;
+    if (!id || unique[id]) return;
+    unique[id] = true;
+    const found = sheet.createTextFinder(id).matchEntireCell(true).findNext();
+    if (!found) rows.push(historyRows_([item])[0]);
+  });
+  if (rows.length) {
+    sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, SHEETS.historyArchive.headers.length).setValues(rows);
+  }
+}
+
 function readHistory_() {
   return readRawRows_(SHEETS.history).map(function(row) {
     return {
@@ -422,7 +450,7 @@ function normalizeData_(data) {
     lsteps: array_(data.lsteps),
     monitoring: array_(data.monitoring),
     agencyNotices: array_(data.agencyNotices),
-    history: array_(data.history).slice(0, 1000)
+    history: array_(data.history)
   };
 }
 

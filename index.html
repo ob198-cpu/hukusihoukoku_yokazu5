@@ -3102,11 +3102,12 @@ body.modal-open {
     </div>
   </div>
 
-  <script src="sync-engine.js?v=20260729"></script>
+  <script src="sync-engine.js?v=20260730-conflict-review"></script>
   <script>
     const STORAGE_KEY = "sns_operation_report_yokazu5_v4";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
     const CLOUD_SYSTEM_KEY = "yokazu5";
+    const EXPECTED_BACKEND_BUILD_ID = "sns-multitenant-20260730-v1";
     const CLOUD_CLIENT_ID_KEY = STORAGE_KEY + ":cloud_client_id";
     const CLOUD_BASE_KEY = STORAGE_KEY + ":cloud_base_v2";
     const CLOUD_PENDING_PREFIX = STORAGE_KEY + ":cloud_pending_v2";
@@ -3163,6 +3164,7 @@ body.modal-open {
     let cloudRevision = "";
     let cloudBaseData = null;
     let volatilePendingCloudWrite = null;
+    let cloudConflictWaiting = false;
 
     const $ = selector => document.querySelector(selector);
     const $$ = selector => Array.from(document.querySelectorAll(selector));
@@ -3482,22 +3484,62 @@ body.modal-open {
     function writeLocalJson(key, value) {
       try {
         localStorage.setItem(key, JSON.stringify(value));
+        updateStorageCapacityWarning();
         return true;
       } catch {
+        updateStorageCapacityWarning(true);
         return false;
+      }
+    }
+
+    function localStorageUsageBytes() {
+      let total = 0;
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index) || "";
+        const value = localStorage.getItem(key) || "";
+        total += (key.length + value.length) * 2;
+      }
+      return total;
+    }
+
+    function updateStorageCapacityWarning(force = false) {
+      const status = $("#cloud-status");
+      if (!status) return;
+      let warning = $("#storage-capacity-warning");
+      if (!warning) {
+        warning = document.createElement("div");
+        warning.id = "storage-capacity-warning";
+        warning.className = "cloud-status error no-print";
+        warning.hidden = true;
+        status.insertAdjacentElement("afterend", warning);
+      }
+      const bytes = localStorageUsageBytes();
+      const shouldWarn = force || bytes >= 3.5 * 1024 * 1024;
+      warning.hidden = !shouldWarn;
+      if (shouldWarn) {
+        warning.textContent = `ブラウザ保存の使用量が約${(bytes / 1024 / 1024).toFixed(1)}MBです。シート保存完了を確認し、不要な復旧履歴を整理してください。`;
       }
     }
 
     function saveRecoverySnapshot(reason, snapshot) {
       if (!snapshot) return;
       const entries = readLocalJson(CLOUD_RECOVERY_KEY, []);
+      const snapshotBytes = JSON.stringify(snapshot).length * 2;
+      const retention = snapshotBytes >= 1024 * 1024 ? 1 : snapshotBytes >= 512 * 1024 ? 2 : 3;
       const next = [{
         id: uid(),
         at: new Date().toISOString(),
         reason: reason,
         data: normalizeData(cloneRecord(snapshot))
-      }, ...(Array.isArray(entries) ? entries : [])].slice(0, 3);
+      }, ...(Array.isArray(entries) ? entries : [])].slice(0, retention);
       writeLocalJson(CLOUD_RECOVERY_KEY, next);
+    }
+
+    function pruneConfirmedRecoverySnapshots() {
+      const entries = readLocalJson(CLOUD_RECOVERY_KEY, []);
+      if (Array.isArray(entries) && entries.length > 1) {
+        writeLocalJson(CLOUD_RECOVERY_KEY, entries.slice(0, 1));
+      }
     }
 
     function readPendingCloudWrite() {
@@ -3657,6 +3699,9 @@ body.modal-open {
         throw error;
       }
       const responseData = result.data || {};
+      if (responseData.backendBuildId !== EXPECTED_BACKEND_BUILD_ID) {
+        throw new Error("保存先プログラムの版が一致しません。誤った保存先への書込みを停止しました。");
+      }
       if (responseData.systemKey && String(responseData.systemKey) !== CLOUD_SYSTEM_KEY) {
         throw new Error("保存先の確認に失敗しました。別事業所への保存を防止しました。");
       }
@@ -3695,6 +3740,55 @@ body.modal-open {
       );
     }
 
+    function conflictValueText(value) {
+      if (value == null) return "削除";
+      if (typeof value === "object") {
+        const text = JSON.stringify(value);
+        return text.length > 120 ? text.slice(0, 117) + "..." : text;
+      }
+      return String(value);
+    }
+
+    function requestConflictResolution(conflicts) {
+      return new Promise(resolve => {
+        const existing = $("#cloud-conflict-dialog");
+        if (existing) existing.remove();
+        const overlay = document.createElement("div");
+        overlay.id = "cloud-conflict-dialog";
+        overlay.setAttribute("role", "dialog");
+        overlay.setAttribute("aria-modal", "true");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.55)";
+        const items = conflicts.slice(0, 8).map(conflict => `
+          <li style="margin:0 0 8px">
+            <strong>${escapeHtml(conflict.collection)} / ${escapeHtml(conflict.field || "レコード全体")}</strong><br>
+            この端末: ${escapeHtml(conflictValueText(conflict.localValue))}<br>
+            シート: ${escapeHtml(conflictValueText(conflict.remoteValue))}
+          </li>
+        `).join("");
+        overlay.innerHTML = `
+          <section style="width:min(720px,100%);max-height:85vh;overflow:auto;border-radius:8px;padding:24px;background:#fff;box-shadow:0 24px 60px rgba(0,0,0,.25)">
+            <h2 style="margin:0 0 10px;font-size:22px">同じ項目が別の端末でも変更されています</h2>
+            <p>自動では上書きしません。残す内容を選んでください。選択しない場合、入力はこの端末に保全されます。</p>
+            <ul style="padding-left:22px">${items}</ul>
+            ${conflicts.length > 8 ? `<p>ほか ${conflicts.length - 8}項目</p>` : ""}
+            <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:18px">
+              <button type="button" class="btn" data-conflict-choice="later">あとで確認</button>
+              <button type="button" class="btn" data-conflict-choice="remote">シートの入力を採用</button>
+              <button type="button" class="btn primary" data-conflict-choice="local">この端末の入力を採用</button>
+            </div>
+          </section>
+        `;
+        overlay.addEventListener("click", event => {
+          const button = event.target.closest("[data-conflict-choice]");
+          if (!button) return;
+          const choice = button.dataset.conflictChoice;
+          overlay.remove();
+          resolve(choice === "later" ? "" : choice);
+        });
+        document.body.appendChild(overlay);
+      });
+    }
+
     async function flushCloudSave() {
       if (!cloudEnabled() || cloudSyncInFlight) return;
       if (!cloudSyncReady) {
@@ -3712,7 +3806,7 @@ body.modal-open {
           }
 
           setCloudStatus(
-            attempt === 0 ? "シート保存中" : "競合した入力を自動統合して再保存中",
+            attempt === 0 ? "シート保存中" : "確認した競合内容を再保存中",
             "syncing"
           );
 
@@ -3734,6 +3828,8 @@ body.modal-open {
             if (latestPending && latestPending.id === pending.id) {
               clearPendingCloudWrite(pending.id);
               applySyncedData(confirmed, false);
+              pruneConfirmedRecoverySnapshots();
+              cloudConflictWaiting = false;
               setCloudStatus("シート保存済み（サーバー読戻し確認済み）", "ok");
               return;
             }
@@ -3753,8 +3849,24 @@ body.modal-open {
             const merged = mergeCloudData(baseData, latestPending.data, remoteData);
 
             persistCloudBase(remoteData, remoteResult.updatedAt || "");
-            applySyncedData(merged.data, true);
-            writePendingCloudWrite(merged.data, "automatic-conflict-merge");
+            if (merged.conflicts.length) {
+              cloudConflictWaiting = true;
+              setCloudStatus(`同じ項目に${merged.conflicts.length}件の競合があります。採用する内容を選んでください。`, "error");
+              const choice = await requestConflictResolution(merged.conflicts);
+              if (!choice) return;
+              const resolved = window.SnsSyncMerge.resolveConflicts(
+                merged.data,
+                merged.conflicts,
+                choice,
+                { now: new Date().toISOString(), id: uid() }
+              );
+              cloudConflictWaiting = false;
+              applySyncedData(resolved, true);
+              writePendingCloudWrite(resolved, "user-reviewed-conflict");
+            } else {
+              applySyncedData(merged.data, true);
+              writePendingCloudWrite(merged.data, "non-conflicting-merge");
+            }
           }
         }
 
@@ -3768,7 +3880,7 @@ body.modal-open {
         );
       } finally {
         cloudSyncInFlight = false;
-        if (readPendingCloudWrite()) scheduleCloudSave(CLOUD_RETRY_DELAY_MS);
+        if (readPendingCloudWrite() && !cloudConflictWaiting) scheduleCloudSave(CLOUD_RETRY_DELAY_MS);
       }
     }
 

@@ -87,8 +87,8 @@
       } else if (equal(remoteValue, baseValue)) {
         result[field] = clone(localValue);
       } else {
-        // Both sides changed the same field. Keep the current user's edit in the
-        // main record and retain both values in the audit history.
+        // The temporary merged result keeps the current device value. The caller
+        // must ask the user which value to keep before this result is saved.
         result[field] = clone(localValue);
         conflicts.push(describeConflict(
           collection,
@@ -197,7 +197,48 @@
       );
     });
 
-    if (conflicts.length) {
+    return { data: data, conflicts: conflicts };
+  }
+
+  function findRecordIndex(collection, records, key) {
+    return (records || []).findIndex(function (record, index) {
+      return recordKey(collection, record, index) === key;
+    });
+  }
+
+  function upsertResolvedRecord(collection, records, key, value) {
+    const index = findRecordIndex(collection, records, key);
+    if (value == null) {
+      if (index >= 0) records.splice(index, 1);
+      return;
+    }
+    if (index >= 0) records[index] = clone(value);
+    else records.push(clone(value));
+  }
+
+  function resolveConflicts(mergedSnapshot, conflicts, choice, options) {
+    if (choice !== "local" && choice !== "remote") {
+      throw new Error("競合の採用元を選択してください。");
+    }
+    const data = clone(mergedSnapshot || {});
+    COLLECTIONS.forEach(function (collection) {
+      if (!Array.isArray(data[collection])) data[collection] = [];
+    });
+
+    (conflicts || []).forEach(function (conflict) {
+      const records = data[conflict.collection] || (data[conflict.collection] = []);
+      const chosenValue = choice === "local" ? conflict.localValue : conflict.remoteValue;
+      if (conflict.kind === "same-field-change") {
+        const index = findRecordIndex(conflict.collection, records, conflict.recordKey);
+        if (index < 0) return;
+        if (chosenValue === undefined) delete records[index][conflict.field];
+        else records[index][conflict.field] = clone(chosenValue);
+        return;
+      }
+      upsertResolvedRecord(conflict.collection, records, conflict.recordKey, chosenValue);
+    });
+
+    if ((conflicts || []).length) {
       const now = options && options.now ? options.now : new Date().toISOString();
       const id = options && options.id
         ? options.id
@@ -205,22 +246,23 @@
       data.history.unshift({
         id: id,
         at: now,
-        action: "自動競合統合",
+        action: "競合確認",
         type: "sync",
         recordId: "",
-        label: "競合した入力を自動統合（" + conflicts.length + "項目）",
-        before: { remoteConflicts: clone(conflicts) },
-        after: { localConflicts: clone(conflicts) }
+        label: "競合した入力を確認して" + (choice === "local" ? "この端末" : "スプレッドシート") + "を採用（" + conflicts.length + "項目）",
+        before: { conflicts: clone(conflicts) },
+        after: { choice: choice }
       });
       data.history = data.history.slice(0, 1000);
     }
 
-    return { data: data, conflicts: conflicts };
+    return data;
   }
 
   return {
     COLLECTIONS: COLLECTIONS.slice(),
     equal: equal,
-    mergeSnapshots: mergeSnapshots
+    mergeSnapshots: mergeSnapshots,
+    resolveConflicts: resolveConflicts
   };
 });
