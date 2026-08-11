@@ -426,7 +426,7 @@ textarea { min-height: 90px; resize: vertical; }
 }
 
 .report-slide-details {
-  min-height: 680px;
+  min-height: auto;
   scroll-margin-top: 84px;
 }
 
@@ -959,6 +959,13 @@ textarea { min-height: 90px; resize: vertical; }
   grid-template-columns: 1fr 1fr;
   gap: 24px;
   margin-top: 10px;
+}
+
+.report-subsection-divider {
+  height: 2px;
+  margin: 28px 0 20px;
+  border: 0;
+  background: var(--primary);
 }
 
 .large-outline-box {
@@ -2158,6 +2165,31 @@ tbody tr:nth-child(even) td {
   margin-bottom: 20px;
 }
 
+.impression-trend-section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+}
+
+.impression-trend-section .follower-chart-grid {
+  margin-bottom: 18px;
+}
+
+.summary-overview-table {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.summary-overview-table table {
+  min-width: 900px;
+}
+
+.summary-overview-table th,
+.summary-overview-table td {
+  white-space: nowrap;
+}
+
 .follower-chart-card {
   min-width: 0;
   border: 1px solid var(--border-color);
@@ -2226,6 +2258,16 @@ tbody tr:nth-child(even) td {
 
 .follower-table-panel.active {
   display: block;
+}
+
+.summary-breakdown-table {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.follower-table-panel .summary-breakdown-table table {
+  min-width: 680px;
 }
 
 .follower-table-panel th,
@@ -2339,6 +2381,49 @@ tbody tr:nth-child(even) td {
 @media (max-width: 1100px) {
   .follower-chart-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .summary-range-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-range-controls > * {
+    min-width: 0;
+  }
+
+  .summary-range-controls > .btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .summary-range-controls input[type="date"] {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+
+  .follower-chart-card {
+    padding: 14px 10px;
+  }
+
+  .follower-chart-bars {
+    gap: 5px;
+    padding: 8px 3px 0;
+  }
+
+  .follower-chart-col {
+    min-width: 0;
+  }
+
+  .follower-stacked-bar,
+  .follower-bar {
+    width: min(34px, 100%);
+  }
+
+  .follower-chart-value,
+  .follower-chart-label {
+    font-size: 9px;
   }
 }
 
@@ -2524,6 +2609,11 @@ body.modal-open {
   }
   .report-section-divider {
     display: none !important;
+  }
+  .report-subsection-divider {
+    height: 1px !important;
+    margin: 16px 0 12px !important;
+    background: #000 !important;
   }
   .report-title {
     border-bottom: 1px solid #000 !important;
@@ -2716,7 +2806,11 @@ body.modal-open {
               <div class="mock-post-list" id="youtube-posts"></div>
             </div>
           </div>
+        </section>
 
+        <hr class="report-section-divider" aria-hidden="true">
+
+        <section class="report-slide report-slide-actions">
           <div class="slide2-bottom">
             <div class="large-outline-box">
               <h3>LステップLINE送信通数（<span id="lstep-check-label">〇月〇日</span>チェック）</h3>
@@ -2991,14 +3085,53 @@ body.modal-open {
               <strong id="summary-total-followers">0人</strong>
             </div>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>総インプレッション/再生数</th><th>総フォロワー数</th><th>問い合わせ</th><th>利用者問い合わせ</th><th>職員問い合わせ</th><th>L前週まで送信数</th><th>L今週送信数</th><th>L残通数</th>
-              </tr>
-            </thead>
-            <tbody id="summary-body"></tbody>
-          </table>
+          <section class="impression-trend-section" aria-labelledby="impression-trend-title">
+            <h3 class="summary-section-title" id="impression-trend-title">インプレッション数の推移</h3>
+            <div class="follower-chart-grid">
+              <section class="follower-chart-card">
+                <div class="follower-chart-head">
+                  <h4>月次合計</h4>
+                  <span>SNS別の内訳</span>
+                </div>
+                <div class="follower-chart-legend" id="impression-month-legend"></div>
+                <div class="follower-chart-bars" id="impression-month-chart"></div>
+              </section>
+              <section class="follower-chart-card">
+                <div class="follower-chart-head">
+                  <h4>SNS別時系列</h4>
+                  <span id="impression-series-label">X・週次</span>
+                </div>
+                <div class="follower-sns-switch" id="impression-sns-switch" role="group" aria-label="インプレッション推移に表示するSNS"></div>
+                <div class="follower-chart-bars" id="impression-series-chart"></div>
+              </section>
+            </div>
+            <div class="follower-table-section">
+              <div class="follower-table-switch" role="group" aria-label="インプレッション一覧の表示単位">
+                <button class="follower-table-btn active" type="button" data-impression-table-mode="week">週次一覧</button>
+                <button class="follower-table-btn" type="button" data-impression-table-mode="month">月次一覧</button>
+              </div>
+              <div class="follower-table-panel active" data-impression-table-panel="week">
+                <div class="summary-breakdown-table">
+                  <table><thead><tr><th>週</th><th>SNS</th><th>インプレッション/再生数</th><th>前回比</th><th>増加率</th></tr></thead><tbody id="impression-week-body"></tbody></table>
+                </div>
+              </div>
+              <div class="follower-table-panel" data-impression-table-panel="month">
+                <div class="summary-breakdown-table">
+                  <table><thead><tr><th>月</th><th>SNS</th><th>インプレッション/再生数</th><th>前回比</th><th>増加率</th></tr></thead><tbody id="impression-month-body"></tbody></table>
+                </div>
+              </div>
+            </div>
+          </section>
+          <div class="summary-overview-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>総インプレッション/再生数</th><th>総フォロワー数</th><th>問い合わせ</th><th>利用者問い合わせ</th><th>職員問い合わせ</th><th>L前週まで送信数</th><th>L今週送信数</th><th>L残通数</th>
+                </tr>
+              </thead>
+              <tbody id="summary-body"></tbody>
+            </table>
+          </div>
         </div>
 
         <div class="summary-panel" data-summary-panel="followers">
@@ -3154,6 +3287,8 @@ body.modal-open {
     let summaryBreakdownMode = "week";
     let workBreakdownMode = "day";
     let workDisplayMode = "list";
+    let impressionTrendSns = "X";
+    let impressionTableMode = "week";
     let followerTrendSns = "X";
     let followerTableMode = "week";
     let cloudSyncReady = false;
@@ -3892,7 +4027,6 @@ body.modal-open {
         initCloudSync();
       }, CLOUD_RETRY_DELAY_MS);
     }
-
 
     function setInitialCloudLoading(active, message = "スプレッドシートの最新データを確認しています。") {
       const main = document.querySelector("main");
@@ -5220,6 +5354,7 @@ body.modal-open {
           <td><span class="pill ${lstep.remaining <= 20 ? "danger" : "ok"}">${lstep.remaining}</span></td>
         </tr>`;
       }).join("");
+      renderImpressionSummary(selectedBusiness);
       renderFollowerSummary(selectedBusiness);
       renderSummaryWorkMetrics();
       const periodLabel = summaryBreakdownLabels()[summaryBreakdownMode];
@@ -5254,6 +5389,141 @@ body.modal-open {
       const rows = data.workMetrics.filter(item => isInSummaryRange(item.date));
       $("#summary-work-count").textContent = `${rows.length}件`;
       $("#summary-work-metrics").innerHTML = workMetricChartForRowsHtml(rows, "day");
+    }
+
+    function impressionSnsColor(sns) {
+      return {
+        X: "#111111",
+        Instagram: "#e1306c",
+        TikTok: "#7a7a7a",
+        Threads: "#ffffff",
+        YouTube: "#ff0000"
+      }[sns] || "#64748b";
+    }
+
+    function impressionSnsBarStyle(sns) {
+      const outline = sns === "Threads" ? "box-shadow:inset 0 0 0 1px #94a3b8;" : "";
+      return `background:${impressionSnsColor(sns)};${outline}`;
+    }
+
+    function impressionTrendRows(mode, selectedBusiness = "合計") {
+      const grouped = new Map();
+      data.posts.filter(post =>
+        (selectedBusiness === "合計" || post.business === selectedBusiness) &&
+        snsTypes.includes(post.sns) &&
+        isThroughToday(post.date) &&
+        isInSummaryRange(post.date)
+      ).forEach(post => {
+        const period = summaryPeriodInfo(post.date, mode);
+        const key = `${period.key}_${post.sns}`;
+        const current = grouped.get(key) || {
+          period: period.key,
+          label: period.label,
+          sns: post.sns,
+          impressions: 0
+        };
+        current.impressions += Number(post.impressions || 0);
+        grouped.set(key, current);
+      });
+      const chronological = Array.from(grouped.values()).sort((a, b) =>
+        snsTypes.indexOf(a.sns) - snsTypes.indexOf(b.sns) || a.period.localeCompare(b.period)
+      );
+      const previousBySns = new Map();
+      chronological.forEach(row => {
+        const previous = previousBySns.get(row.sns);
+        row.previous = previous?.impressions || 0;
+        row.diff = previous ? row.impressions - previous.impressions : null;
+        previousBySns.set(row.sns, row);
+      });
+      return chronological.sort((a, b) =>
+        a.period.localeCompare(b.period) || snsTypes.indexOf(a.sns) - snsTypes.indexOf(b.sns)
+      );
+    }
+
+    function latestImpressionPeriodRows(rows, limit) {
+      const periods = Array.from(new Set(rows.map(row => row.period))).sort().slice(-limit);
+      const periodSet = new Set(periods);
+      return rows.filter(row => periodSet.has(row.period)).sort((a, b) => {
+        const periodCompare = b.period.localeCompare(a.period);
+        if (periodCompare) return periodCompare;
+        return snsTypes.indexOf(a.sns) - snsTypes.indexOf(b.sns);
+      });
+    }
+
+    function impressionTrendTableRows(rows) {
+      return rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.label)}</td>
+          <td>${escapeHtml(row.sns)}</td>
+          <td>${row.impressions.toLocaleString()}</td>
+          <td>${followerDiffText(row.diff)}</td>
+          <td>${followerRateText(row.diff, row.previous)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function impressionMonthlyChartHtml(selectedBusiness) {
+      const rows = impressionTrendRows("month", selectedBusiness);
+      const periods = Array.from(new Map(rows.map(row => [row.period, row.label])).entries()).slice(-6);
+      const byPeriodSns = new Map(rows.map(row => [`${row.period}_${row.sns}`, row.impressions]));
+      const totals = periods.map(([period]) =>
+        snsTypes.reduce((sum, sns) => sum + Number(byPeriodSns.get(`${period}_${sns}`) || 0), 0)
+      );
+      const max = Math.max(...totals, 1);
+      return periods.map(([period, label], periodIndex) => {
+        const total = totals[periodIndex] || 0;
+        const height = total ? Math.max(30, Math.round((total / max) * 150)) : 10;
+        const segments = snsTypes.map(sns => {
+          const value = Number(byPeriodSns.get(`${period}_${sns}`) || 0);
+          return value
+            ? `<div class="follower-stack-segment" style="flex:${value};${impressionSnsBarStyle(sns)}" title="${escapeHtml(sns)} ${value.toLocaleString()}回"></div>`
+            : "";
+        }).join("");
+        return `
+          <div class="follower-chart-col">
+            <span class="follower-chart-value">${total.toLocaleString()}回</span>
+            <div class="follower-stacked-bar" style="height:${height}px" title="${escapeHtml(label)} 合計 ${total.toLocaleString()}回">${segments}</div>
+            <div class="follower-chart-label">${escapeHtml(label)}</div>
+          </div>
+        `;
+      }).join("") || `<div class="empty-state">グラフに表示するデータがありません。</div>`;
+    }
+
+    function impressionSeriesChartHtml(selectedBusiness, sns) {
+      const rows = impressionTrendRows("week", selectedBusiness);
+      const periods = Array.from(new Map(rows.map(row => [row.period, row.label])).entries()).slice(-8);
+      const byPeriodSns = new Map(rows.map(row => [`${row.period}_${row.sns}`, row.impressions]));
+      const values = periods.map(([period]) => Number(byPeriodSns.get(`${period}_${sns}`) || 0));
+      const max = Math.max(...values, 1);
+      return periods.map(([period, label], index) => {
+        const value = values[index] || 0;
+        const height = value ? Math.max(24, Math.round((value / max) * 150)) : 10;
+        return `
+          <div class="follower-chart-col">
+            <span class="follower-chart-value">${value.toLocaleString()}回</span>
+            <div class="follower-bar" style="height:${height}px;${impressionSnsBarStyle(sns)}" title="${escapeHtml(label)} ${value.toLocaleString()}回"></div>
+            <div class="follower-chart-label">${escapeHtml(dateLabel(period))}週</div>
+          </div>
+        `;
+      }).join("") || `<div class="empty-state">${escapeHtml(sns)}の時系列データがありません。</div>`;
+    }
+
+    function renderImpressionSummary(selectedBusiness) {
+      const weekRows = latestImpressionPeriodRows(impressionTrendRows("week", selectedBusiness), 12);
+      const monthRows = latestImpressionPeriodRows(impressionTrendRows("month", selectedBusiness), 12);
+      $("#impression-week-body").innerHTML = impressionTrendTableRows(weekRows) || `<tr><td colspan="5">データはありません。</td></tr>`;
+      $("#impression-month-body").innerHTML = impressionTrendTableRows(monthRows) || `<tr><td colspan="5">データはありません。</td></tr>`;
+      $("#impression-month-legend").innerHTML = snsTypes.map(sns =>
+        `<span><i style="${impressionSnsBarStyle(sns)}"></i>${escapeHtml(sns)}</span>`
+      ).join("");
+      $("#impression-month-chart").innerHTML = impressionMonthlyChartHtml(selectedBusiness);
+      $("#impression-sns-switch").innerHTML = snsTypes.map(sns => `
+        <button class="follower-sns-btn ${sns === impressionTrendSns ? "active" : ""}" type="button" data-impression-sns="${escapeHtml(sns)}" aria-pressed="${sns === impressionTrendSns}">${escapeHtml(sns)}</button>
+      `).join("");
+      $("#impression-series-label").textContent = `${impressionTrendSns}・週次`;
+      $("#impression-series-chart").innerHTML = impressionSeriesChartHtml(selectedBusiness, impressionTrendSns);
+      $$('[data-impression-table-mode]').forEach(button => button.classList.toggle('active', button.dataset.impressionTableMode === impressionTableMode));
+      $$('[data-impression-table-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.impressionTablePanel === impressionTableMode));
     }
 
     function renderFollowerSummary(selectedBusiness) {
@@ -6404,6 +6674,18 @@ body.modal-open {
       const deleteButton = event.target.closest("[data-delete-record]");
       if (deleteButton) {
         deleteRecord(deleteButton.dataset.deleteRecord, deleteButton.dataset.recordId);
+        return;
+      }
+      const impressionSnsButton = event.target.closest("[data-impression-sns]");
+      if (impressionSnsButton) {
+        impressionTrendSns = impressionSnsButton.dataset.impressionSns;
+        renderImpressionSummary(businesses[0]);
+        return;
+      }
+      const impressionTableButton = event.target.closest("[data-impression-table-mode]");
+      if (impressionTableButton) {
+        impressionTableMode = impressionTableButton.dataset.impressionTableMode;
+        renderImpressionSummary(businesses[0]);
         return;
       }
       const snsButton = event.target.closest("[data-follower-sns]");

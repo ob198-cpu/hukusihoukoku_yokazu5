@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("assert");
-const { mergeSnapshots } = require("./sync-engine.js");
+const { mergeSnapshots, resolveConflicts } = require("./sync-engine.js");
 
 function snapshot(posts = []) {
   return {
@@ -46,8 +46,18 @@ const sameField = mergeSnapshots(
 );
 assert.equal(sameField.data.posts[0].impressions, 150);
 assert.equal(sameField.conflicts.length, 1);
-assert.equal(sameField.data.history[0].action, "自動競合統合");
-assert.equal(sameField.data.history[0].before.remoteConflicts[0].remoteValue, 140);
+assert.equal(sameField.data.history.length, 0);
+const localResolved = resolveConflicts(sameField.data, sameField.conflicts, "local", {
+  now: "2026-07-29T00:00:00.000Z",
+  id: "same-field-local"
+});
+const remoteResolved = resolveConflicts(sameField.data, sameField.conflicts, "remote", {
+  now: "2026-07-29T00:00:00.000Z",
+  id: "same-field-remote"
+});
+assert.equal(localResolved.posts[0].impressions, 150);
+assert.equal(remoteResolved.posts[0].impressions, 140);
+assert.equal(remoteResolved.history[0].action, "競合確認");
 
 const deletedLocally = mergeSnapshots(
   snapshot([{ id: "p1", impressions: 100 }]),
@@ -63,6 +73,11 @@ const editedWhileRemoteDeleted = mergeSnapshots(
 );
 assert.equal(editedWhileRemoteDeleted.data.posts[0].impressions, 180);
 assert.equal(editedWhileRemoteDeleted.conflicts.length, 1);
+assert.equal(resolveConflicts(
+  editedWhileRemoteDeleted.data,
+  editedWhileRemoteDeleted.conflicts,
+  "remote"
+).posts.length, 0);
 
 const manyLocal = Array.from({ length: 20 }, (_, index) => ({
   id: "local-" + index,
