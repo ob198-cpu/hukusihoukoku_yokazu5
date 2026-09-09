@@ -163,3 +163,26 @@ assert.equal(context.readData_().posts.length, 3650);
 assert.equal(context.readUpdatedAt_(), 'rev_10years');
 
 console.log('safe save, rollback, conflict, and 10-year volume checks passed');
+
+// Browser migration never overwrites report rows and is idempotent after a lost response.
+context.SpreadsheetApp.flush = () => {};
+context.Utilities.DigestAlgorithm = {SHA_256:'sha256'};
+context.Utilities.Charset = {UTF_8:'utf8'};
+context.Utilities.computeDigest = (algorithm, value) => [...require('crypto').createHash(algorithm).update(value).digest()];
+context.selectSpreadsheet_('yokazu7');
+const storageKey='sns_operation_report_yokazu7_v4';
+const payload='=formula must remain text\n'+ '入力🙂'.repeat(15000);
+const digest=require('crypto').createHash('sha256').update(storageKey+'\n'+payload).digest('hex');
+const request={storageKey,payload,digest,clientId:'migration-test'};
+assert.equal(context.archiveBrowserData_(request).verified,true);
+const archiveSheet=book.getSheetByName('BrowserArchives');
+const archiveCount=archiveSheet.rows.length;
+assert.equal(context.archiveBrowserData_(request).digest,digest);
+assert.equal(archiveSheet.rows.length,archiveCount);
+assert.equal(context.readData_().posts.length,3650);
+assert.throws(()=>context.archiveBrowserData_({...request,digest:'bad'}),/照合/);
+archiveSheet.rows[1][7]='j:corrupted';
+assert.throws(()=>context.archiveBrowserData_(request),/読戻し/);
+context.selectSpreadsheet_('yokazu6');
+assert.throws(()=>context.archiveBrowserData_(request),/未設定/);
+console.log('server archive: chunk readback, unicode, duplicate retries, isolation and corruption checks passed');

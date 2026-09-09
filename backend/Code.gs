@@ -47,10 +47,14 @@ function doPost(e) {
     recoverPendingSave_();
     ensureAllSheets_();
     const action = request.action || '';
+    if (action === 'archiveBrowserData') {
+      return json_({ ok: true, data: archiveBrowserData_(request) });
+    }
     if (action === 'loadData') return json_({ ok: true, data: {
       data: readData_(),
       updatedAt: readUpdatedAt_(),
       systemKey: ACTIVE_SYSTEM_KEY,
+      browserArchiveSupported: ACTIVE_SYSTEM_KEY === 'yokazu7',
       backendBuildId: BACKEND_BUILD_ID
     } });
     if (action === 'saveData') {
@@ -62,6 +66,46 @@ function doPost(e) {
   } finally {
     if (locked) lock.releaseLock();
   }
+}
+
+function archiveBrowserData_(request) {
+  if (ACTIVE_SYSTEM_KEY !== 'yokazu7') throw new Error('この事業所の保存移行は未設定です。');
+  const key = String(request.storageKey || '');
+  const payload = request.payload;
+  if (!(key === 'sns_operation_report_yokazu7_v4' || key.indexOf('sns_operation_report_yokazu7_v4:') === 0) || key.length > 300) throw new Error('保存キーが不正です。');
+  if (typeof payload !== 'string' || payload.length > 8 * 1024 * 1024) throw new Error('移行データが不正です。');
+  const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, key + '\n' + payload, Utilities.Charset.UTF_8)
+    .map(function(b) { return ('0' + (b & 255).toString(16)).slice(-2); }).join('');
+  if (request.digest !== digest) throw new Error('移行データの照合に失敗しました。');
+  const def = { name: 'BrowserArchives', headers: ['digest', 'at', 'systemKey', 'clientId', 'storageKey', 'chunkIndex', 'chunkCount', 'payloadChunk'] };
+  ensureSheet_(def);
+  const sheet = targetSpreadsheet_().getSheetByName(def.name);
+  const last = sheet.getLastRow();
+  const ids = last > 1 ? sheet.getRange(2, 1, last - 1, 1).getValues().map(function(r) { return r[0]; }) : [];
+  const found = ids.indexOf(digest);
+  const chunks = [];
+  for (let offset = 0; offset < payload.length;) {
+    let end = Math.min(offset + 30000, payload.length);
+    const lastCode = payload.charCodeAt(end - 1);
+    if (end < payload.length && lastCode >= 0xD800 && lastCode <= 0xDBFF) end -= 1;
+    chunks.push(payload.slice(offset, end));
+    offset = end;
+  }
+  if (!chunks.length) chunks.push('');
+  const count = chunks.length;
+  const start = found >= 0 ? found + 2 : last + 1;
+  if (found < 0) {
+    const at = new Date().toISOString();
+    const rows = [];
+    for (let i = 0; i < count; i += 1) rows.push([digest, at, ACTIVE_SYSTEM_KEY, 'c:' + String(request.clientId || '').slice(0, 120), key, i + 1, count, 'j:' + chunks[i]]);
+    if (sheet.getMaxRows() < start + count - 1) sheet.insertRowsAfter(sheet.getMaxRows(), start + count - 1 - sheet.getMaxRows());
+    sheet.getRange(start, 1, count, 8).setValues(rows);
+    SpreadsheetApp.flush();
+  }
+  const saved = sheet.getRange(start, 1, count, 8).getValues();
+  if (saved.some(function(r, i) { return r[0] !== digest || r[2] !== ACTIVE_SYSTEM_KEY || r[4] !== key || r[5] !== i + 1 || r[6] !== count || String(r[7]).slice(0, 2) !== 'j:'; }) ||
+      saved.map(function(r) { return String(r[7]).slice(2); }).join('') !== payload) throw new Error('移行後の読戻し照合に失敗しました。端末データは残してください。');
+  return { digest: digest, verified: true, systemKey: ACTIVE_SYSTEM_KEY, backendBuildId: BACKEND_BUILD_ID };
 }
 
 function saveData_(data, expectedUpdatedAt, clientId) {
