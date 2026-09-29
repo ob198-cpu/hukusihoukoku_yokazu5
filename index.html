@@ -3859,7 +3859,7 @@ body.modal-open {
 
     function applySyncedData(snapshot, shouldRender = false) {
       data = normalizeData(cloneRecord(snapshot || {}));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      writeLocalJson(STORAGE_KEY, data);
       if (shouldRender) {
         setupForms();
         renderAll();
