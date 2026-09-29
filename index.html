@@ -3826,7 +3826,9 @@ body.modal-open {
       try {
         result = JSON.parse(text);
       } catch {
-        throw new Error("Apps Scriptの初回承認または公開設定を確認してください。");
+        const error = new Error("Apps Scriptの初回承認または公開設定を確認してください。");
+        error.code = "INVALID_API_RESPONSE";
+        throw error;
       }
       if (!response.ok || !result.ok) {
         const error = new Error(result.error || "シート保存に失敗しました。");
@@ -4059,14 +4061,17 @@ body.modal-open {
         return;
       }
       setCloudStatus("シート読込中", "syncing");
+      let syncStage = "read-sheet";
       try {
         cloudSyncReady = false;
         const result = await cloudRequest("loadData");
+        syncStage = "normalize-sheet";
         const remoteData = normalizeData(result.data || {});
         const remoteRevision = result.updatedAt || "";
         const pending = readPendingCloudWrite();
 
         if (pending) {
+          syncStage = "restore-pending";
           const storedBase = readStoredCloudBase();
           const baseData = (storedBase && storedBase.data) || cloudBaseData || {};
           saveRecoverySnapshot("起動時に検出した未保存入力", pending.data);
@@ -4079,16 +4084,19 @@ body.modal-open {
           }
           setCloudStatus("未保存入力を復元し、シートへ保存中", "syncing");
         } else {
+          syncStage = "backup-browser";
           if (cloudDataHasRows(data) && !window.sessionStorage.getItem(STORAGE_KEY + ":startup_backup")) {
             saveRecoverySnapshot("クラウド読込前の端末データ", data);
             window.sessionStorage.setItem(STORAGE_KEY + ":startup_backup", "1");
           }
           persistCloudBase(remoteData, remoteRevision);
+          syncStage = "render-sheet";
           applySyncedData(remoteData, true);
           setCloudStatus("シート読込済み", "ok");
         }
 
         cloudSyncReady = true;
+        syncStage = "finish-sync";
         clearTimeout(cloudRetryTimer);
         startCloudRefresh();
         if (readPendingCloudWrite()) await flushCloudSave();
@@ -4101,6 +4109,11 @@ body.modal-open {
         }
         finishInitialCloudLoading();
       } catch (error) {
+        console.warn("SNS_SYNC_DIAGNOSTIC", JSON.stringify({
+          stage: syncStage,
+          type: String(error?.name || "Error"),
+          code: ["INVALID_API_RESPONSE", "CONFLICT", "SAVE_ERROR"].includes(error?.code) ? error.code : ""
+        }));
         cloudSyncReady = false;
         setCloudStatus(
           "シート接続待ち・入力はこの端末に保全します。",
