@@ -1,5 +1,5 @@
 // Enable each office only after its isolated save and readback checks pass.
-const RECORD_SAVE_SYSTEMS = Object.freeze(['yokazu5', 'yokazu6', 'yokazu4', 'yokazu8', 'yokazu']);
+const RECORD_SAVE_SYSTEMS = Object.freeze(['yokazu5', 'yokazu6', 'yokazu4', 'yokazu8', 'yokazu', 'yokazu2']);
 const RECORD_SAVE_VERSION = 1;
 const RECORD_TRANSACTION_PREFIX = 'SNS_RECORD_TRANSACTION_';
 
