@@ -21,6 +21,7 @@ function fixture({quota=false,networkError=false,htmlError=false,wrongOffice=fal
  const remote={posts:[{id:'server',totalWatchTime:41.53}]};
  const state={shown:false,retries:0,warnings:0,status:'',rendered:0,requests:0};
  const context=vm.createContext({
+  window:{location:{protocol:'https:'}},
   STORAGE_KEY:'office',CLOUD_BASE_KEY:'office:base',CLOUD_API_URL:'https://example.test/exec',
   CLOUD_SYSTEM_KEY:'yokazu5',CLOUD_SPREADSHEET_ID:'sheet',EXPECTED_BACKEND_BUILD_ID:'build',cloudBaseData:null,cloudRevision:'',
   verifiedCloudSource:r=>r.systemKey==='yokazu5'&&r.spreadsheetId==='sheet',
@@ -41,6 +42,7 @@ function fixture({quota=false,networkError=false,htmlError=false,wrongOffice=fal
   finishInitialCloudLoading:()=>{state.shown=true;},setInitialCloudLoading:()=>{},
   scheduleCloudReconnect:()=>{state.retries++;}
  });
+ context.window.SnsGasTransport={request:async(url,payload)=>(await context.fetch(url,{body:JSON.stringify(payload)})).text()};
  const policy=require('../backend/browser-retention.js').create({storage:context.localStorage,primaryKey:'office',baseKey:'office:base',
   recoveryKey:'office:recovery',pendingPrefix:'office:pending',dirtyKey:'office:dirty',normalize:x=>x,
   equal:require('../backend/record-sync.js').equal});

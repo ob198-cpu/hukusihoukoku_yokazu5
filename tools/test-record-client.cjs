@@ -30,7 +30,7 @@ function client(options={}) {
       if(options.quota || (options.backupFailure&&key==='office:recovery'))throw Object.assign(Error('quota'),{name:'QuotaExceededError'});
       storage.set(key,value);
     },removeItem:key=>{if(options.removeFailure)throw Error('blocked');storage.delete(key);}},
-    window:{SnsRecordSync:sync,SnsSyncMerge:merge,SnsBrowserRetention:require('../backend/browser-retention.js'),
+    window:{location:{protocol:'https:'},SnsRecordSync:sync,SnsSyncMerge:merge,SnsBrowserRetention:require('../backend/browser-retention.js'),
       sessionStorage:{getItem:()=>{if(options.sessionFailure)throw Error('denied');return null;},setItem(){}}},
     fetch:async(_url,opts)=>{
       const req=JSON.parse(opts.body);requests.push(clone(req));
@@ -46,6 +46,7 @@ function client(options={}) {
     requestConflictResolution:async()=>{state.confirmations++;return options.choice||'';},
     confirmSubmittedDrafts(){}
   });
+  ctx.window.SnsGasTransport={request:async(url,payload)=>(await ctx.fetch(url,{body:JSON.stringify(payload)})).text()};
   for(const pair of [
     ['function readLocalJson(','function cloudEnabled('],
     ['function cloudEnabled(','function setCloudStatus('],

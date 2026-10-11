@@ -3239,6 +3239,7 @@ body.modal-open {
   <script src="sync-engine.js?v=20260730-conflict-review"></script>
   <script src="backend/record-sync.js?v=20261009-record-save"></script>
   <script src="backend/browser-retention.js?v=20261011-bounded-storage"></script>
+  <script src="backend/gas-transport.js?v=20261011-sheet-bridge"></script>
   <script>
     const STORAGE_KEY = "sns_operation_report_yokazu5_v4";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
@@ -3916,11 +3917,16 @@ body.modal-open {
 
     async function cloudRequest(action, payload = {}) {
       if (!cloudEnabled()) throw new Error("保存先URLが未設定です。");
-      const response = await fetch(CLOUD_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action, systemKey: CLOUD_SYSTEM_KEY, ...payload })
-      });
+      const request = { action, systemKey: CLOUD_SYSTEM_KEY, ...payload };
+      const useBridge = CLOUD_SYSTEM_KEY === "yokazu5" && window.SnsGasTransport
+        && /^(https?:)$/.test(window.location.protocol);
+      const response = useBridge
+        ? { ok: true, text: () => window.SnsGasTransport.request(CLOUD_API_URL, request) }
+        : await fetch(CLOUD_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(request)
+        });
       const text = await response.text();
       let result;
       try {

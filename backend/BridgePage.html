@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Sheet connection</title></head><body>
+<script>
+'use strict';
+const config = "__BRIDGE_CONFIG__";
+function send(message) {
+  window.top.postMessage(Object.assign({channel:'sns-sheet-v1',token:config.token},message),config.origin);
+}
+window.addEventListener('message',function(event) {
+  const m=event.data;
+  if(event.source!==window.top || event.origin!==config.origin || !m || m.channel!=='sns-sheet-v1'
+    || m.token!==config.token || m.type!=='request' || typeof m.id!=='string' || typeof m.payload!=='string') return;
+  google.script.run.withSuccessHandler(function(result) {
+    send({type:'result',id:m.id,result:result});
+  }).withFailureHandler(function(error) {
+    send({type:'result',id:m.id,result:JSON.stringify({ok:false,error:error.message || String(error)})});
+  }).snsBridgeRequest(m.payload);
+});
+send({type:'ready'});
+</script>
+</body></html>

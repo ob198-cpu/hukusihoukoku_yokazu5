@@ -30,6 +30,7 @@ const SHEETS = {
 };
 
 function doGet(e) {
+  if (e && e.parameter && e.parameter.transport === 'sheet-bridge-v1') return sheetBridgePage_(e.parameter);
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
