@@ -49,7 +49,7 @@ function doPost(e) {
     lock.waitLock(30000);
     locked = true;
     const request = JSON.parse((e.postData && e.postData.contents) || '{}');
-    if (request.action === 'saveChanges' && request.systemKey !== 'yokazu5') {
+    if (request.action === 'saveChanges' && !recordSaveEnabled_(request.systemKey)) {
       throw new Error('RECORD_SAVE_TARGET_MISMATCH');
     }
     selectSpreadsheet_(request.systemKey);

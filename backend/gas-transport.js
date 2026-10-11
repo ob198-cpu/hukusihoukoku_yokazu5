@@ -20,12 +20,14 @@
   function create(options) {
     const win = options.window, doc = options.document;
     const connections = new Map();
-    function connect(endpoint) {
-      if (connections.has(endpoint)) return connections.get(endpoint);
+    function connect(endpoint, systemKey) {
       const url = new URL(endpoint);
       if (url.origin !== 'https://script.google.com' || !/^\/macros\/s\/[\w-]+\/exec$/.test(url.pathname)) {
         throw new Error('INVALID_BRIDGE_ENDPOINT');
       }
+      if (typeof systemKey !== 'string' || !/^(hukusihoukoku|yokazu[2-8]?)$/.test(systemKey)) throw new Error('INVALID_BRIDGE_TARGET');
+      const connectionKey = endpoint + '\n' + systemKey;
+      if (connections.has(connectionKey)) return connections.get(connectionKey);
       const token = Array.from(win.crypto.getRandomValues(new Uint8Array(24)), n => n.toString(16).padStart(2, '0')).join('');
       const frame = doc.createElement('iframe');
       frame.hidden = true;
@@ -41,7 +43,7 @@
         win.clearTimeout(readyTimer);
         win.removeEventListener('message', receive);
         frame.remove();
-        connections.delete(endpoint);
+        connections.delete(connectionKey);
         rejectReady(reason);
         pending.forEach(p => { win.clearTimeout(p.timer); p.reject(reason); });
         pending.clear();
@@ -67,7 +69,7 @@
       win.addEventListener('message', receive);
       readyTimer = win.setTimeout(() => close(new Error('シートとの接続を確認できません。未送信内容を残して再接続します。')), options.readyTimeoutMs || 45000);
       url.searchParams.set('transport', 'sheet-bridge-v1');
-      url.searchParams.set('systemKey', 'yokazu5');
+      url.searchParams.set('systemKey', systemKey);
       url.searchParams.set('parentOrigin', win.location.origin);
       url.searchParams.set('channelToken', token);
       frame.src = url.href;
@@ -87,12 +89,12 @@
         },
         close
       };
-      connections.set(endpoint, connection);
+      connections.set(connectionKey, connection);
       doc.body.appendChild(frame);
       return connection;
     }
     return {
-      request(endpoint, payload) { return connect(endpoint).request(payload); },
+      request(endpoint, payload) { return connect(endpoint, payload && payload.systemKey).request(payload); },
       close() { Array.from(connections.values()).forEach(c => c.close(new Error('BRIDGE_CLOSED'))); }
     };
   }

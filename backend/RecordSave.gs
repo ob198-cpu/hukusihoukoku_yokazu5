@@ -1,8 +1,10 @@
-// Only yokazu5 participates in the pilot. Legacy clients keep their revision checks.
+// Enable each office only after its isolated save and readback checks pass.
+const RECORD_SAVE_SYSTEMS = Object.freeze(['yokazu5', 'yokazu6']);
 const RECORD_SAVE_VERSION = 1;
 const RECORD_TRANSACTION_PREFIX = 'SNS_RECORD_TRANSACTION_';
 
-function recordSaveSupported_() { return ACTIVE_SYSTEM_KEY === 'yokazu5'; }
+function recordSaveEnabled_(key) { return RECORD_SAVE_SYSTEMS.indexOf(key) >= 0 && Object.prototype.hasOwnProperty.call(SPREADSHEET_IDS, key); }
+function recordSaveSupported_() { return recordSaveEnabled_(ACTIVE_SYSTEM_KEY); }
 
 function readRecordData_() {
   const data = readData_();

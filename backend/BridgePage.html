@@ -14,7 +14,7 @@ window.addEventListener('message',function(event) {
     send({type:'result',id:m.id,result:result});
   }).withFailureHandler(function(error) {
     send({type:'result',id:m.id,result:JSON.stringify({ok:false,error:error.message || String(error)})});
-  }).snsBridgeRequest(m.payload);
+  }).snsBridgeRequest(m.payload, config.systemKey);
 });
 send({type:'ready'});
 </script>
