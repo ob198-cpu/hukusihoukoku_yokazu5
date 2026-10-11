@@ -3235,11 +3235,15 @@ body.modal-open {
     </div>
   </div>
 
+  <style>#storage-capacity-warning[hidden] { display: none; }</style>
   <script src="sync-engine.js?v=20260730-conflict-review"></script>
+  <script src="backend/record-sync.js?v=20261009-record-save"></script>
+  <script src="backend/browser-retention.js?v=20261011-bounded-storage"></script>
   <script>
     const STORAGE_KEY = "sns_operation_report_yokazu5_v4";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
     const CLOUD_SYSTEM_KEY = "yokazu5";
+    const CLOUD_SPREADSHEET_ID = "1J2Jfv4PIj2C3RMoX2ZH5jW946FFBN6p25FJkk8TsvGU";
     const EXPECTED_BACKEND_BUILD_ID = "sns-multitenant-20260730-v1";
     const CLOUD_CLIENT_ID_KEY = STORAGE_KEY + ":cloud_client_id";
     const CLOUD_BASE_KEY = STORAGE_KEY + ":cloud_base_v2";
@@ -3260,10 +3264,16 @@ body.modal-open {
     const CLOUD_PENDING_KEY = CLOUD_PENDING_PREFIX + ":" + CLOUD_TAB_ID;
     const CLOUD_DIRTY_MARKER_KEY = STORAGE_KEY + ":cloud_dirty_v1";
     const CLOUD_RECOVERY_KEY = STORAGE_KEY + ":recovery_snapshots_v2";
+    const FORM_DRAFT_KEY = STORAGE_KEY + ":form_drafts_v1:" + CLOUD_TAB_ID;
     const CLOUD_MAX_MERGE_RETRIES = 6;
     const CLOUD_RETRY_DELAY_MS = 15000;
-    const CLOUD_CLIENT_ID = localStorage.getItem(CLOUD_CLIENT_ID_KEY) || ("client_" + Date.now() + "_" + Math.random().toString(36).slice(2));
-    localStorage.setItem(CLOUD_CLIENT_ID_KEY, CLOUD_CLIENT_ID);
+    const CLOUD_CLIENT_ID = (() => {
+      let stored = "";
+      try { stored = localStorage.getItem(CLOUD_CLIENT_ID_KEY) || ""; } catch { /* Storage may be unavailable. */ }
+      const id = stored || ("client_" + Date.now() + "_" + Math.random().toString(36).slice(2));
+      try { localStorage.setItem(CLOUD_CLIENT_ID_KEY, id); } catch { /* Sending does not require a persistent client ID. */ }
+      return id;
+    })();
     const businesses = ["自事業所"];
     const monitoringUsers = ["大場", "A", "B", "C", "D", "E", "F"];
     const snsTypes = ["X", "Instagram", "TikTok", "Threads", "YouTube"];
@@ -3292,6 +3302,7 @@ body.modal-open {
     let followerTrendSns = "X";
     let followerTableMode = "week";
     let cloudSyncReady = false;
+    let cloudRecordSaveReady = false;
     let cloudSaveTimer = null;
     let cloudRetryTimer = null;
     let cloudRefreshTimer = null;
@@ -3599,9 +3610,9 @@ body.modal-open {
     }
 
     function loadData() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return normalizeData({ accounts: defaultAccounts() });
       try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return normalizeData({ accounts: defaultAccounts() });
         return normalizeData(JSON.parse(raw));
       } catch {
         return normalizeData({ accounts: defaultAccounts() });
@@ -3617,15 +3628,30 @@ body.modal-open {
       }
     }
 
-    function writeLocalJson(key, value) {
+    var browserRetentionPolicy = null;
+
+    function getBrowserRetention() {
       try {
-        localStorage.setItem(key, JSON.stringify(value));
-        updateStorageCapacityWarning();
-        return true;
-      } catch {
-        updateStorageCapacityWarning(true);
-        return false;
-      }
+        if (!browserRetentionPolicy && window.SnsBrowserRetention) {
+          browserRetentionPolicy = window.SnsBrowserRetention.create({
+            storage: localStorage, primaryKey: STORAGE_KEY, baseKey: CLOUD_BASE_KEY,
+            recoveryKey: CLOUD_RECOVERY_KEY, pendingPrefix: CLOUD_PENDING_PREFIX,
+            dirtyKey: CLOUD_DIRTY_MARKER_KEY, normalize: normalizeData, equal: window.SnsSyncMerge.equal
+          });
+        }
+        return browserRetentionPolicy;
+      } catch { return null; }
+    }
+
+    function writeLocalJson(key, value) {
+      let stored = false;
+      try {
+        const policy = getBrowserRetention();
+        if (policy) stored = policy.writeProtected(key, value);
+        else { localStorage.setItem(key, JSON.stringify(value)); stored = true; }
+      } catch { /* Keep sending from memory if the browser store is unavailable. */ }
+      try { updateStorageCapacityWarning(!stored); } catch { /* Warning must not stop sending. */ }
+      return stored;
     }
 
     function localStorageUsageBytes() {
@@ -3649,33 +3675,33 @@ body.modal-open {
         warning.hidden = true;
         status.insertAdjacentElement("afterend", warning);
       }
-      const bytes = localStorageUsageBytes();
-      const shouldWarn = force || bytes >= 3.5 * 1024 * 1024;
+      const shouldWarn = force || Boolean(getBrowserRetention()?.hasFailures())
+        || (typeof formDraftReadFailed !== "undefined" && formDraftReadFailed);
       warning.hidden = !shouldWarn;
       if (shouldWarn) {
-        warning.textContent = `ブラウザ保存の使用量が約${(bytes / 1024 / 1024).toFixed(1)}MBです。シート保存完了を確認し、不要な復旧履歴を整理してください。`;
+        warning.textContent = "入力内容の端末保存に失敗しました。画面を閉じず、シート保存完了またはバックアップを確認してください。";
       }
     }
 
     function saveRecoverySnapshot(reason, snapshot) {
-      if (!snapshot) return;
-      const entries = readLocalJson(CLOUD_RECOVERY_KEY, []);
-      const snapshotBytes = JSON.stringify(snapshot).length * 2;
-      const retention = snapshotBytes >= 1024 * 1024 ? 1 : snapshotBytes >= 512 * 1024 ? 2 : 3;
-      const next = [{
-        id: uid(),
-        at: new Date().toISOString(),
-        reason: reason,
-        data: normalizeData(cloneRecord(snapshot))
-      }, ...(Array.isArray(entries) ? entries : [])].slice(0, retention);
-      writeLocalJson(CLOUD_RECOVERY_KEY, next);
+      try {
+        if (!snapshot) return;
+        const pending = readPendingCloudWrite();
+        if (pendingIsDurable(pending) && window.SnsSyncMerge.equal(pending.data, snapshot)) return true;
+        return getBrowserRetention()?.recover({
+          id: uid(),
+          at: new Date().toISOString(),
+          reason: reason,
+          data: normalizeData(cloneRecord(snapshot))
+        }) || false;
+      } catch { /* Optional recovery history must not block the normal save. */ }
     }
 
     function pruneConfirmedRecoverySnapshots() {
-      const entries = readLocalJson(CLOUD_RECOVERY_KEY, []);
-      if (Array.isArray(entries) && entries.length > 1) {
-        writeLocalJson(CLOUD_RECOVERY_KEY, entries.slice(0, 1));
-      }
+      try {
+        getBrowserRetention()?.trim();
+        updateStorageCapacityWarning();
+      } catch { /* Retain recovery history if cleanup is unavailable. */ }
     }
 
     function readPendingCloudWrite() {
@@ -3683,10 +3709,12 @@ body.modal-open {
         return volatilePendingCloudWrite;
       }
       const current = readLocalJson(CLOUD_PENDING_KEY, null);
+      if (current?.format === "record-changes-v1") return hydratePendingChanges(current, CLOUD_PENDING_KEY);
       if (current?.id && current?.data) {
         return { ...current, storageKey: CLOUD_PENDING_KEY };
       }
       const legacy = readLocalJson(CLOUD_LEGACY_PENDING_KEY, null);
+      if (legacy?.format === "record-changes-v1") return hydratePendingChanges(legacy, CLOUD_LEGACY_PENDING_KEY);
       if (legacy?.id && legacy?.data) {
         return { ...legacy, storageKey: CLOUD_LEGACY_PENDING_KEY };
       }
@@ -3704,26 +3732,61 @@ body.modal-open {
         : null;
     }
 
-    function writePendingCloudWrite(snapshot, reason = "local-change") {
+    function hydratePendingChanges(stored, storageKey) {
+      try {
+        if (stored.systemKey !== CLOUD_SYSTEM_KEY || stored.spreadsheetId !== CLOUD_SPREADSHEET_ID) throw new Error("WRONG_TARGET");
+        window.SnsRecordSync.validate(stored.changes);
+        const base = cloneRecord(cloudBaseData || readStoredCloudBase()?.data || normalizeData({}));
+        stored.changes.forEach(change => {
+          const rows = base[change.collection] || (base[change.collection] = []);
+          const index = rows.findIndex(row => window.SnsRecordSync.key(change.collection, row) === change.key);
+          if (index >= 0) rows.splice(index, 1);
+          if (change.before !== null) rows.push(cloneRecord(change.before));
+        });
+        const next = window.SnsRecordSync.apply(base, stored.changes);
+        return {...stored, storageKey, baseData: base, data: normalizeData(next)};
+      } catch {
+        return {...stored, storageKey, invalid: true, baseData: null, data: normalizeData(cloneRecord(data))};
+      }
+    }
+
+    function serializePendingWrite(pending) {
+      if (!pending.baseData || !window.SnsRecordSync) return pending;
+      return {
+        format: "record-changes-v1", id: pending.id, at: pending.at, reason: pending.reason,
+        systemKey: CLOUD_SYSTEM_KEY, spreadsheetId: CLOUD_SPREADSHEET_ID,
+        baseRevision: pending.baseRevision, supersedes: pending.supersedes,
+        changes: window.SnsRecordSync.diff(pending.baseData, normalizeData(cloneRecord(pending.baseData)), pending.data)
+      };
+    }
+
+    function writePendingCloudWrite(snapshot, reason = "local-change", baseSnapshot) {
+      const previous = readPendingCloudWrite();
+      if (baseSnapshot === undefined) {
+        baseSnapshot = previous ? pendingBaseData(previous) : cloudBaseData;
+      }
       const pending = {
         id: uid(),
         at: new Date().toISOString(),
         reason: reason,
         baseRevision: cloudRevision || "",
+        baseData: cloneRecord(baseSnapshot),
+        ...(previous?.invalid ? {invalid: true} : {}),
+        supersedes: previous ? [...new Set([previous.id, ...(previous.supersedes || [])])] : [],
         data: normalizeData(cloneRecord(snapshot)),
         storageKey: CLOUD_PENDING_KEY
       };
       volatilePendingCloudWrite = pending;
-      pending.dirtyStored = writeLocalJson(CLOUD_DIRTY_MARKER_KEY, {
-        id: pending.id,
-        at: pending.at,
-        baseRevision: pending.baseRevision
-      });
-      const stored = writeLocalJson(CLOUD_PENDING_KEY, pending);
+      cloudConflictWaiting = false;
+      let stored = false;
+      if (!previous?.invalid) {
+        try { stored = writeLocalJson(CLOUD_PENDING_KEY, serializePendingWrite(pending)); }
+        catch { /* Keep the edit in memory if its diff cannot be safely encoded. */ }
+      }
       pending.stored = stored;
       if (stored && CLOUD_PENDING_KEY !== CLOUD_LEGACY_PENDING_KEY) {
         const legacy = readLocalJson(CLOUD_LEGACY_PENDING_KEY, null);
-        if (legacy?.id && legacy.id !== pending.id) {
+        if (legacy?.id && pending.supersedes.includes(legacy.id)) {
           try {
             localStorage.removeItem(CLOUD_LEGACY_PENDING_KEY);
           } catch {
@@ -3737,24 +3800,57 @@ body.modal-open {
       return pending;
     }
 
-    function clearPendingCloudWrite(expectedId) {
+    function pendingIsDurable(pending) {
+      if (!pending) return false;
+      try {
+        const stored = readLocalJson(pending.storageKey || CLOUD_PENDING_KEY, null);
+        if (stored?.format === "record-changes-v1") {
+          return stored.id === pending.id && stored.systemKey === CLOUD_SYSTEM_KEY
+            && stored.spreadsheetId === CLOUD_SPREADSHEET_ID
+            && window.SnsSyncMerge.equal(stored.changes, serializePendingWrite(pending).changes);
+        }
+        return Boolean(stored && stored.id === pending.id
+          && window.SnsSyncMerge.equal(stored.data, pending.data));
+      } catch { return false; }
+    }
+
+    function pendingBaseData(pending) {
+      if (Object.prototype.hasOwnProperty.call(pending, "baseData")) return pending.baseData;
+      const stored = readStoredCloudBase();
+      return pending.baseRevision && stored?.revision === pending.baseRevision ? stored.data : null;
+    }
+
+    function setPendingFailureStatus(message = "シート未保存") {
+      const pending = readPendingCloudWrite();
+      const detail = pendingIsDurable(pending)
+        ? cloudConflictWaiting ? "未送信内容は端末に退避済みです。競合内容を確認してください。"
+          : "未送信内容は端末に退避済みです。自動再試行します。"
+        : "端末への退避にも失敗しています。入力はこの画面だけに残っています。画面を閉じずに保全してください。";
+      setCloudStatus(`${message}・${detail}`, "error");
+    }
+
+    function clearPendingCloudWrite(expectedId, confirmedPending) {
+      const confirmedIds = new Set([expectedId, ...(confirmedPending?.supersedes || [])]);
+      confirmSubmittedDrafts(confirmedIds);
       if (!expectedId || volatilePendingCloudWrite?.id === expectedId) {
         volatilePendingCloudWrite = null;
       }
       [CLOUD_PENDING_KEY, CLOUD_LEGACY_PENDING_KEY].forEach(key => {
         const stored = readLocalJson(key, null);
-        if (!stored || !expectedId || stored.id === expectedId) {
+        if (!stored || confirmedIds.has(stored.id)) {
           try {
             localStorage.removeItem(key);
+            getBrowserRetention()?.forgetFailure(key);
           } catch {
             // A confirmed server save is authoritative even if local cleanup fails.
           }
         }
       });
       const dirty = readLocalJson(CLOUD_DIRTY_MARKER_KEY, null);
-      if (!dirty || !expectedId || dirty.id === expectedId) {
+      if (!dirty || confirmedIds.has(dirty.id)) {
         try {
           localStorage.removeItem(CLOUD_DIRTY_MARKER_KEY);
+          getBrowserRetention()?.forgetFailure(CLOUD_DIRTY_MARKER_KEY);
         } catch {
           // A stale marker only causes a safe merge on the next load.
         }
@@ -3777,10 +3873,15 @@ body.modal-open {
       return stored && stored.data ? stored : null;
     }
 
-    function persistCloudBase(snapshot, revision) {
-      cloudBaseData = normalizeData(cloneRecord(snapshot || {}));
+    function verifiedCloudSource(result) {
+      return result?.systemKey === CLOUD_SYSTEM_KEY && result.spreadsheetId === CLOUD_SPREADSHEET_ID;
+    }
+
+    function persistCloudBase(snapshot, revision, verified = false) {
+      cloudBaseData = cloneRecord(snapshot || {});
       cloudRevision = revision || "";
-      writeLocalJson(CLOUD_BASE_KEY, {
+      if (verified) getBrowserRetention()?.confirm(cloudBaseData);
+      getBrowserRetention()?.cache(CLOUD_BASE_KEY, {
         revision: cloudRevision,
         at: new Date().toISOString(),
         data: cloudBaseData
@@ -3789,16 +3890,15 @@ body.modal-open {
 
     function saveData(nextData) {
       const snapshot = normalizeData(cloneRecord(nextData));
-      const primaryStored = writeLocalJson(STORAGE_KEY, snapshot);
-      if (!cloudEnabled()) return;
+      if (!cloudEnabled()) { writeLocalJson(STORAGE_KEY, snapshot); return; }
       const pending = writePendingCloudWrite(snapshot);
       setCloudStatus(
-        !primaryStored && !pending.stored
-          ? "端末容量不足です。画面を閉じず、シート保存完了を待ってください。"
+        !pending.stored
+          ? "未送信内容の端末退避に失敗しました。画面を閉じず、シート保存完了を待ってください。"
           : cloudSyncReady
             ? "この端末に退避済み・シート保存待ち"
             : "この端末に退避済み・シート接続待ち",
-        !primaryStored && !pending.stored ? "error" : "syncing"
+        !pending.stored ? "error" : "syncing"
       );
       if (cloudSyncReady) scheduleCloudSave();
     }
@@ -3861,7 +3961,7 @@ body.modal-open {
 
     function applySyncedData(snapshot, shouldRender = false) {
       data = normalizeData(cloneRecord(snapshot || {}));
-      writeLocalJson(STORAGE_KEY, data);
+      getBrowserRetention()?.cache(STORAGE_KEY, data);
       if (shouldRender) {
         setupForms();
         renderAll();
@@ -3906,7 +4006,7 @@ body.modal-open {
         overlay.innerHTML = `
           <section style="width:min(720px,100%);max-height:85vh;overflow:auto;border-radius:8px;padding:24px;background:#fff;box-shadow:0 24px 60px rgba(0,0,0,.25)">
             <h2 style="margin:0 0 10px;font-size:22px">同じ項目が別の端末でも変更されています</h2>
-            <p>自動では上書きしません。残す内容を選んでください。選択しない場合、入力はこの端末に保全されます。</p>
+            <p>自動では上書きしません。残す内容を選んでください。あとで確認する場合は、画面を閉じずに保存状態を確認してください。</p>
             <ul style="padding-left:22px">${items}</ul>
             ${conflicts.length > 8 ? `<p>ほか ${conflicts.length - 8}項目</p>` : ""}
             <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:18px">
@@ -3933,15 +4033,18 @@ body.modal-open {
         scheduleCloudReconnect();
         return;
       }
+      if (!readPendingCloudWrite()) return;
+      if (!cloudRecordSaveReady || !window.SnsRecordSync) {
+        setPendingFailureStatus("保存先のID単位送信に未対応のため未送信です");
+        scheduleCloudReconnect();
+        return;
+      }
 
       cloudSyncInFlight = true;
       try {
         for (let attempt = 0; attempt < CLOUD_MAX_MERGE_RETRIES; attempt += 1) {
           const pending = readPendingCloudWrite();
-          if (!pending) {
-            setCloudStatus("シート保存済み（サーバー確認済み）", "ok");
-            return;
-          }
+          if (!pending) return;
 
           setCloudStatus(
             attempt === 0 ? "シート保存中" : "確認した競合内容を再保存中",
@@ -3949,29 +4052,38 @@ body.modal-open {
           );
 
           try {
-            const result = await cloudRequest("saveData", {
-              data: pending.data,
-              expectedUpdatedAt: cloudRevision,
+            const base = pendingBaseData(pending);
+            const changes = window.SnsRecordSync.diff(base, base ? normalizeData(cloneRecord(base)) : null, pending.data);
+            const result = await cloudRequest("saveChanges", {
+              changes,
+              protocolVersion: 1,
+              spreadsheetId: CLOUD_SPREADSHEET_ID,
+              requestId: pending.id,
+              expectedUpdatedAt: pending.baseRevision || cloudRevision,
               clientId: CLOUD_CLIENT_ID
             });
-            if (!result.data) throw new Error("サーバーから保存後の読戻しデータを取得できませんでした。");
+            if (!result.data || result.verified !== true || result.recordSaveVersion !== 1
+                || result.systemKey !== CLOUD_SYSTEM_KEY || result.spreadsheetId !== CLOUD_SPREADSHEET_ID
+                || result.requestId !== pending.id) {
+              throw new Error("保存先と保存後の読戻し結果を確認できませんでした。");
+            }
             const confirmed = normalizeData(result.data);
-            const expected = normalizeData(pending.data);
-            if (!window.SnsSyncMerge.equal(confirmed, expected)) {
+            if (!window.SnsRecordSync.verify(result.data, changes)) {
               throw new Error("サーバーの読戻し内容が送信内容と一致しません。");
             }
-            persistCloudBase(confirmed, result.updatedAt || cloudRevision);
+            persistCloudBase(result.data, result.updatedAt || cloudRevision, true);
 
             const latestPending = readPendingCloudWrite();
             if (latestPending && latestPending.id === pending.id) {
-              clearPendingCloudWrite(pending.id);
+              clearPendingCloudWrite(pending.id, pending);
               applySyncedData(confirmed, false);
               pruneConfirmedRecoverySnapshots();
               cloudConflictWaiting = false;
-              setCloudStatus("シート保存済み（サーバー読戻し確認済み）", "ok");
+              setCloudStatus("保存完了（シート読戻し確認済み）", "ok");
               finishInitialCloudLoading();
               return;
             }
+            if (latestPending && !await rebasePendingWrite(latestPending, pending.data, result.data, "送信中の追加入力")) return;
             continue;
           } catch (error) {
             if (error.code !== "CONFLICT" && !String(error.message || error).includes("CONFLICT")) {
@@ -3981,46 +4093,45 @@ body.modal-open {
             const conflictPending = readPendingCloudWrite() || pending;
             saveRecoverySnapshot("競合発生時の未保存入力", conflictPending.data);
             const remoteResult = await cloudRequest("loadData");
-            const remoteData = normalizeData(remoteResult.data || {});
             const latestPending = readPendingCloudWrite() || conflictPending;
-            const storedBase = readStoredCloudBase();
-            const baseData = cloudBaseData || (storedBase && storedBase.data) || {};
-            const merged = mergeCloudData(baseData, latestPending.data, remoteData);
-
-            persistCloudBase(remoteData, remoteResult.updatedAt || "");
-            if (merged.conflicts.length) {
-              cloudConflictWaiting = true;
-              setCloudStatus(`同じ項目に${merged.conflicts.length}件の競合があります。採用する内容を選んでください。`, "error");
-              const choice = await requestConflictResolution(merged.conflicts);
-              if (!choice) return;
-              const resolved = window.SnsSyncMerge.resolveConflicts(
-                merged.data,
-                merged.conflicts,
-                choice,
-                { now: new Date().toISOString(), id: uid() }
-              );
-              cloudConflictWaiting = false;
-              applySyncedData(resolved, true);
-              writePendingCloudWrite(resolved, "user-reviewed-conflict");
-            } else {
-              applySyncedData(merged.data, true);
-              writePendingCloudWrite(merged.data, "non-conflicting-merge");
-            }
+            const baseData = pendingBaseData(latestPending);
+            if (!baseData) throw new Error("BASE_REQUIRED: 保存元を確認できません。入力は残しています。");
+            persistCloudBase(remoteResult.data || {}, remoteResult.updatedAt || "", verifiedCloudSource(remoteResult));
+            if (!await rebasePendingWrite(latestPending, baseData, remoteResult.data || {}, "競合確認後")) return;
           }
         }
 
-        setCloudStatus("更新が集中しています。入力は端末内に保全し、自動再試行します。", "syncing");
+        setPendingFailureStatus("更新が集中しています");
       } catch (error) {
         const pending = readPendingCloudWrite();
         if (pending) saveRecoverySnapshot("通信・保存エラー時の未保存入力", pending.data);
-        setCloudStatus(
-          "シート未保存・入力はこの端末に保全済みです。接続回復後に自動再試行します。",
-          "error"
-        );
+        setPendingFailureStatus(String(error.message || "").includes("BASE_REQUIRED")
+          ? "保存元を確認できないため未送信です" : "シート未保存・送信または読戻し確認に失敗しました");
       } finally {
         cloudSyncInFlight = false;
         if (readPendingCloudWrite() && !cloudConflictWaiting) scheduleCloudSave(CLOUD_RETRY_DELAY_MS);
       }
+    }
+
+    async function rebasePendingWrite(pending, base, remote, reason) {
+      const merged = mergeCloudData(base, pending.data, remote);
+      let resolved = merged.data;
+      if (merged.conflicts.length) {
+        cloudConflictWaiting = true;
+        setCloudStatus(`同じ項目に${merged.conflicts.length}件の競合があります。採用する内容を選んでください。`, "error");
+        const choice = await requestConflictResolution(merged.conflicts);
+        if (!choice) {
+          setPendingFailureStatus("競合内容の選択待ちです");
+          return false;
+        }
+        resolved = window.SnsSyncMerge.resolveConflicts(merged.data, merged.conflicts, choice,
+          {now: new Date().toISOString(), id: uid()});
+      }
+      // Do not replace a newer input with the response to an older request.
+      if (readPendingCloudWrite()?.id !== pending.id) return true;
+      writePendingCloudWrite(resolved, reason, remote);
+      applySyncedData(resolved, false);
+      return true;
     }
 
     function scheduleCloudReconnect() {
@@ -4064,7 +4175,10 @@ body.modal-open {
       let syncStage = "read-sheet";
       try {
         cloudSyncReady = false;
+        cloudRecordSaveReady = false;
         const result = await cloudRequest("loadData");
+        cloudRecordSaveReady = result.recordSaveVersion === 1 && result.spreadsheetId === CLOUD_SPREADSHEET_ID;
+        cloudSyncReady = true;
         syncStage = "normalize-sheet";
         const remoteData = normalizeData(result.data || {});
         const remoteRevision = result.updatedAt || "";
@@ -4072,24 +4186,28 @@ body.modal-open {
 
         if (pending) {
           syncStage = "restore-pending";
-          const storedBase = readStoredCloudBase();
-          const baseData = (storedBase && storedBase.data) || cloudBaseData || {};
+          const baseData = pendingBaseData(pending);
+          if (!baseData) throw new Error("BASE_REQUIRED: 保存元を確認できません。入力は残しています。");
           saveRecoverySnapshot("起動時に検出した未保存入力", pending.data);
-          const merged = mergeCloudData(baseData, pending.data, remoteData);
-          persistCloudBase(remoteData, remoteRevision);
-          applySyncedData(merged.data, true);
-          const migrated = writePendingCloudWrite(merged.data, "startup-pending-merge");
-          if (migrated.stored && pending.storageKey === CLOUD_LEGACY_PENDING_KEY) {
+          persistCloudBase(result.data || {}, remoteRevision, verifiedCloudSource(result));
+          if (!await rebasePendingWrite(pending, baseData, result.data || {}, "startup-pending-merge")) {
+            finishInitialCloudLoading();
+            return;
+          }
+          const migrated = readPendingCloudWrite();
+          if (migrated?.stored && pending.storageKey === CLOUD_LEGACY_PENDING_KEY) {
             removeLegacyPendingCloudWrite(pending.id);
           }
           setCloudStatus("未保存入力を復元し、シートへ保存中", "syncing");
         } else {
           syncStage = "backup-browser";
-          if (cloudDataHasRows(data) && !window.sessionStorage.getItem(STORAGE_KEY + ":startup_backup")) {
-            saveRecoverySnapshot("クラウド読込前の端末データ", data);
-            window.sessionStorage.setItem(STORAGE_KEY + ":startup_backup", "1");
-          }
-          persistCloudBase(remoteData, remoteRevision);
+          try {
+            if (cloudDataHasRows(data) && !window.sessionStorage.getItem(STORAGE_KEY + ":startup_backup")) {
+              saveRecoverySnapshot("クラウド読込前の端末データ", data);
+              window.sessionStorage.setItem(STORAGE_KEY + ":startup_backup", "1");
+            }
+          } catch { /* Startup backup cannot block reading or sending. */ }
+          persistCloudBase(result.data || {}, remoteRevision, verifiedCloudSource(result));
           syncStage = "render-sheet";
           applySyncedData(remoteData, true);
           setCloudStatus("シート読込済み", "ok");
@@ -4115,10 +4233,8 @@ body.modal-open {
           code: ["INVALID_API_RESPONSE", "CONFLICT", "SAVE_ERROR"].includes(error?.code) ? error.code : ""
         }));
         cloudSyncReady = false;
-        setCloudStatus(
-          "シート接続待ち・入力はこの端末に保全します。",
-          "error"
-        );
+        if (readPendingCloudWrite()) setPendingFailureStatus("シート接続または未送信内容の確認待ちです");
+        else setCloudStatus("シート接続待ちです。画面を閉じずにお待ちください。", "error");
         setInitialCloudLoading(
           true,
           "スプレッドシートに接続できません。再接続しています。画面を閉じずにお待ちください。"
@@ -4129,7 +4245,7 @@ body.modal-open {
 
     function hasActiveFormInput() {
       const active = document.activeElement;
-      return Boolean(active && ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName));
+      return hasFormDrafts() || Boolean(active && ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName));
     }
 
     async function refreshCloudIfIdle() {
@@ -4149,7 +4265,7 @@ body.modal-open {
         }
         const remoteData = normalizeData(result.data || {});
         saveRecoverySnapshot("他端末更新反映前", data);
-        persistCloudBase(remoteData, result.updatedAt);
+        persistCloudBase(result.data || {}, result.updatedAt, verifiedCloudSource(result));
         applySyncedData(remoteData, true);
         setCloudStatus("他端末の更新を反映済み", "ok");
       } catch {
@@ -4165,6 +4281,154 @@ body.modal-open {
     let data = loadData();
     let recordAllMode = false;
     let activeRecordEdit = null;
+
+    let formDrafts = {};
+    let formDraftReadFailed = false;
+
+    function hasFormDrafts() {
+      return Object.values(formDrafts).some(draft => !draft.submittedId);
+    }
+
+    function persistFormDrafts() {
+      if (formDraftReadFailed) {
+        updateStorageCapacityWarning(true);
+        return false;
+      }
+      if (Object.keys(formDrafts).length) {
+        return writeLocalJson(FORM_DRAFT_KEY, {version: 1, systemKey: CLOUD_SYSTEM_KEY, forms: formDrafts});
+      }
+      try {
+        localStorage.removeItem(FORM_DRAFT_KEY);
+        getBrowserRetention()?.forgetFailure(FORM_DRAFT_KEY);
+        updateStorageCapacityWarning();
+        return true;
+      } catch { updateStorageCapacityWarning(true); return false; }
+    }
+
+    function draftFields(container) {
+      return Array.from(container.querySelectorAll("input[name],textarea[name],select[name]"))
+        .filter(input => !["password", "file", "submit", "button"].includes(input.type))
+        .map(input => ({name: input.name, value: input.value, checked: input.checked === true}));
+    }
+
+    function restoreDraftFields(container, fields) {
+      const indexes = new Map();
+      const inputs = Array.from(container.querySelectorAll("input[name],textarea[name],select[name]"));
+      fields.forEach(field => {
+        const index = indexes.get(field.name) || 0;
+        indexes.set(field.name, index + 1);
+        const input = inputs.filter(item => item.name === field.name)[index];
+        if (!input || ["password", "file", "submit", "button"].includes(input.type)) return;
+        input.value = field.value;
+        if (["checkbox", "radio"].includes(input.type)) input.checked = field.checked;
+      });
+    }
+
+    function workDraftKey(row) {
+      return row.dataset.workDraftId || row.dataset.workId || row.dataset.workPostId
+        || row.querySelector("[name='workName']")?.value
+        || (row.dataset.workDraftId = "draft_" + uid());
+    }
+
+    function captureFormDraft(event) {
+      const form = event.target.closest("form");
+      if (!form || !["post-form", "work-form", "follower-form", "inquiry-form", "lstep-form"].includes(form.id)) return;
+      const previous = formDrafts[form.id];
+      const fields = draftFields(form);
+      const draft = {fields, rows: previous?.rows || {}, at: new Date().toISOString()};
+      if (form.id === "work-form") {
+        const row = event.target.closest("[data-work-row]");
+        if (row) draft.rows[workDraftKey(row)] = {dataset: {...row.dataset}, fields: draftFields(row)};
+        draft.fields = fields.filter(field => !["workName", "workTheme", "workContent", "workSns", "workPostDate", "workValue", ...engagementFields].includes(field.name));
+      }
+      formDrafts[form.id] = draft;
+      persistFormDrafts();
+    }
+
+    function restoreFormDrafts(onlyFormId = "") {
+      Object.entries(formDrafts).forEach(([formId, draft]) => {
+        if (onlyFormId && formId !== onlyFormId) return;
+        if (draft.submittedId) return;
+        const form = document.getElementById(formId);
+        if (!form) return;
+        restoreDraftFields(form, draft.fields);
+        if (formId === "work-form") {
+          const body = $("#work-metric-body");
+          Object.entries(draft.rows || {}).forEach(([key, saved]) => {
+            if (saved.submittedId) return;
+            const value = name => saved.fields.find(field => field.name === name)?.value || "";
+            const entry = {isNew: saved.dataset.workNew === "true", editId: saved.dataset.workId,
+              postId: saved.dataset.workPostId, sns: value("workSns") || saved.dataset.workSns,
+              postDate: value("workPostDate") || saved.dataset.workPostDate,
+              workName: value("workName"), theme: value("workTheme"), content: value("workContent") || value("workName")};
+            const existing = Array.from(body.querySelectorAll("[data-work-row]")).find(row => workDraftKey(row) === key);
+            const holder = document.createElement("tbody");
+            holder.innerHTML = workMetricRowHtml(entry);
+            const row = holder.firstElementChild;
+            row.dataset.workDraftId = key;
+            restoreDraftFields(row, saved.fields);
+            if (existing) existing.replaceWith(row); else body.appendChild(row);
+          });
+        }
+        const type = formId.replace("-form", "");
+        if (form.elements[type + "Id"]?.value) setRecordFormMode(type, "edit");
+        updateFormWeekLabel(form);
+      });
+      updateVideoMetricVisibility();
+      updateFollowerTotal();
+    }
+
+    function discardFormDraft(formId, rowKey = "") {
+      if (rowKey && formDrafts[formId]?.rows) {
+        delete formDrafts[formId].rows[rowKey];
+        if (!Object.keys(formDrafts[formId].rows).length) delete formDrafts[formId];
+      } else delete formDrafts[formId];
+      persistFormDrafts();
+    }
+
+    function submitFormDraft(formId, rowKey = "") {
+      const draft = formDrafts[formId], pending = readPendingCloudWrite();
+      if (!draft || !pending) return;
+      if (pendingIsDurable(pending)) { discardFormDraft(formId, rowKey); return; }
+      // If queue storage failed, retain the draft until this exact send is acknowledged.
+      if (rowKey) {
+        if (draft.rows[rowKey]) draft.rows[rowKey].submittedId = pending.id;
+      } else draft.submittedId = pending.id;
+      persistFormDrafts();
+    }
+
+    function confirmSubmittedDrafts(ids) {
+      let changed = false;
+      Object.entries(formDrafts).forEach(([formId, draft]) => {
+        let rowChanged = false;
+        if (ids.has(draft.submittedId)) { delete formDrafts[formId]; changed = true; return; }
+        Object.entries(draft.rows || {}).forEach(([key, row]) => {
+          if (ids.has(row.submittedId)) { delete draft.rows[key]; changed = true; rowChanged = true; }
+        });
+        if (formId === "work-form" && rowChanged && !Object.keys(draft.rows || {}).length) delete formDrafts[formId];
+      });
+      if (changed) persistFormDrafts();
+    }
+
+    function initFormDrafts() {
+      try {
+        const raw = localStorage.getItem(FORM_DRAFT_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (saved.version !== 1 || saved.systemKey !== CLOUD_SYSTEM_KEY || !saved.forms || Array.isArray(saved.forms)) throw new Error("INVALID_DRAFT");
+        const validFields = fields => Array.isArray(fields) && fields.every(field => field
+          && typeof field.name === "string" && typeof field.value === "string" && typeof field.checked === "boolean");
+        if (Object.entries(saved.forms).some(([id, draft]) =>
+          !["post-form", "work-form", "follower-form", "inquiry-form", "lstep-form"].includes(id)
+          || !draft || !validFields(draft.fields)
+          || (draft.rows && (typeof draft.rows !== "object" || Array.isArray(draft.rows)
+            || Object.values(draft.rows).some(row => !row || !row.dataset || !validFields(row.fields))))
+        )) throw new Error("INVALID_DRAFT");
+        formDrafts = saved.forms;
+        Object.values(formDrafts).forEach(draft => { delete draft.submittedId;
+          Object.values(draft.rows || {}).forEach(row => { delete row.submittedId; }); });
+      } catch { formDraftReadFailed = true; updateStorageCapacityWarning(true); }
+    }
 
     function cloneRecord(record) {
       return JSON.parse(JSON.stringify(record || null));
@@ -5140,6 +5404,7 @@ body.modal-open {
     function cancelRecordEdit(type, showNotice = false) {
       const form = $(`#${type}-form`);
       if (!form) return;
+      if (showNotice) discardFormDraft(form.id);
       restoreRecordEditForm(type);
       form.reset();
       const idField = form.querySelector(`[name="${type}Id"]`);
@@ -5929,6 +6194,7 @@ body.modal-open {
       if (!body) return;
       const rows = entries && entries.length ? entries : defaultWorkMetricEntries();
       body.innerHTML = rows.map(workMetricRowHtml).join("");
+      restoreFormDrafts("work-form");
       updateWorkFilterStatus(rows.length);
     }
 
@@ -5965,6 +6231,7 @@ body.modal-open {
       $$("input[name='date'], input[name='checkDate']").forEach(input => input.value = todayIso());
       updateVideoMetricVisibility();
       syncInputWeeks();
+      restoreFormDrafts();
     }
 
     function updateVideoMetricVisibility() {
@@ -6331,6 +6598,7 @@ body.modal-open {
         addHistory("登録", "post", null, row);
       }
       saveData(data);
+      submitFormDraft(form.id);
       cancelPostEdit();
       renderAll();
     });
@@ -6345,6 +6613,7 @@ body.modal-open {
     $("#work-metric-body").addEventListener("click", event => {
       const cancelButton = event.target.closest("[data-cancel-work-row]");
       if (cancelButton) {
+        discardFormDraft("work-form", workDraftKey(cancelButton.closest("tr")));
         cancelButton.closest("tr")?.remove();
         updateWorkFilterStatus($("#work-metric-body").querySelectorAll("tr").length);
         return;
@@ -6456,6 +6725,7 @@ body.modal-open {
         addHistory("登録", "work", null, created);
       }
       saveData(data);
+      submitFormDraft(form.id, workDraftKey(row));
       if (wasRecordEdit) {
         cancelRecordEdit("work");
         renderAll();
@@ -6495,6 +6765,7 @@ body.modal-open {
         });
         addHistory("編集", "follower", before, target);
         saveData(data);
+        submitFormDraft(form.id);
         cancelRecordEdit("follower");
         renderAll();
         return;
@@ -6514,6 +6785,7 @@ body.modal-open {
         addHistory("登録", "follower", null, row);
       });
       saveData(data);
+      submitFormDraft(form.id);
       setupForms();
       renderAll();
     });
@@ -6545,6 +6817,7 @@ body.modal-open {
         addHistory("登録", "inquiry", null, row);
       }
       saveData(data);
+      submitFormDraft(form.id);
       cancelRecordEdit("inquiry");
       renderAll();
     });
@@ -6590,6 +6863,7 @@ body.modal-open {
         addHistory("登録", "lstep", null, row);
       }
       saveData(data);
+      submitFormDraft(form.id);
       cancelRecordEdit("lstep");
       renderAll();
     });
@@ -6875,7 +7149,7 @@ body.modal-open {
     });
 
     window.addEventListener("beforeunload", event => {
-      if (!readPendingCloudWrite()) return;
+      if (!readPendingCloudWrite() && !hasFormDrafts()) return;
       event.preventDefault();
       event.returnValue = "";
     });
@@ -6907,6 +7181,9 @@ body.modal-open {
       if (!document.hidden) refreshCloudIfIdle();
     });
 
+    initFormDrafts();
+    document.addEventListener("input", captureFormDraft);
+    document.addEventListener("change", captureFormDraft);
     setupForms();
     renderAll();
     setInitialCloudLoading(cloudEnabled());

@@ -22,14 +22,16 @@ function fixture({quota=false,networkError=false,htmlError=false,wrongOffice=fal
  const state={shown:false,retries:0,warnings:0,status:'',rendered:0,requests:0};
  const context=vm.createContext({
   STORAGE_KEY:'office',CLOUD_BASE_KEY:'office:base',CLOUD_API_URL:'https://example.test/exec',
-  CLOUD_SYSTEM_KEY:'yokazu5',EXPECTED_BACKEND_BUILD_ID:'build',cloudBaseData:null,cloudRevision:'',
+  CLOUD_SYSTEM_KEY:'yokazu5',CLOUD_SPREADSHEET_ID:'sheet',EXPECTED_BACKEND_BUILD_ID:'build',cloudBaseData:null,cloudRevision:'',
+  verifiedCloudSource:r=>r.systemKey==='yokazu5'&&r.spreadsheetId==='sheet',
+  getBrowserRetention:()=>policy,
   cloudSyncReady:false,cloudRetryTimer:null,data:{posts:[]},
-  localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>{
+  localStorage:{get length(){return storage.size;},key:i=>[...storage.keys()][i],getItem:key=>storage.get(key)||null,setItem:(key,value)=>{
    if(quota){const error=new Error('Quota exceeded');error.name='QuotaExceededError';throw error;}
    storage.set(key,value);
-  }},
+  },removeItem:key=>storage.delete(key)},
   fetch:async()=>{state.requests++;if(networkError)throw new TypeError('Failed to fetch');
-   return {ok:true,text:async()=>htmlError?'<!DOCTYPE html><title>Error</title>':JSON.stringify({ok:true,data:{data:remote,updatedAt:'revision',systemKey:wrongOffice?'yokazu6':'yokazu5',backendBuildId:'build'}})};
+   return {ok:true,text:async()=>htmlError?'<!DOCTYPE html><title>Error</title>':JSON.stringify({ok:true,data:{data:remote,updatedAt:'revision',systemKey:wrongOffice?'yokazu6':'yokazu5',spreadsheetId:'sheet',backendBuildId:'build'}})};
   },
   cloudEnabled:()=>true,normalizeData:x=>x,cloneRecord:x=>JSON.parse(JSON.stringify(x)),
   updateStorageCapacityWarning:force=>{if(force)state.warnings++;},
@@ -39,6 +41,9 @@ function fixture({quota=false,networkError=false,htmlError=false,wrongOffice=fal
   finishInitialCloudLoading:()=>{state.shown=true;},setInitialCloudLoading:()=>{},
   scheduleCloudReconnect:()=>{state.retries++;}
  });
+ const policy=require('../backend/browser-retention.js').create({storage:context.localStorage,primaryKey:'office',baseKey:'office:base',
+  recoveryKey:'office:recovery',pendingPrefix:'office:pending',dirtyKey:'office:dirty',normalize:x=>x,
+  equal:require('../backend/record-sync.js').equal});
  for(const pair of [
   ['function writeLocalJson(','function localStorageUsageBytes('],
   ['function persistCloudBase(','function saveData('],
@@ -54,13 +59,13 @@ test('quota failure after successful sheet read must not become a connection err
  assert.equal(f.state.shown,true);assert.equal(f.state.status,'シート読込済み');
  assert.equal(f.state.retries,0);assert.equal(f.state.rendered,1);
  assert.deepEqual(JSON.parse(JSON.stringify(f.context.data)),f.remote);
- assert.equal(f.context.cloudRevision,'revision');assert.ok(f.state.warnings>=1);
+ assert.equal(f.context.cloudRevision,'revision');assert.equal(f.state.warnings,0);
  assert.equal(f.storage.get('office'),f.existing);
  assert.equal(f.storage.get('office:recovery'),'old recovery');
  assert.equal(f.storage.get('other-office'),'untouched');
 });
-test('normal sheet read still updates the local cache and renders',async()=>{
- const f=fixture();await f.context.initCloudSync();
+test('normal sheet read caches a verified copy and renders when no unverified primary exists',async()=>{
+ const f=fixture();f.storage.delete('office');await f.context.initCloudSync();
  assert.equal(f.context.cloudSyncReady,true);assert.equal(f.state.shown,true);
  assert.deepEqual(JSON.parse(f.storage.get('office')),f.remote);
  assert.equal(f.state.warnings,0);assert.equal(f.state.requests,1);
@@ -73,6 +78,6 @@ for(const condition of ['networkError','htmlError','wrongOffice'])test(condition
 });
 test('server-confirmed snapshots can render even when the cache cannot be written',()=>{
  const f=fixture({quota:true});f.context.applySyncedData(f.remote,true);
- assert.equal(f.state.rendered,1);assert.ok(f.state.warnings>=1);
+ assert.equal(f.state.rendered,1);assert.equal(f.state.warnings,0);
  assert.equal(f.storage.get('office'),f.existing);
 });

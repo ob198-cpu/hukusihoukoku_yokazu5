@@ -30,10 +30,15 @@ const SHEETS = {
 };
 
 function doGet(e) {
-  const systemKey = selectSpreadsheet_(e && e.parameter && e.parameter.systemKey);
-  recoverPendingSave_();
-  ensureAllSheets_();
-  return json_({ ok: true, data: { status: 'ready', systemKey: systemKey, updatedAt: readUpdatedAt_(), backendBuildId: BACKEND_BUILD_ID } });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const systemKey = selectSpreadsheet_(e && e.parameter && e.parameter.systemKey);
+    recoverRecordSave_();
+    recoverPendingSave_();
+    ensureAllSheets_();
+    return json_({ ok: true, data: { status: 'ready', systemKey: systemKey, updatedAt: readUpdatedAt_(), backendBuildId: BACKEND_BUILD_ID } });
+  } finally { lock.releaseLock(); }
 }
 
 function doPost(e) {
@@ -43,7 +48,11 @@ function doPost(e) {
     lock.waitLock(30000);
     locked = true;
     const request = JSON.parse((e.postData && e.postData.contents) || '{}');
+    if (request.action === 'saveChanges' && request.systemKey !== 'yokazu5') {
+      throw new Error('RECORD_SAVE_TARGET_MISMATCH');
+    }
     selectSpreadsheet_(request.systemKey);
+    recoverRecordSave_();
     recoverPendingSave_();
     ensureAllSheets_();
     const action = request.action || '';
@@ -51,12 +60,15 @@ function doPost(e) {
       return json_({ ok: true, data: archiveBrowserData_(request) });
     }
     if (action === 'loadData') return json_({ ok: true, data: {
-      data: readData_(),
+      data: recordSaveSupported_() ? readRecordData_() : readData_(),
       updatedAt: readUpdatedAt_(),
       systemKey: ACTIVE_SYSTEM_KEY,
       browserArchiveSupported: ACTIVE_SYSTEM_KEY === 'yokazu7',
+      recordSaveVersion: recordSaveSupported_() ? RECORD_SAVE_VERSION : 0,
+      spreadsheetId: ACTIVE_SPREADSHEET_ID,
       backendBuildId: BACKEND_BUILD_ID
     } });
+    if (action === 'saveChanges') return json_({ ok: true, data: saveChanges_(request) });
     if (action === 'saveData') {
       return json_({ ok: true, data: saveData_(request.data || {}, request.expectedUpdatedAt || '', request.clientId || '') });
     }
@@ -403,7 +415,9 @@ function readRawRows_(def) {
 function readJsonColumn_(def) {
   const jsonIndex = def.headers.indexOf('json');
   if (jsonIndex < 0) return [];
-  return readRawRows_(def).map(function(row) {
+  return readRawRows_(def).filter(function(row) {
+    return row.some(function(value) { return value !== '' && value !== null; });
+  }).map(function(row) {
     try {
       var raw = row[jsonIndex];
       if (!raw) {
