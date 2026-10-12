@@ -15,7 +15,7 @@ function snsBridgeRequest(payload, systemKey) {
   const request = JSON.parse(payload);
   // The existing Hatchobori bridge can omit this second argument until its iframe reloads.
   if (!recordSaveEnabled_(request.systemKey) || request.systemKey !== (systemKey || 'yokazu5')
-    || ['loadData', 'saveChanges'].indexOf(request.action) < 0) {
+    || ['loadData', 'saveChanges', 'archiveRecoveryCopy', 'readRecoveryCopy', 'ensureRecoveryArchive', 'migrateLegacyRecoveryCopies'].indexOf(request.action) < 0) {
     throw new Error('INVALID_BRIDGE_TARGET');
   }
   // Use the same lock, target checks, conflict handling and readback as the POST API.

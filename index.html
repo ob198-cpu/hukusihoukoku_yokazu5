@@ -3238,8 +3238,9 @@ body.modal-open {
   <style>#storage-capacity-warning[hidden] { display: none; }</style>
   <script src="sync-engine.js?v=20260730-conflict-review"></script>
   <script src="backend/record-sync.js?v=20261009-record-save"></script>
-  <script src="backend/browser-retention.js?v=20261011-bounded-storage"></script>
+  <script src="backend/browser-retention.js?v=20261012-recovery-archive"></script>
   <script src="backend/gas-transport.js?v=20261011-sheet-bridge"></script>
+  <script src="backend/recovery-archive.js?v=20261012-1"></script>
   <script>
     const STORAGE_KEY = "sns_operation_report_yokazu5_v4";
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyEqN6b5KVAXlU_03_in2WDdlDUcJNAsvU54EvB6ZRQFf_k1Xh68HkkowOqD3wqxek4/exec";
@@ -3629,6 +3630,38 @@ body.modal-open {
       }
     }
 
+    var recoveryArchiveClient = null;
+
+    function getRecoveryArchive() {
+      try {
+        if (!recoveryArchiveClient && window.SnsRecoveryArchive) {
+          recoveryArchiveClient = window.SnsRecoveryArchive.create({
+            storage: localStorage, recoveryKey: CLOUD_RECOVERY_KEY,
+            systemKey: CLOUD_SYSTEM_KEY, spreadsheetId: CLOUD_SPREADSHEET_ID,
+            request: (action, payload) => cloudRequest(action, payload),
+            digest: async text => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))))
+              .map(byte => byte.toString(16).padStart(2, "0")).join(""),
+            ready: () => cloudSyncReady && !cloudSyncInFlight && !readPendingCloudWrite(),
+            onStatus: text => {
+              let notice = document.querySelector("#recovery-archive-status");
+              if (!notice && text) {
+                notice = document.createElement("div"); notice.id = "recovery-archive-status";
+                notice.className = "cloud-status error no-print";
+                document.querySelector("#cloud-status")?.insertAdjacentElement("afterend", notice);
+              }
+              if (notice && text) notice.textContent = text;
+              else if (notice) notice.remove();
+            }
+          });
+        }
+        return recoveryArchiveClient;
+      } catch { return null; }
+    }
+
+    function runRecoveryArchive() {
+      try { return getRecoveryArchive()?.run(); } catch { /* Never block a business save. */ }
+    }
+
     var browserRetentionPolicy = null;
 
     function getBrowserRetention() {
@@ -3637,7 +3670,7 @@ body.modal-open {
           browserRetentionPolicy = window.SnsBrowserRetention.create({
             storage: localStorage, primaryKey: STORAGE_KEY, baseKey: CLOUD_BASE_KEY,
             recoveryKey: CLOUD_RECOVERY_KEY, pendingPrefix: CLOUD_PENDING_PREFIX,
-            dirtyKey: CLOUD_DIRTY_MARKER_KEY, normalize: normalizeData, equal: window.SnsSyncMerge.equal
+            dirtyKey: CLOUD_DIRTY_MARKER_KEY, archiveRecovery: true, normalize: normalizeData, equal: window.SnsSyncMerge.equal
           });
         }
         return browserRetentionPolicy;
@@ -3689,12 +3722,15 @@ body.modal-open {
         if (!snapshot) return;
         const pending = readPendingCloudWrite();
         if (pendingIsDurable(pending) && window.SnsSyncMerge.equal(pending.data, snapshot)) return true;
-        return getBrowserRetention()?.recover({
+        const recovery = {
           id: uid(),
           at: new Date().toISOString(),
           reason: reason,
           data: normalizeData(cloneRecord(snapshot))
-        }) || false;
+        };
+        const stored = getBrowserRetention()?.recover(recovery) || false;
+        if (!stored) getRecoveryArchive()?.enqueue(recovery);
+        return stored;
       } catch { /* Optional recovery history must not block the normal save. */ }
     }
 
@@ -4115,6 +4151,7 @@ body.modal-open {
           ? "保存元を確認できないため未送信です" : "シート未保存・送信または読戻し確認に失敗しました");
       } finally {
         cloudSyncInFlight = false;
+        runRecoveryArchive();
         if (readPendingCloudWrite() && !cloudConflictWaiting) scheduleCloudSave(CLOUD_RETRY_DELAY_MS);
       }
     }
@@ -4281,7 +4318,8 @@ body.modal-open {
 
     function startCloudRefresh() {
       clearInterval(cloudRefreshTimer);
-      cloudRefreshTimer = setInterval(refreshCloudIfIdle, 30000);
+      cloudRefreshTimer = setInterval(async () => { await refreshCloudIfIdle(); runRecoveryArchive(); }, 30000);
+      runRecoveryArchive();
     }
 
     let data = loadData();
@@ -7155,7 +7193,7 @@ body.modal-open {
     });
 
     window.addEventListener("beforeunload", event => {
-      if (!readPendingCloudWrite() && !hasFormDrafts()) return;
+      if (!readPendingCloudWrite() && !hasFormDrafts() && !getRecoveryArchive()?.hasVolatile()) return;
       event.preventDefault();
       event.returnValue = "";
     });

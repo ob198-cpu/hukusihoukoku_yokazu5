@@ -57,6 +57,7 @@ var SnsBrowserRetention = (function () {
       } catch { return false; }
     }
     function pruneRecovery() {
+      if (options.archiveRecovery) return;
       const raw = read(recoveryKey), entries = parse(raw);
       if (!Array.isArray(entries)) return;
       const kept = entries.filter(entry => !same(entry?.data, confirmed));

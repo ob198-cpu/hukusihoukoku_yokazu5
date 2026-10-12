@@ -57,6 +57,10 @@ function doPost(e) {
     recoverPendingSave_();
     ensureAllSheets_();
     const action = request.action || '';
+    if (action === 'archiveRecoveryCopy') return json_({ok:true, data:archiveRecoveryCopy_(request)});
+    if (action === 'readRecoveryCopy') return json_({ok:true, data:readRecoveryCopy_(request)});
+    if (action === 'ensureRecoveryArchive') return json_({ok:true, data:ensureRecoveryArchive_(request)});
+    if (action === 'migrateLegacyRecoveryCopies') return json_({ok:true, data:migrateLegacyRecoveryCopies_(request)});
     if (action === 'archiveBrowserData') {
       return json_({ ok: true, data: archiveBrowserData_(request) });
     }

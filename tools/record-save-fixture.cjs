@@ -36,6 +36,8 @@ class Sheet {
   insertRowsAfter(_row,count){this.maxRows+=count;return this;}
   insertColumnsAfter(_col,count){this.maxColumns+=count;return this;}
   setFrozenRows(){return this;}
+  setColumnWidth(){return this;}
+  setColumnWidths(){return this;}
   setName(name){this.book.sheets.delete(this.name);this.name=name;this.book.sheets.set(name,this);return this;}
   createTextFinder(text){const self=this;return {matchEntireCell(){return this;},findNext(){return self.rows.some(row=>row.includes(text))?{}:null;}};}
 }
@@ -61,7 +63,7 @@ function backend() {
     LockService:{getScriptLock:()=>({waitLock(){if(locked)throw Error('lock conflict');locked=true;},releaseLock(){locked=false;}})},
     ContentService:{MimeType:{JSON:'json'},createTextOutput:text=>({text,setMimeType(){return this;}})}
   });
-  for(const name of ['record-sync.js','Code.gs','RecordSave.gs']) vm.runInContext(fs.readFileSync(path.join(__dirname,'../backend',name),'utf8'),ctx);
+  for(const name of ['record-sync.js','Code.gs','RecordSave.gs','RecoveryArchive.gs']) vm.runInContext(fs.readFileSync(path.join(__dirname,'../backend',name),'utf8'),ctx);
   function seed(systemKey, data) {
     ctx.selectSpreadsheet_(systemKey);ctx.ensureAllSheets_();ctx.commitDataSafely_(ctx.normalizeData_(data),'seed-'+systemKey);
     const book=ctx.targetSpreadsheet_();book.writes.length=0;return book;
